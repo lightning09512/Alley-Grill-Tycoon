@@ -61,7 +61,7 @@ export const STAFF_WAGE_PER_SHIFT = 30;
 export const OFFLINE_CAP_MINUTES = 4 * 60;
 export const OFFLINE_COINS_PER_MINUTE = 8;
 
-export const MAX_CART_LEVEL = 12;
+export const MAX_CART_LEVEL = SHOP_STAGES.length;
 export const BUSINESS_STAGE_NAMES = SHOP_STAGES.map((stage) => stage.name);
 
 export const CART_UPGRADE_COST: Record<number, number> = {

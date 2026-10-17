@@ -1,0 +1,1396 @@
+{
+  "kind": "alley-grill-tycoon-generated-walk-atlases",
+  "tool": "sprite-gen",
+  "frame_size": [
+    247,
+    396
+  ],
+  "frames_per_direction": 8,
+  "directions": [
+    "left (mirrored)",
+    "right (generated)"
+  ],
+  "fps": 5,
+  "files": [
+    {
+      "id": "saigon-schoolgirl",
+      "file": "saigon-schoolgirl-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\saigon-schoolgirl-walk-horizontal-v2-concept.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-walkers-batch-v2\\runs\\saigon-schoolgirl",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        7
+      ],
+      "right_frames": [
+        8,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          40,
+          23,
+          203,
+          373
+        ],
+        [
+          28,
+          23,
+          200,
+          373
+        ],
+        [
+          20,
+          23,
+          208,
+          373
+        ],
+        [
+          45,
+          23,
+          206,
+          373
+        ],
+        [
+          44,
+          23,
+          199,
+          373
+        ],
+        [
+          27,
+          23,
+          197,
+          373
+        ],
+        [
+          34,
+          23,
+          206,
+          373
+        ],
+        [
+          48,
+          23,
+          210,
+          373
+        ]
+      ]
+    },
+    {
+      "id": "saigon-office-man",
+      "file": "saigon-office-man-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\saigon-office-man-walk-horizontal-v3-12frame.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-walkers-batch-v2\\runs\\saigon-office-man",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        7
+      ],
+      "right_frames": [
+        8,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          52,
+          23,
+          200,
+          373
+        ],
+        [
+          61,
+          23,
+          207,
+          373
+        ],
+        [
+          74,
+          23,
+          212,
+          373
+        ],
+        [
+          50,
+          23,
+          207,
+          373
+        ],
+        [
+          45,
+          23,
+          204,
+          373
+        ],
+        [
+          67,
+          23,
+          210,
+          373
+        ],
+        [
+          65,
+          23,
+          212,
+          373
+        ],
+        [
+          44,
+          23,
+          208,
+          373
+        ]
+      ]
+    },
+    {
+      "id": "saigon-market-shopper",
+      "file": "saigon-market-shopper-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\saigon-market-shopper-walk-horizontal-v3-12frame.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-walkers-batch-v2\\runs\\saigon-market-shopper",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        7
+      ],
+      "right_frames": [
+        8,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          44,
+          23,
+          197,
+          373
+        ],
+        [
+          38,
+          23,
+          211,
+          373
+        ],
+        [
+          36,
+          23,
+          204,
+          373
+        ],
+        [
+          37,
+          23,
+          207,
+          373
+        ],
+        [
+          43,
+          23,
+          198,
+          373
+        ],
+        [
+          28,
+          23,
+          204,
+          373
+        ],
+        [
+          37,
+          23,
+          208,
+          373
+        ],
+        [
+          40,
+          23,
+          201,
+          373
+        ]
+      ]
+    },
+    {
+      "id": "saigon-backpacker-tourist",
+      "file": "saigon-backpacker-tourist-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\saigon-backpacker-tourist-walk-horizontal-user.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-walkers-batch-v2\\runs\\saigon-backpacker-tourist",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        7
+      ],
+      "right_frames": [
+        8,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          48,
+          23,
+          221,
+          373
+        ],
+        [
+          41,
+          23,
+          214,
+          373
+        ],
+        [
+          39,
+          23,
+          210,
+          373
+        ],
+        [
+          47,
+          23,
+          217,
+          373
+        ],
+        [
+          43,
+          23,
+          213,
+          373
+        ],
+        [
+          40,
+          23,
+          210,
+          373
+        ],
+        [
+          41,
+          23,
+          212,
+          373
+        ],
+        [
+          43,
+          23,
+          213,
+          373
+        ]
+      ]
+    },
+    {
+      "id": "saigon-construction-worker",
+      "file": "saigon-construction-worker-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\saigon-construction-worker-walk-horizontal-user.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-walkers-batch-v2\\runs\\saigon-construction-worker",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        7
+      ],
+      "right_frames": [
+        8,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          50,
+          23,
+          203,
+          373
+        ],
+        [
+          57,
+          23,
+          206,
+          373
+        ],
+        [
+          57,
+          23,
+          208,
+          373
+        ],
+        [
+          43,
+          23,
+          205,
+          373
+        ],
+        [
+          52,
+          23,
+          202,
+          373
+        ],
+        [
+          65,
+          23,
+          207,
+          373
+        ],
+        [
+          44,
+          23,
+          206,
+          373
+        ],
+        [
+          53,
+          23,
+          200,
+          373
+        ]
+      ]
+    },
+    {
+      "id": "saigon-delivery-rider",
+      "file": "saigon-delivery-rider-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\saigon-delivery-rider-walk-horizontal-user.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-walkers-batch-v2\\runs\\saigon-delivery-rider",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        7
+      ],
+      "right_frames": [
+        8,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          28,
+          23,
+          214,
+          373
+        ],
+        [
+          34,
+          23,
+          223,
+          373
+        ],
+        [
+          34,
+          23,
+          226,
+          373
+        ],
+        [
+          34,
+          23,
+          220,
+          373
+        ],
+        [
+          29,
+          23,
+          214,
+          373
+        ],
+        [
+          33,
+          23,
+          229,
+          373
+        ],
+        [
+          34,
+          23,
+          226,
+          373
+        ],
+        [
+          33,
+          23,
+          219,
+          373
+        ]
+      ]
+    },
+    {
+      "id": "saigon-food-reviewer",
+      "file": "saigon-food-reviewer-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\saigon-food-reviewer-walk-horizontal-user.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-walkers-batch-v2\\runs\\saigon-food-reviewer",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        7
+      ],
+      "right_frames": [
+        8,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          42,
+          23,
+          204,
+          373
+        ],
+        [
+          49,
+          23,
+          213,
+          373
+        ],
+        [
+          49,
+          23,
+          211,
+          373
+        ],
+        [
+          47,
+          23,
+          213,
+          373
+        ],
+        [
+          48,
+          23,
+          210,
+          373
+        ],
+        [
+          54,
+          23,
+          217,
+          373
+        ],
+        [
+          46,
+          23,
+          209,
+          373
+        ],
+        [
+          46,
+          23,
+          210,
+          373
+        ]
+      ]
+    },
+    {
+      "id": "saigon-genz-nightowl",
+      "file": "saigon-genz-nightowl-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\saigon-genz-nightowl-walk-horizontal-user.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-walkers-batch-v2\\runs\\saigon-genz-nightowl",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        7
+      ],
+      "right_frames": [
+        8,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          40,
+          23,
+          200,
+          373
+        ],
+        [
+          41,
+          23,
+          199,
+          373
+        ],
+        [
+          41,
+          23,
+          202,
+          373
+        ],
+        [
+          42,
+          23,
+          201,
+          373
+        ],
+        [
+          42,
+          23,
+          200,
+          373
+        ],
+        [
+          41,
+          23,
+          200,
+          373
+        ],
+        [
+          42,
+          23,
+          200,
+          373
+        ],
+        [
+          43,
+          23,
+          199,
+          373
+        ]
+      ]
+    },
+    {
+      "id": "saigon-ingredient-supplier",
+      "file": "saigon-ingredient-supplier-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\saigon-ingredient-supplier-walk-horizontal-v3-12frame.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-walkers-batch-v2\\runs\\saigon-ingredient-supplier",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        7
+      ],
+      "right_frames": [
+        8,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          26,
+          25,
+          227,
+          373
+        ],
+        [
+          37,
+          23,
+          231,
+          373
+        ],
+        [
+          33,
+          23,
+          229,
+          373
+        ],
+        [
+          36,
+          23,
+          231,
+          373
+        ],
+        [
+          34,
+          23,
+          229,
+          373
+        ],
+        [
+          36,
+          23,
+          235,
+          373
+        ],
+        [
+          34,
+          23,
+          228,
+          373
+        ],
+        [
+          30,
+          23,
+          223,
+          373
+        ]
+      ]
+    },
+    {
+      "id": "saigon-lottery-vendor",
+      "file": "saigon-lottery-vendor-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\saigon-lottery-vendor-walk-horizontal-user.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-walkers-batch-v2\\runs\\saigon-lottery-vendor",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        7
+      ],
+      "right_frames": [
+        8,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          32,
+          23,
+          219,
+          373
+        ],
+        [
+          36,
+          23,
+          220,
+          373
+        ],
+        [
+          45,
+          23,
+          226,
+          373
+        ],
+        [
+          33,
+          23,
+          219,
+          373
+        ],
+        [
+          32,
+          23,
+          216,
+          373
+        ],
+        [
+          33,
+          23,
+          214,
+          373
+        ],
+        [
+          32,
+          23,
+          216,
+          373
+        ],
+        [
+          31,
+          23,
+          216,
+          373
+        ]
+      ]
+    },
+    {
+      "id": "saigon-morning-jogger",
+      "file": "saigon-morning-jogger-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\saigon-morning-jogger-walk-horizontal-user.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-walkers-batch-v2\\runs\\saigon-morning-jogger",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        7
+      ],
+      "right_frames": [
+        8,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          42,
+          23,
+          214,
+          373
+        ],
+        [
+          39,
+          23,
+          213,
+          373
+        ],
+        [
+          66,
+          23,
+          215,
+          373
+        ],
+        [
+          43,
+          23,
+          215,
+          373
+        ],
+        [
+          44,
+          23,
+          209,
+          373
+        ],
+        [
+          43,
+          23,
+          208,
+          373
+        ],
+        [
+          61,
+          23,
+          211,
+          373
+        ],
+        [
+          41,
+          23,
+          216,
+          373
+        ]
+      ]
+    },
+    {
+      "id": "saigon-office-woman",
+      "file": "saigon-office-woman-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\saigon-office-woman-walk-horizontal-v2-concept.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-walkers-batch-v2\\runs\\saigon-office-woman",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        7
+      ],
+      "right_frames": [
+        8,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          24,
+          23,
+          210,
+          373
+        ],
+        [
+          23,
+          23,
+          219,
+          373
+        ],
+        [
+          28,
+          23,
+          211,
+          373
+        ],
+        [
+          30,
+          23,
+          220,
+          373
+        ],
+        [
+          23,
+          23,
+          211,
+          373
+        ],
+        [
+          25,
+          23,
+          214,
+          373
+        ],
+        [
+          30,
+          23,
+          213,
+          373
+        ],
+        [
+          20,
+          23,
+          212,
+          373
+        ]
+      ]
+    },
+    {
+      "id": "saigon-older-regular",
+      "file": "saigon-older-regular-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\saigon-older-regular-walk-horizontal-v2-concept.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-walkers-batch-v2\\runs\\saigon-older-regular",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        7
+      ],
+      "right_frames": [
+        8,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          25,
+          23,
+          216,
+          373
+        ],
+        [
+          22,
+          23,
+          215,
+          373
+        ],
+        [
+          37,
+          23,
+          208,
+          373
+        ],
+        [
+          27,
+          23,
+          222,
+          373
+        ],
+        [
+          28,
+          23,
+          216,
+          373
+        ],
+        [
+          25,
+          23,
+          214,
+          373
+        ],
+        [
+          45,
+          23,
+          215,
+          373
+        ],
+        [
+          29,
+          23,
+          217,
+          373
+        ]
+      ]
+    },
+    {
+      "id": "saigon-schoolboy",
+      "file": "saigon-schoolboy-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\saigon-schoolboy-walk-horizontal-v2-concept.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-walkers-batch-v2\\runs\\saigon-schoolboy",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        7
+      ],
+      "right_frames": [
+        8,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          38,
+          23,
+          212,
+          373
+        ],
+        [
+          48,
+          23,
+          215,
+          373
+        ],
+        [
+          34,
+          23,
+          217,
+          373
+        ],
+        [
+          52,
+          23,
+          216,
+          373
+        ],
+        [
+          35,
+          23,
+          222,
+          373
+        ],
+        [
+          57,
+          23,
+          224,
+          373
+        ],
+        [
+          41,
+          23,
+          222,
+          373
+        ],
+        [
+          41,
+          23,
+          208,
+          373
+        ]
+      ]
+    },
+    {
+      "id": "saigon-street-sweeper",
+      "file": "saigon-street-sweeper-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\saigon-street-sweeper-walk-horizontal-v2-concept.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-walkers-batch-v2\\runs\\saigon-street-sweeper",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        7
+      ],
+      "right_frames": [
+        8,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          20,
+          23,
+          218,
+          373
+        ],
+        [
+          14,
+          42,
+          215,
+          373
+        ],
+        [
+          33,
+          23,
+          210,
+          373
+        ],
+        [
+          24,
+          23,
+          215,
+          373
+        ],
+        [
+          20,
+          23,
+          217,
+          373
+        ],
+        [
+          16,
+          23,
+          209,
+          373
+        ],
+        [
+          32,
+          23,
+          211,
+          373
+        ],
+        [
+          21,
+          23,
+          219,
+          373
+        ]
+      ]
+    },
+    {
+      "id": "saigon-ward-police-officer",
+      "file": "saigon-ward-police-officer-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\saigon-ward-police-officer-walk-horizontal-user.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-walkers-batch-v2\\runs\\saigon-ward-police-officer",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        7
+      ],
+      "right_frames": [
+        8,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          51,
+          23,
+          205,
+          373
+        ],
+        [
+          50,
+          23,
+          207,
+          373
+        ],
+        [
+          52,
+          23,
+          211,
+          373
+        ],
+        [
+          51,
+          23,
+          211,
+          373
+        ],
+        [
+          54,
+          23,
+          209,
+          373
+        ],
+        [
+          53,
+          23,
+          212,
+          373
+        ],
+        [
+          49,
+          23,
+          206,
+          373
+        ],
+        [
+          49,
+          23,
+          208,
+          373
+        ]
+      ]
+    },
+    {
+      "id": "saigon-ward-inspector",
+      "file": "saigon-ward-inspector-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\saigon-ward-inspector-walk-horizontal-user.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-walkers-batch-v2\\runs\\saigon-ward-inspector",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        7
+      ],
+      "right_frames": [
+        8,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          46,
+          23,
+          203,
+          373
+        ],
+        [
+          49,
+          23,
+          201,
+          373
+        ],
+        [
+          54,
+          23,
+          204,
+          373
+        ],
+        [
+          50,
+          23,
+          199,
+          373
+        ],
+        [
+          44,
+          23,
+          207,
+          373
+        ],
+        [
+          48,
+          23,
+          200,
+          373
+        ],
+        [
+          57,
+          23,
+          207,
+          373
+        ],
+        [
+          49,
+          23,
+          199,
+          373
+        ]
+      ]
+    },
+    {
+      "id": "saigon-young-mother",
+      "file": "saigon-young-mother-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\saigon-young-mother-walk-horizontal-v2-concept.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-walkers-batch-v2\\runs\\saigon-young-mother",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        7
+      ],
+      "right_frames": [
+        8,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          19,
+          23,
+          220,
+          373
+        ],
+        [
+          18,
+          23,
+          215,
+          373
+        ],
+        [
+          43,
+          23,
+          235,
+          373
+        ],
+        [
+          22,
+          24,
+          223,
+          373
+        ],
+        [
+          14,
+          23,
+          212,
+          373
+        ],
+        [
+          36,
+          23,
+          234,
+          373
+        ],
+        [
+          19,
+          43,
+          220,
+          373
+        ],
+        [
+          6,
+          23,
+          206,
+          373
+        ]
+      ]
+    },
+    {
+      "id": "saigon-taphoa-student-boy",
+      "file": "saigon-taphoa-student-boy-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\saigon-taphoa-student-boy-walk-v1.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-walkers-batch-v2\\runs\\saigon-taphoa-student-boy",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        7
+      ],
+      "right_frames": [
+        8,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          42,
+          23,
+          204,
+          373
+        ],
+        [
+          49,
+          23,
+          213,
+          373
+        ],
+        [
+          60,
+          23,
+          215,
+          373
+        ],
+        [
+          45,
+          23,
+          214,
+          373
+        ],
+        [
+          41,
+          23,
+          209,
+          373
+        ],
+        [
+          59,
+          23,
+          217,
+          373
+        ],
+        [
+          51,
+          23,
+          215,
+          373
+        ],
+        [
+          40,
+          23,
+          219,
+          373
+        ]
+      ]
+    },
+    {
+      "id": "saigon-taphoa-college-girl",
+      "file": "saigon-taphoa-college-girl-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\saigon-taphoa-college-girl-walk-v1.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-walkers-batch-v2\\runs\\saigon-taphoa-college-girl",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        7
+      ],
+      "right_frames": [
+        8,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          44,
+          23,
+          200,
+          373
+        ],
+        [
+          53,
+          23,
+          192,
+          373
+        ],
+        [
+          48,
+          23,
+          190,
+          373
+        ],
+        [
+          71,
+          23,
+          199,
+          373
+        ],
+        [
+          38,
+          23,
+          206,
+          373
+        ],
+        [
+          50,
+          23,
+          189,
+          373
+        ],
+        [
+          48,
+          23,
+          191,
+          373
+        ],
+        [
+          45,
+          23,
+          197,
+          373
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,909 @@
+{
+  "characterId": "saigon-backpacker-tourist",
+  "engine": "component-row",
+  "game_input": "sprite-sheet-alpha.png",
+  "degraded_static_fallback": false,
+  "curation_applied": false,
+  "frame_variant": "pixel",
+  "sprite_sheet_alpha": "sprite-sheet-alpha.png",
+  "sprite_sheet_alpha_report": "sprite-sheet-alpha.report.json",
+  "base_image": "base-source.png",
+  "cell": {
+    "shape": "rect",
+    "width": 247,
+    "height": 396,
+    "safe_margin_x": 23,
+    "safe_margin_y": 37
+  },
+  "chroma_key": {
+    "name": "magenta",
+    "hex": "#FF00FF",
+    "rgb": [
+      255,
+      0,
+      255
+    ],
+    "selection": "auto",
+    "score": 207.44,
+    "min_subject_distance": 197.8,
+    "background": {
+      "mode": "transparent",
+      "opaque_border_fraction": 0.0,
+      "subject_pixels": 13025
+    },
+    "candidates": [
+      {
+        "name": "magenta",
+        "hex": "#FF00FF",
+        "score": 207.44,
+        "min_subject_distance": 197.8,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "green",
+        "hex": "#00FF00",
+        "score": 186.9,
+        "min_subject_distance": 184.03,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "cyan",
+        "hex": "#00FFFF",
+        "score": 176.8,
+        "min_subject_distance": 159.43,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "blue",
+        "hex": "#004DFF",
+        "score": 128.83,
+        "min_subject_distance": 124.05,
+        "clears_erase_radius": true
+      }
+    ],
+    "selection_reason": "highest 1st-percentile subject distance among the 4 candidate(s) clearing the 96 erase radius"
+  },
+  "animation": {
+    "cellWidth": 247,
+    "cellHeight": 396,
+    "columns": 8,
+    "rows": {
+      "down_idle": {
+        "row": 0,
+        "frames": 4,
+        "fps": 4,
+        "durations_ms": [
+          250,
+          250,
+          250,
+          250
+        ],
+        "loop": true,
+        "frame_variant": "pixel"
+      },
+      "down_walk": {
+        "row": 1,
+        "frames": 8,
+        "fps": 5,
+        "durations_ms": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ],
+        "loop": true,
+        "frame_variant": "pixel"
+      },
+      "down_sit": {
+        "row": 2,
+        "frames": 4,
+        "fps": 6,
+        "durations_ms": [
+          167,
+          167,
+          167,
+          167
+        ],
+        "loop": false,
+        "frame_variant": "pixel"
+      },
+      "down_seated_idle": {
+        "row": 3,
+        "frames": 4,
+        "fps": 4,
+        "durations_ms": [
+          250,
+          250,
+          250,
+          250
+        ],
+        "loop": true,
+        "frame_variant": "pixel"
+      },
+      "down_eat": {
+        "row": 4,
+        "frames": 6,
+        "fps": 6,
+        "durations_ms": [
+          167,
+          167,
+          167,
+          167,
+          167,
+          167
+        ],
+        "loop": true,
+        "frame_variant": "pixel"
+      },
+      "down_stand": {
+        "row": 5,
+        "frames": 4,
+        "fps": 6,
+        "durations_ms": [
+          167,
+          167,
+          167,
+          167
+        ],
+        "loop": false,
+        "frame_variant": "pixel"
+      },
+      "side_idle": {
+        "row": 6,
+        "frames": 4,
+        "fps": 4,
+        "durations_ms": [
+          250,
+          250,
+          250,
+          250
+        ],
+        "loop": true,
+        "frame_variant": "pixel"
+      },
+      "side_walk": {
+        "row": 7,
+        "frames": 8,
+        "fps": 5,
+        "durations_ms": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ],
+        "loop": true,
+        "frame_variant": "pixel"
+      },
+      "side_sit": {
+        "row": 8,
+        "frames": 4,
+        "fps": 6,
+        "durations_ms": [
+          167,
+          167,
+          167,
+          167
+        ],
+        "loop": false,
+        "frame_variant": "pixel"
+      },
+      "side_seated_idle": {
+        "row": 9,
+        "frames": 4,
+        "fps": 4,
+        "durations_ms": [
+          250,
+          250,
+          250,
+          250
+        ],
+        "loop": true,
+        "frame_variant": "pixel"
+      },
+      "side_eat": {
+        "row": 10,
+        "frames": 6,
+        "fps": 6,
+        "durations_ms": [
+          167,
+          167,
+          167,
+          167,
+          167,
+          167
+        ],
+        "loop": true,
+        "frame_variant": "pixel"
+      },
+      "side_stand": {
+        "row": 11,
+        "frames": 4,
+        "fps": 6,
+        "durations_ms": [
+          167,
+          167,
+          167,
+          167
+        ],
+        "loop": false,
+        "frame_variant": "pixel"
+      },
+      "up_idle": {
+        "row": 12,
+        "frames": 4,
+        "fps": 4,
+        "durations_ms": [
+          250,
+          250,
+          250,
+          250
+        ],
+        "loop": true,
+        "frame_variant": "pixel"
+      },
+      "up_walk": {
+        "row": 13,
+        "frames": 8,
+        "fps": 5,
+        "durations_ms": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ],
+        "loop": true,
+        "frame_variant": "pixel"
+      },
+      "up_sit": {
+        "row": 14,
+        "frames": 4,
+        "fps": 6,
+        "durations_ms": [
+          167,
+          167,
+          167,
+          167
+        ],
+        "loop": false,
+        "frame_variant": "pixel"
+      },
+      "up_seated_idle": {
+        "row": 15,
+        "frames": 4,
+        "fps": 4,
+        "durations_ms": [
+          250,
+          250,
+          250,
+          250
+        ],
+        "loop": true,
+        "frame_variant": "pixel"
+      },
+      "up_eat": {
+        "row": 16,
+        "frames": 6,
+        "fps": 6,
+        "durations_ms": [
+          167,
+          167,
+          167,
+          167,
+          167,
+          167
+        ],
+        "loop": true,
+        "frame_variant": "pixel"
+      },
+      "up_stand": {
+        "row": 17,
+        "frames": 4,
+        "fps": 6,
+        "durations_ms": [
+          167,
+          167,
+          167,
+          167
+        ],
+        "loop": false,
+        "frame_variant": "pixel"
+      }
+    }
+  },
+  "frame_layout": {
+    "sheetWidth": 1976,
+    "sheetHeight": 7128,
+    "cellWidth": 247,
+    "cellHeight": 396,
+    "rows": {
+      "down_idle": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 0,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 0,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 0,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "down_walk": [
+        {
+          "x": 0,
+          "y": 396,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 396,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 396,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 396,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 988,
+          "y": 396,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1235,
+          "y": 396,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1482,
+          "y": 396,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1729,
+          "y": 396,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "down_sit": [
+        {
+          "x": 0,
+          "y": 792,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 792,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 792,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 792,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "down_seated_idle": [
+        {
+          "x": 0,
+          "y": 1188,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 1188,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 1188,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 1188,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "down_eat": [
+        {
+          "x": 0,
+          "y": 1584,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 1584,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 1584,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 1584,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 988,
+          "y": 1584,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1235,
+          "y": 1584,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "down_stand": [
+        {
+          "x": 0,
+          "y": 1980,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 1980,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 1980,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 1980,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "side_idle": [
+        {
+          "x": 0,
+          "y": 2376,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 2376,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 2376,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 2376,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "side_walk": [
+        {
+          "x": 0,
+          "y": 2772,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 2772,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 2772,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 2772,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 988,
+          "y": 2772,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1235,
+          "y": 2772,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1482,
+          "y": 2772,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1729,
+          "y": 2772,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "side_sit": [
+        {
+          "x": 0,
+          "y": 3168,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 3168,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 3168,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 3168,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "side_seated_idle": [
+        {
+          "x": 0,
+          "y": 3564,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 3564,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 3564,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 3564,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "side_eat": [
+        {
+          "x": 0,
+          "y": 3960,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 3960,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 3960,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 3960,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 988,
+          "y": 3960,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1235,
+          "y": 3960,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "side_stand": [
+        {
+          "x": 0,
+          "y": 4356,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 4356,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 4356,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 4356,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "up_idle": [
+        {
+          "x": 0,
+          "y": 4752,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 4752,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 4752,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 4752,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "up_walk": [
+        {
+          "x": 0,
+          "y": 5148,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 5148,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 5148,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 5148,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 988,
+          "y": 5148,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1235,
+          "y": 5148,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1482,
+          "y": 5148,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1729,
+          "y": 5148,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "up_sit": [
+        {
+          "x": 0,
+          "y": 5544,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 5544,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 5544,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 5544,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "up_seated_idle": [
+        {
+          "x": 0,
+          "y": 5940,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 5940,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 5940,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 5940,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "up_eat": [
+        {
+          "x": 0,
+          "y": 6336,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 6336,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 6336,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 6336,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 988,
+          "y": 6336,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1235,
+          "y": 6336,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "up_stand": [
+        {
+          "x": 0,
+          "y": 6732,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 6732,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 6732,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 6732,
+          "w": 247,
+          "h": 396
+        }
+      ]
+    }
+  }
+}
