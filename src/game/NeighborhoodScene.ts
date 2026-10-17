@@ -2560,7 +2560,8 @@ export class NeighborhoodScene extends Phaser.Scene {
       // so they read as one tree. Their pivots stay fixed at the edge.
       const period = anchor.side === "left" ? 3_450 : 3_720;
       const sway = Math.sin(time / period + anchor.phase);
-      const rotation = sway * (0.018 + weather.wind * 0.026);
+      // Keep the motion gentle but large enough to read on a phone-sized map.
+      const rotation = sway * (0.042 + weather.wind * 0.047);
       layer.setRotation(rotation);
       const sunlight = this.canopySunlightLayers[index];
       const shimmer = 0.92 + Math.sin(time / (3_800 + index * 260) + anchor.phase) * 0.08;
