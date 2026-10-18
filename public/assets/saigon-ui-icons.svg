@@ -13,6 +13,12 @@
     <path d="m24 14 2.7 6.2 6.7.6-5.1 4.4 1.5 6.6-5.8-3.5-5.8 3.5 1.5-6.6-5.1-4.4 6.7-.6Z" fill="#d98b35" stroke="#a9602d" stroke-width="1.5"/>
     <path d="M12 20q1-5 5-7" fill="none" stroke="#fff2c6" stroke-width="2" stroke-linecap="round"/>
   </symbol>
+  <symbol id="banknote" viewBox="0 0 48 48">
+    <rect x="4" y="11" width="40" height="27" rx="5" fill="#4f9563" stroke="#493a2a" stroke-width="3"/>
+    <path d="M9 17q4 0 4-3h22q0 3 4 3v15q-4 0-4 3H13q0-3-4-3Z" fill="#b9d77b" stroke="#e9e3aa" stroke-width="1.5"/>
+    <circle cx="24" cy="24.5" r="6" fill="#f4ce70" stroke="#756039" stroke-width="1.5"/>
+    <path d="m21 21 3 7 3-7M7 15l-2-3m36 3 2-3M7 34l-2 3m36-3 2 3" fill="none" stroke="#fff0b1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
   <symbol id="reputation-star" viewBox="0 0 48 48">
     <path d="m24 4 5.7 12.1 13.3 1.8-9.7 9.2 2.4 13.2L24 34l-11.7 6.3 2.4-13.2L5 17.9l13.3-1.8Z" fill="#f4bd4f" stroke="#68472d" stroke-width="3" stroke-linejoin="round"/>
     <path d="m24 11 3.4 7.2 7.9 1.1-5.8 5.5 1.4 7.8-6.9-3.7-6.9 3.7 1.4-7.8-5.8-5.5 7.9-1.1Z" fill="#ffe99a"/>

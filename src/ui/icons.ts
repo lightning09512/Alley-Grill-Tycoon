@@ -1,7 +1,7 @@
 export const UI_ICON_SPRITE = "/assets/saigon-ui-icons.svg";
 
 export type UiIconName =
-  | "beer-toast" | "coin" | "reputation-star" | "music-note" | "play" | "pause"
+  | "beer-toast" | "coin" | "banknote" | "reputation-star" | "music-note" | "play" | "pause"
   | "fullscreen" | "exit-fullscreen" | "arrow-left" | "arrow-right" | "map-pan"
   | "sun" | "cloud" | "rain" | "leaf" | "corn" | "sauce-jar" | "pork-skewer"
   | "egg-grill" | "greens" | "grill-meal" | "lantern" | "storefront" | "staff-chef"

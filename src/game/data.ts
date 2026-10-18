@@ -14,7 +14,7 @@ export type Inventory = Record<IngredientId, number>;
 export const RECIPES = {
   cha: {
     id: "cha",
-    name: "Xiên ba chỉ nướng",
+    name: "Xiên thịt ba chỉ nướng",
     salePrice: 30,
     ingredients: ["bread", "pate", "cha", "greens"],
     unlockLevel: 1,

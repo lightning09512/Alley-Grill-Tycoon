@@ -51,7 +51,7 @@ Bạn đang tiếp tục dự án game hiện có trong thư mục này: **Alley
 - Dùng đủ 12 ảnh phủ để nâng từ quầy vỉa hè lên quán nhậu nhiều gian và thương hiệu lớn.
 - Cấp hiển thị trên UI phải khớp frame đang thấy. Nút nâng cấp và giá phải chạy hết cấp 1–12; không còn giới hạn cấp 3.
 - Lưu cấp mới trong tiến trình hiện có; bản lưu cũ cấp 1–3 vẫn phải tải được.
-- Giữ vòng chơi hiện tại: mở ca, khách đi tới, ráp đúng nguyên liệu, nhận xu, đóng ca, nhập hàng và nâng cấp.
+- Giữ vòng chơi hiện tại: mở ca, khách đi tới, ráp đúng nguyên liệu, nhận tiền Việt Nam, đóng ca, nhập hàng và nâng cấp. Số tiền được lưu theo nghìn đồng; giá và khoản thu chi hiển thị thành đồng (ví dụ `35.000đ`).
 
 ## Hoàn tất
 

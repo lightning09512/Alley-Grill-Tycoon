@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><defs>
+    <linearGradient id="roof" x2="0" y2="1"><stop stop-color="#f6bb73" /><stop offset=".52" stop-color="#d87f49" /><stop offset="1" stop-color="#9b543c" /></linearGradient>
+    <linearGradient id="wood" x2="0" y2="1"><stop stop-color="#e1ac70" /><stop offset=".55" stop-color="#b47748" /><stop offset="1" stop-color="#865437" /></linearGradient>
+    <linearGradient id="teal" x2="0" y2="1"><stop stop-color="#6fb2a0" /><stop offset="1" stop-color="#35796e" /></linearGradient>
+    <linearGradient id="paper" x2="0" y2="1"><stop stop-color="#fff5d5" /><stop offset="1" stop-color="#dfbd86" /></linearGradient>
+    <linearGradient id="metal" x2="0" y2="1"><stop stop-color="#e5d2b1" /><stop offset=".45" stop-color="#a8a99b" /><stop offset="1" stop-color="#6d756b" /></linearGradient>
+  </defs>
+
+  <ellipse cx="32" cy="56" rx="26" ry="5" fill="#241e1a" opacity=".27" />
+    <path d="M9 20h46v35H9Z" fill="url(#wood)" stroke="#49372d" stroke-width="3" stroke-linejoin="round" />
+    <path d="M8 18 13 8h38l5 10Z" fill="url(#paper)" stroke="#49372d" stroke-width="3" stroke-linejoin="round" />
+    <path d="M7 19h50l-4 12q-5 4-9 0-5 4-9 0-5 4-10 0-5 4-9 0-5 4-9 0Z" fill="#f3d7a0" stroke="#49372d" stroke-width="2.5" stroke-linejoin="round" />
+    <path d="m17 19-2 13m12-13-1 14m12-14 1 14m10-14 3 13" stroke="#c77852" stroke-width="7" />
+    <path d="M23 36h18v19H23Z" fill="url(#teal)" stroke="#49372d" stroke-width="2.5" />
+    <path d="M11 37h9v12h-9Zm33 0h9v12h-9Z" fill="#eecb8c" stroke="#49372d" stroke-width="2" />
+    <path d="M28 9h9m-26 45h42" stroke="#fff3c8" stroke-width="2" stroke-linecap="round" />
+  </svg>

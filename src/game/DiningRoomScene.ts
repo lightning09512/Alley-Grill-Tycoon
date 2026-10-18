@@ -1,79 +1,73 @@
 import Phaser from "phaser";
 import roomShellUrl from "../../assets/interior-v2/modular-pack-v1/tavern_room_shell_base.png?url";
-import curtainUrl from "../../assets/interior-v2/modular-pack-v1/curtain_closed_teal.png?url";
 import shelfUrl from "../../assets/interior-v2/modular-pack-v1/spice_shelf.png?url";
 import staircaseUrl from "../../assets/interior-v2/modular-pack-v1/staircase_wood.png?url";
-import lanternUrl from "../../assets/interior-v2/modular-pack-v1/lantern_woven_red.png?url";
-import plantUrl from "../../assets/interior-v2/modular-pack-v1/potted_plant_large.png?url";
-import tableUrl from "../../assets/interior-v2/modular-pack-v1/dining_set_table_4stools_stove.png?url";
+import tableUrl from "../../assets/interior-v2/modular-pack-v2/dining_set_table_4stools_stove-v2.png?url";
 import counterUrl from "../../assets/interior-v2/modular-pack-v1/reception_counter_clean.png?url";
 import registerUrl from "../../assets/interior-v2/modular-pack-v1/cash_register_compact.png?url";
 import ledgerUrl from "../../assets/interior-v2/modular-pack-v1/order_ledger.png?url";
-import { CUSTOMER_TYPES, MAX_CART_LEVEL, type CustomerType } from "./data";
-import { GameStore, getDiningTableCapacity, type DiningGuest, type GameSnapshot } from "./GameStore";
-import { diningTravelSeconds } from "./diningCharacters";
+import hotpotGrillSheetUrl from "../../assets/interior-v2/food/food-spritesheet-hotpot-grill.png?url";
+import snacksRiceSheetUrl from "../../assets/interior-v2/food/food-spritesheet-snacks-rice.png?url";
+import mixedGrillPlatterUrl from "../../assets/interior-v2/food/mixed_grill_platter.png?url";
+import { MENU_DISHES } from "./menuCatalog";
+import { CUSTOMER_TYPES, type CustomerType, type RecipeId } from "./data";
+import { GameStore, getDiningTableCapacity, type DiningDialogueEvent, type DiningGuest, type DiningOrder, type GameSnapshot } from "./GameStore";
+import { diningArrivalSeconds, diningTravelSeconds } from "./diningCharacters";
 
 type TablePoint = { x: number; y: number; seats: { x: number; y: number }[] };
 type GameAtlas = { frame_layout: { cellWidth: number; cellHeight: number; rows: Record<string, { x: number; y: number; w: number; h: number }[]> }; animation: { rows: Record<string, { fps: number; loop: boolean }> }; anchors: { standingFeet: { x: number; y: number }; seatedHip: { x: number; y: number } } };
 type GuestMotion = { status: DiningGuest["status"]; startedAt: number };
-type RoomTexture = "shell" | "curtain" | "shelf" | "staircase" | "lantern" | "plant" | "table" | "counter" | "register" | "ledger";
+type RoomTexture = "shell" | "shelf" | "staircase" | "table" | "counter" | "register" | "ledger";
 type RoomPart = {
   slot: string;
   x: number;
   y: number;
   scale?: number;
   depth: number;
-  variants: { fromLevel: number; texture: RoomTexture }[];
+  crop?: { x: number; y: number; width: number; height: number };
+  texture: RoomTexture;
 };
 
 const ROOM_WIDTH = 576;
 const ROOM_HEIGHT = 1280;
+const DINING_WALK_FPS = 3;
+const TABLE_ART_SCALE = 0.17;
+const TABLE_CENTER = { x: 109.1, y: 93.5 } as const;
+// Origins for the six tables in the dining-room art.
+const TABLE_ORIGINS = [{ x: 24, y: 313 }, { x: 260, y: 313 }, { x: 24, y: 550 }, { x: 260, y: 550 }, { x: 24, y: 787 }, { x: 260, y: 787 }] as const;
+// Seating anchors measured from the full four-stool table art.
+const SEAT_OFFSETS = [{ x: 109.3, y: 28.9 }, { x: 181.1, y: 99.5 }, { x: 109.1, y: 157.3 }, { x: 37.4, y: 99.5 }] as const;
 const ROOM_TEXTURES: Record<RoomTexture, string> = {
   shell: roomShellUrl,
-  curtain: curtainUrl,
   shelf: shelfUrl,
   staircase: staircaseUrl,
-  lantern: lanternUrl,
-  plant: plantUrl,
   table: tableUrl,
   counter: counterUrl,
   register: registerUrl,
   ledger: ledgerUrl,
 };
-// Each slot owns its image. A later level can swap one slot's texture without changing the room layout.
+// Keep one fixed starter room until matching upgrade art is ready.
 const ROOM_PARTS: RoomPart[] = [
-  { slot: "shell", x: 0, y: 0, depth: 0, variants: [{ fromLevel: 1, texture: "shell" }] },
-  { slot: "curtain", x: 223, y: 82, scale: 0.75, depth: 1, variants: [{ fromLevel: 1, texture: "curtain" }] },
-  { slot: "shelf", x: 4, y: 20, depth: 2, variants: [{ fromLevel: 1, texture: "shelf" }] },
-  { slot: "staircase", x: 440, y: 24, scale: 0.85, depth: 2, variants: [{ fromLevel: 1, texture: "staircase" }] },
-  { slot: "lantern-left", x: 179, y: 61, scale: 0.95, depth: 3, variants: [{ fromLevel: 1, texture: "lantern" }] },
-  { slot: "lantern-right", x: 344, y: 56, scale: 0.95, depth: 3, variants: [{ fromLevel: 1, texture: "lantern" }] },
-  { slot: "plant-shelf", x: 99, y: 75, scale: 0.72, depth: 3, variants: [{ fromLevel: 1, texture: "plant" }] },
-  { slot: "plant-left-wall", x: -6, y: 159, depth: 3, variants: [{ fromLevel: 1, texture: "plant" }] },
-  { slot: "plant-stair-top", x: 483, y: -23, scale: 0.75, depth: 3, variants: [{ fromLevel: 1, texture: "plant" }] },
-  { slot: "plant-stair-middle", x: 435, y: 261, scale: 0.8, depth: 3, variants: [{ fromLevel: 1, texture: "plant" }] },
-  { slot: "table-1", x: 81, y: 313, depth: 4, variants: [{ fromLevel: 1, texture: "table" }] },
-  { slot: "table-2", x: 300, y: 313, depth: 4, variants: [{ fromLevel: 1, texture: "table" }] },
-  { slot: "table-3", x: 81, y: 513, depth: 4, variants: [{ fromLevel: 1, texture: "table" }] },
-  { slot: "table-4", x: 301, y: 513, depth: 4, variants: [{ fromLevel: 1, texture: "table" }] },
-  { slot: "table-5", x: 81, y: 710, depth: 4, variants: [{ fromLevel: 1, texture: "table" }] },
-  { slot: "table-6", x: 303, y: 711, depth: 4, variants: [{ fromLevel: 1, texture: "table" }] },
-  { slot: "counter", x: -7, y: 903, scale: 0.9, depth: 5, variants: [{ fromLevel: 1, texture: "counter" }] },
-  { slot: "register", x: 55, y: 896, depth: 6, variants: [{ fromLevel: 1, texture: "register" }] },
-  { slot: "ledger", x: 133, y: 926, depth: 6, variants: [{ fromLevel: 1, texture: "ledger" }] },
-  { slot: "counter-lantern", x: -10, y: 902, scale: 0.82, depth: 6, variants: [{ fromLevel: 1, texture: "lantern" }] },
-  { slot: "plant-bottom-left", x: -9, y: 1043, scale: 0.92, depth: 6, variants: [{ fromLevel: 1, texture: "plant" }] },
-  { slot: "plant-bottom-right", x: 494, y: 1082, scale: 0.92, depth: 6, variants: [{ fromLevel: 1, texture: "plant" }] },
+  { slot: "shell", x: 0, y: 0, depth: 0, texture: "shell" },
+  { slot: "shelf", x: 4, y: 20, depth: 2, texture: "shelf" },
+  { slot: "staircase", x: 440, y: 24, scale: 0.85, depth: 2, texture: "staircase" },
+  ...TABLE_ORIGINS.map((origin, index) => ({ slot: `table-${index + 1}`, x: origin.x, y: origin.y, scale: TABLE_ART_SCALE, depth: 4, texture: "table" as const })),
+  // Re-draw the near half above side/back guests. This restores depth for the original combined table-and-stools art.
+  ...TABLE_ORIGINS.map((origin, index) => ({
+    slot: `table-front-${index + 1}`,
+    x: origin.x,
+    y: origin.y,
+    scale: TABLE_ART_SCALE,
+    depth: 5,
+    crop: { x: 370, y: 350, width: 550, height: 460 },
+    texture: "table" as const,
+  })),
+  { slot: "counter", x: -7, y: 1000, scale: 0.9, depth: 5, texture: "counter" },
+  { slot: "register", x: 55, y: 993, depth: 6, texture: "register" },
+  { slot: "ledger", x: 133, y: 1023, depth: 6, texture: "ledger" },
 ];
-
-function roomTextureAtLevel(part: RoomPart, level: number): RoomTexture {
-  return [...part.variants].reverse().find((variant) => level >= variant.fromLevel)!.texture;
-}
-
-// These are the six table asset origins, and the four stool locations inside each asset.
-const TABLE_ORIGINS = [{ x: 81, y: 313 }, { x: 300, y: 313 }, { x: 81, y: 513 }, { x: 301, y: 513 }, { x: 81, y: 710 }, { x: 303, y: 711 }] as const;
-const SEAT_OFFSETS = [{ x: 96, y: 77 }, { x: 162, y: 133 }, { x: 96, y: 181 }, { x: 30, y: 133 }] as const;
 const SEAT_DIRECTIONS = ["down", "side", "up", "side"] as const;
+const SIDE_SEAT_INSET = 10;
 const DINING_ATLAS_URLS = import.meta.glob("../../assets/characters/sprite-gen-dining/*/game-atlas.png", { eager: true, query: "?url", import: "default" }) as Record<string, string>;
 const DINING_ATLAS_MANIFESTS = import.meta.glob("../../assets/characters/sprite-gen-dining/*/game-manifest.json", { eager: true, import: "default" }) as Record<string, GameAtlas>;
 
@@ -90,7 +84,11 @@ export class DiningRoomScene extends Phaser.Scene {
   private roomPieces: { part: RoomPart; image: Phaser.GameObjects.Image }[] = [];
   private guestArt?: Phaser.GameObjects.Graphics;
   private guestSprites = new Map<string, Phaser.GameObjects.Sprite>();
+  private diningFood = new Map<string, Phaser.GameObjects.Image | Phaser.GameObjects.Graphics>();
   private guestMotion = new Map<string, GuestMotion>();
+  private guestEntryBubbles = new Map<string, Phaser.GameObjects.Container>();
+  private diningDialogueBubble?: Phaser.GameObjects.Container;
+  private diningDialogueBubbleId: number | null = null;
   private requestedCharacters = new Set<string>();
   private tableZones: Phaser.GameObjects.Zone[] = [];
   private seatZones: Phaser.GameObjects.Zone[] = [];
@@ -103,20 +101,10 @@ export class DiningRoomScene extends Phaser.Scene {
   private unsubscribe?: () => void;
   private snapshot?: GameSnapshot;
   private interactionEnabled = true;
-  private previewStage?: number;
 
   constructor(store: GameStore) {
     super("dining-room");
     this.store = store;
-  }
-
-  setPreviewStage(stage: number): void {
-    if (!Number.isFinite(stage)) return;
-    this.previewStage = Phaser.Math.Clamp(Math.round(stage), 1, MAX_CART_LEVEL);
-    if (this.sys.isActive()) {
-      if (this.updateRoomTextures()) this.layout();
-      else this.renderGuests();
-    }
   }
 
   setDevicePixelRatio(value: number): void {
@@ -134,6 +122,9 @@ export class DiningRoomScene extends Phaser.Scene {
 
   preload(): void {
     for (const [key, url] of Object.entries(ROOM_TEXTURES)) this.load.image(`dining-${key}`, url);
+    this.load.image("dining-food-hotpot-grill", hotpotGrillSheetUrl);
+    this.load.image("dining-food-snacks-rice", snacksRiceSheetUrl);
+    this.load.image("dining-food-special-platter", mixedGrillPlatterUrl);
   }
 
   create(): void {
@@ -143,7 +134,7 @@ export class DiningRoomScene extends Phaser.Scene {
     this.snapshot = this.store.getSnapshot();
     this.roomPieces = ROOM_PARTS.map((part) => ({
       part,
-      image: this.add.image(0, 0, `dining-${roomTextureAtLevel(part, this.previewStage ?? this.snapshot?.cartLevel ?? 1)}`)
+      image: this.add.image(0, 0, `dining-${part.texture}`)
         .setOrigin(0, 0)
         .setDepth(part.depth),
     }));
@@ -159,6 +150,13 @@ export class DiningRoomScene extends Phaser.Scene {
       this.seatZones = [];
       this.guestSprites.forEach((sprite) => sprite.destroy());
       this.guestSprites.clear();
+      this.diningFood.forEach((sprite) => sprite.destroy());
+      this.diningFood.clear();
+      this.guestEntryBubbles.forEach((bubble) => bubble.destroy());
+      this.guestEntryBubbles.clear();
+      this.diningDialogueBubble?.destroy();
+      this.diningDialogueBubble = undefined;
+      this.diningDialogueBubbleId = null;
       this.guestMotion.clear();
       this.requestedCharacters.forEach((characterId) => {
         const key = `dining-npc-${characterId}`;
@@ -170,8 +168,7 @@ export class DiningRoomScene extends Phaser.Scene {
     });
     this.unsubscribe = this.store.subscribe((snapshot) => {
       this.snapshot = snapshot;
-      if (this.updateRoomTextures()) this.layout();
-      else this.renderGuests();
+      this.renderGuests();
     });
     this.layout();
   }
@@ -200,11 +197,12 @@ export class DiningRoomScene extends Phaser.Scene {
       image
         .setPosition(this.roomMapLeft + part.x * roomScale, part.y * roomScale)
         .setDisplaySize(source.width * scale, source.height * scale);
+      if (part.crop) image.setCrop(part.crop.x, part.crop.y, part.crop.width, part.crop.height);
     }
     this.cameras.main.setBounds(worldLeft, 0, worldWidth, this.roomMapHeight);
     this.tablePoints = TABLE_ORIGINS.map((origin) => ({
-      x: this.roomMapLeft + (origin.x + 96) * roomScale,
-      y: (origin.y + 132) * roomScale,
+      x: this.roomMapLeft + (origin.x + TABLE_CENTER.x) * roomScale,
+      y: (origin.y + TABLE_CENTER.y) * roomScale,
       seats: SEAT_OFFSETS.map((seat) => ({
         x: this.roomMapLeft + (origin.x + seat.x) * roomScale,
         y: (origin.y + seat.y) * roomScale,
@@ -217,19 +215,6 @@ export class DiningRoomScene extends Phaser.Scene {
     } else {
       this.cameras.main.setScroll(0, 0);
     }
-  }
-
-  private updateRoomTextures(): boolean {
-    const level = this.previewStage ?? this.snapshot?.cartLevel ?? 1;
-    let changed = false;
-    for (const { part, image } of this.roomPieces) {
-      const key = `dining-${roomTextureAtLevel(part, level)}`;
-      if (image.texture.key !== key) {
-        image.setTexture(key);
-        changed = true;
-      }
-    }
-    return changed;
   }
 
   focusDiningTable(tableId: number, animate = true): void {
@@ -259,7 +244,7 @@ export class DiningRoomScene extends Phaser.Scene {
       const roomScale = this.roomMapWidth / ROOM_WIDTH;
       const width = 104 * roomScale;
       const height = 78 * roomScale;
-      const unlocked = index < getDiningTableCapacity(this.previewStage ?? this.snapshot?.cartLevel ?? 1);
+      const unlocked = index < getDiningTableCapacity();
       const zone = this.add.zone(point.x, point.y, width, height).setDepth(8);
       if (unlocked) zone.setInteractive();
       else zone.setVisible(false);
@@ -293,17 +278,21 @@ export class DiningRoomScene extends Phaser.Scene {
       if (!this.textures.exists(key)) continue;
       const texture = this.textures.get(key);
       for (const [state, rectangles] of Object.entries(manifest.frame_layout.rows)) {
-        const animationKey = `${key}-${state}`;
-        rectangles.forEach((rect, index) => {
+        // The generated up-facing idle row is standing art; use a true seated back-view frame instead.
+        const sourceRectangles = state === "up_seated_idle" ? [manifest.frame_layout.rows.up_eat[0]] : rectangles;
+        sourceRectangles.forEach((rect, index) => {
           const frame = `${state}-${index}`;
           if (!texture.has(frame)) texture.add(frame, 0, rect.x, rect.y, rect.w, rect.h);
         });
+        const animationKey = `${key}-${state}`;
         if (this.anims.exists(animationKey)) continue;
         const animation = manifest.animation.rows[state];
+        // Frame 0 in these idle rows is still the settling pose, which makes seated guests pop upright on each loop.
+        const firstAnimationFrame = state.endsWith("_seated_idle") && sourceRectangles.length > 1 ? 1 : 0;
         this.anims.create({
           key: animationKey,
-          frames: rectangles.map((_, index) => ({ key, frame: `${state}-${index}` })),
-          frameRate: animation?.fps ?? 5,
+          frames: sourceRectangles.slice(firstAnimationFrame).map((_, index) => ({ key, frame: `${state}-${index + firstAnimationFrame}` })),
+          frameRate: state.endsWith("_walk") ? Math.min(animation?.fps ?? 5, DINING_WALK_FPS) : animation?.fps ?? 5,
           repeat: animation?.loop ? -1 : 0,
         });
       }
@@ -344,13 +333,28 @@ export class DiningRoomScene extends Phaser.Scene {
       const motion = this.guestMotion.get(guest.id);
       if (!sprite || !target || !motion) continue;
       const direction = SEAT_DIRECTIONS[guest.seatIndex];
+      if (guest.status === "entering" || guest.status === "leaving") {
+        sprite.setCrop(0, 0, 96, 154);
+      }
+      const seatedTarget = guest.seatIndex === 2
+        ? target
+        : guest.seatIndex === 1
+          ? { x: target.x - SIDE_SEAT_INSET * roomScale, y: target.y }
+          : guest.seatIndex === 3
+            ? { x: target.x + SIDE_SEAT_INSET * roomScale, y: target.y }
+            : target;
+      // Side source sprites face right: mirror the right-side seat so it faces left toward the table.
       sprite.setFlipX(guest.seatIndex === 1);
       const elapsed = Math.max(0, time - motion.startedAt);
-      const duration = diningTravelSeconds(guest.tableId) * 1000;
+      const travelSeconds = guest.status === "entering" ? diningArrivalSeconds(guest.tableId) : diningTravelSeconds(guest.tableId);
+      const duration = travelSeconds * 1000;
       const poseFraction = 700 / duration;
-      const path = this.guestPath(guest, target, door, roomScale);
+      const entryOffset = (guest.partyMemberIndex - (guest.partySize - 1) / 2) * 13 * roomScale;
+      const entryDoor = { x: door.x + entryOffset, y: door.y };
+      const path = this.guestPath(guest, seatedTarget, entryDoor, roomScale);
       if (guest.status === "entering") {
-        const progress = Math.min(1, elapsed / duration);
+        const delayedElapsed = Math.max(0, elapsed - guest.arrivalDelaySeconds * 1000);
+        const progress = Math.min(1, delayedElapsed / duration);
         if (progress < 1 - poseFraction) {
           const step = this.positionOnPath(path, progress / (1 - poseFraction));
           sprite.setPosition(step.x, step.y);
@@ -358,14 +362,14 @@ export class DiningRoomScene extends Phaser.Scene {
           this.setGuestOrigin(sprite, guest.characterId, false);
           this.playGuestAnimation(sprite, guest.characterId, `${step.direction}_walk`);
         } else {
-          sprite.setPosition(target.x, target.y);
+          sprite.setPosition(seatedTarget.x, seatedTarget.y);
           this.setGuestOrigin(sprite, guest.characterId, true);
-          this.playGuestAnimation(sprite, guest.characterId, `${direction}_sit`);
+          this.playGuestAnimation(sprite, guest.characterId, guest.seatIndex === 2 ? `${direction}_seated_idle` : `${direction}_sit`);
         }
       } else if (guest.status === "leaving") {
         const progress = Math.min(1, elapsed / duration);
         if (progress < poseFraction) {
-          sprite.setPosition(target.x, target.y);
+          sprite.setPosition(seatedTarget.x, seatedTarget.y);
           this.setGuestOrigin(sprite, guest.characterId, true);
           this.playGuestAnimation(sprite, guest.characterId, `${direction}_stand`);
         } else {
@@ -376,11 +380,30 @@ export class DiningRoomScene extends Phaser.Scene {
           this.playGuestAnimation(sprite, guest.characterId, `${step.direction}_walk`);
         }
       } else {
-        sprite.setPosition(target.x, target.y);
+        sprite.setPosition(seatedTarget.x, seatedTarget.y);
+        sprite.setCrop(0, 0, 96, 154);
         this.setGuestOrigin(sprite, guest.characterId, true);
-        this.playGuestAnimation(sprite, guest.characterId, `${direction}_${guest.status === "eating" ? "eat" : "seated_idle"}`);
+        // Side and back eating rows contain seated poses; the front eating row is a standing pose.
+        const hasSeatedEatingPose = guest.seatIndex !== 0;
+        const animationState = guest.status === "eating" && hasSeatedEatingPose ? `${direction}_eat` : `${direction}_seated_idle`;
+        this.playGuestAnimation(sprite, guest.characterId, animationState);
       }
+      this.updateGuestEntryBubble(guest, sprite, elapsed, roomScale);
     }
+  }
+
+  private updateGuestEntryBubble(guest: DiningGuest, sprite: Phaser.GameObjects.Sprite, elapsed: number, roomScale: number): void {
+    const bubble = this.guestEntryBubbles.get(guest.id);
+    if (!bubble) return;
+    const speechStart = guest.arrivalDelaySeconds * 1_000;
+    const speaking = guest.status === "entering"
+      && elapsed >= speechStart
+      && elapsed < speechStart + 2_600;
+    if (!speaking) {
+      bubble.setVisible(false);
+      return;
+    }
+    this.positionSpeechBubble(bubble, sprite.x, sprite.y - sprite.displayHeight - 3 * roomScale, roomScale);
   }
 
   private guestPath(guest: DiningGuest, seat: { x: number; y: number }, door: { x: number; y: number }, scale: number): { x: number; y: number }[] {
@@ -429,7 +452,7 @@ export class DiningRoomScene extends Phaser.Scene {
     const snapshot = this.snapshot;
     if (!graphics || !snapshot) return;
     graphics.clear();
-    const unlockedTableCount = getDiningTableCapacity(this.previewStage ?? snapshot.cartLevel);
+    const unlockedTableCount = getDiningTableCapacity();
     this.tableZones.forEach((zone, index) => {
       const unlocked = index < unlockedTableCount;
       zone.setVisible(unlocked);
@@ -456,6 +479,8 @@ export class DiningRoomScene extends Phaser.Scene {
         const guest = seat.guestId ? snapshot.dining.guests.find((entry) => entry.id === seat.guestId) : undefined;
         if (!guest) return;
         livingGuestIds.add(guest.id);
+        if (guest.status === "entering" && guest.arrivalDialogue) this.ensureGuestEntryBubble(guest);
+        else this.removeGuestEntryBubble(guest.id);
         this.requestGuestAtlas(guest.characterId);
         if (!this.drawGuestSprite(seatPoint, guest)) this.drawGuest(graphics, seatPoint, guest);
         if (selected && guest.status === "waiting-order") {
@@ -466,20 +491,193 @@ export class DiningRoomScene extends Phaser.Scene {
         }
       });
     });
+    this.renderDiningFood(snapshot);
     for (const [guestId, sprite] of this.guestSprites) {
       if (livingGuestIds.has(guestId)) continue;
       sprite.destroy();
       this.guestSprites.delete(guestId);
       this.guestMotion.delete(guestId);
+      this.removeGuestEntryBubble(guestId);
+    }
+    for (const guestId of this.guestEntryBubbles.keys()) {
+      if (!livingGuestIds.has(guestId)) this.removeGuestEntryBubble(guestId);
     }
     const activeCharacters = new Set(snapshot.dining.guests.map((guest) => guest.characterId));
     for (const characterId of this.requestedCharacters) {
       if (activeCharacters.has(characterId)) continue;
       const atlasKey = `dining-npc-${characterId}`;
       if (!this.textures.exists(atlasKey)) continue;
+      const manifestPath = Object.keys(DINING_ATLAS_MANIFESTS).find((entry) => entry.includes(`/${characterId}/`));
+      const manifest = manifestPath && DINING_ATLAS_MANIFESTS[manifestPath];
+      if (manifest) {
+        for (const state of Object.keys(manifest.frame_layout.rows)) {
+          const animationKey = `${atlasKey}-${state}`;
+          if (this.anims.exists(animationKey)) this.anims.remove(animationKey);
+        }
+      }
       this.textures.remove(atlasKey);
       this.requestedCharacters.delete(characterId);
     }
+    this.updateDiningDialogueBubble(snapshot.dining.dialogueEvent, snapshot.dining.guests);
+  }
+
+  private renderDiningFood(snapshot: GameSnapshot): void {
+    const roomScale = this.roomMapWidth / ROOM_WIDTH;
+    const visibleOrders = snapshot.dining.orders.filter((order) => {
+      if (order.status !== "delivered") return false;
+      const guest = snapshot.dining.guests.find((entry) => entry.id === order.guestId);
+      return guest && (guest.status === "eating" || guest.status === "awaiting-payment");
+    });
+    const visibleIds = new Set(visibleOrders.map((order) => order.id));
+    const dishIndexByTable = new Map<number, number>();
+    for (const order of visibleOrders) {
+      const guest = snapshot.dining.guests.find((entry) => entry.id === order.guestId);
+      const tablePoint = this.tablePoints[order.tableId - 1];
+      if (!guest || !tablePoint) continue;
+      const dishIndex = dishIndexByTable.get(order.tableId) ?? 0;
+      dishIndexByTable.set(order.tableId, dishIndex + 1);
+      let sprite = this.diningFood.get(order.id);
+      if (!sprite) {
+        sprite = this.createDiningFood(order.recipe);
+        this.diningFood.set(order.id, sprite);
+      }
+      const slots = [
+        { x: -26, y: -13 },
+        { x: 26, y: -13 },
+        { x: -26, y: 13 },
+        { x: 26, y: 13 },
+      ];
+      const slot = slots[dishIndex % slots.length];
+      sprite.setPosition(tablePoint.x + slot.x * roomScale, tablePoint.y + slot.y * roomScale).setDepth(5.2);
+      if (sprite instanceof Phaser.GameObjects.Image) {
+        sprite.setDisplaySize(32 * roomScale, 28 * roomScale).setVisible(true);
+      } else {
+        sprite.setScale(roomScale).setVisible(true).clear();
+        sprite.fillStyle(0x3c2518, 0.32).fillEllipse(1, 5, 34, 20);
+        sprite.fillStyle(0xf6e8cf, 1).fillEllipse(0, 2, 34, 20);
+        sprite.lineStyle(1.8, 0x9a6336, 1).strokeEllipse(0, 2, 34, 20);
+        sprite.fillStyle(0xf0ad42, 1)
+          .fillEllipse(-8, 1, 8, 9)
+          .fillEllipse(0, -2, 8, 9)
+          .fillEllipse(8, 1, 8, 9);
+        sprite.fillStyle(0x4d8042, 1).fillCircle(0, 4, 2);
+      }
+    }
+    for (const [orderId, sprite] of this.diningFood) {
+      if (visibleIds.has(orderId)) continue;
+      sprite.destroy();
+      this.diningFood.delete(orderId);
+    }
+  }
+
+  private createDiningFood(recipeId: RecipeId): Phaser.GameObjects.Image | Phaser.GameObjects.Graphics {
+    const dishId: Record<RecipeId, string> = {
+      cha: "pork-belly-skewers",
+      egg: "scallion-grilled-eggs",
+      special: "special-grill-platter",
+    };
+    const dish = MENU_DISHES.find((entry) => entry.id === dishId[recipeId]);
+    if (dish?.visual.type === "sheet") {
+      const textureKey = dish.visual.sheet === "hotpot-grill" ? "dining-food-hotpot-grill" : "dining-food-snacks-rice";
+      const texture = this.textures.get(textureKey);
+      const source = texture.getSourceImage() as HTMLImageElement;
+      const cellWidth = source.width / 4;
+      const cellHeight = source.height / 4;
+      const column = dish.visual.cell % 4;
+      const row = Math.floor(dish.visual.cell / 4);
+      const frame = `dish-${dish.visual.cell}`;
+      if (!texture.has(frame)) texture.add(frame, 0, column * cellWidth, row * cellHeight, cellWidth, cellHeight);
+      return this.add.image(0, 0, textureKey, frame).setOrigin(0.5).setDepth(5.2);
+    }
+    if (dish?.visual.type === "image") {
+      return this.add.image(0, 0, "dining-food-special-platter").setOrigin(0.5).setDepth(5.2);
+    }
+    const plate = this.add.graphics().setPosition(0, 0).setDepth(5.2);
+    plate.setData("recipeId", recipeId);
+    return plate;
+  }
+
+  private ensureGuestEntryBubble(guest: DiningGuest): void {
+    if (this.guestEntryBubbles.has(guest.id) || !guest.arrivalDialogue) return;
+    const roomScale = this.roomMapWidth / ROOM_WIDTH;
+    this.guestEntryBubbles.set(guest.id, this.createSpeechBubble(guest.arrivalDialogue, roomScale));
+  }
+
+  private createSpeechBubble(text: string, roomScale: number): Phaser.GameObjects.Container {
+    const width = Math.min(240 * roomScale, this.roomMapWidth * 0.76);
+    const label = this.add.text(0, 0, text, {
+      fontFamily: "Arial, sans-serif",
+      fontSize: `${Math.max(10, 12 * roomScale)}px`,
+      fontStyle: "bold",
+      color: "#513423",
+      align: "center",
+      lineSpacing: -1,
+      wordWrap: { width: width - 18, useAdvancedWrap: true },
+    }).setOrigin(0.5, 0).setResolution(this.devicePixelRatio);
+    const height = Math.max(29 * roomScale, label.height + 10 * roomScale);
+    label.setPosition(0, -height - 3 * roomScale);
+    const tailBaseY = -6 * roomScale;
+    const tailTipY = 3 * roomScale;
+    const tail = this.add.graphics();
+    tail.fillStyle(0xffefc9, 0.98).fillTriangle(-7 * roomScale, tailBaseY, 7 * roomScale, tailBaseY, 0, tailTipY);
+    tail.lineStyle(1.2 * roomScale, 0x8c5735, 0.98)
+      .strokeTriangle(-7 * roomScale, tailBaseY, 7 * roomScale, tailBaseY, 0, tailTipY);
+    const graphics = this.add.graphics();
+    graphics.fillStyle(0x36271b, 0.24).fillRoundedRect(-width / 2 + 1, -height - 5 * roomScale, width, height, 8 * roomScale);
+    graphics.fillStyle(0xffefc9, 0.98).fillRoundedRect(-width / 2, -height - 7 * roomScale, width, height, 8 * roomScale);
+    graphics.lineStyle(1.2 * roomScale, 0x8c5735, 0.98)
+      .strokeRoundedRect(-width / 2, -height - 7 * roomScale, width, height, 8 * roomScale);
+    const bubble = this.add.container(0, 0, [tail, graphics, label]).setDepth(11).setVisible(false);
+    bubble.setData("bubbleWidth", width);
+    return bubble;
+  }
+
+  private positionSpeechBubble(bubble: Phaser.GameObjects.Container, speakerX: number, y: number, roomScale: number): void {
+    const width = bubble.getData("bubbleWidth") as number;
+    const left = this.roomMapLeft + width / 2 + 4;
+    const right = this.roomMapLeft + this.roomMapWidth - width / 2 - 4;
+    const x = left <= right ? Phaser.Math.Clamp(speakerX, left, right) : this.roomMapLeft + this.roomMapWidth / 2;
+    const maxTailOffset = Math.max(0, width / 2 - 10 * roomScale);
+    const tailOffset = Phaser.Math.Clamp(speakerX - x, -maxTailOffset, maxTailOffset);
+    const tail = bubble.getAt(0) as Phaser.GameObjects.Graphics;
+    tail.setPosition(tailOffset, 0);
+    bubble.setPosition(x, y).setVisible(true);
+  }
+
+  private updateDiningDialogueBubble(event: DiningDialogueEvent | null, guests: DiningGuest[]): void {
+    const existing = this.diningDialogueBubble;
+    if (!event) {
+      existing?.setVisible(false);
+      this.diningDialogueBubbleId = null;
+      return;
+    }
+    const guest = guests.find((entry) => entry.id === event.guestId);
+    if (!guest) {
+      existing?.setVisible(false);
+      this.diningDialogueBubbleId = null;
+      return;
+    }
+    if (!existing || this.diningDialogueBubbleId !== event.id) {
+      existing?.destroy();
+      this.diningDialogueBubble = this.createSpeechBubble(event.text, this.roomMapWidth / ROOM_WIDTH);
+      this.diningDialogueBubbleId = event.id;
+    }
+
+    const bubble = this.diningDialogueBubble;
+    const roomScale = this.roomMapWidth / ROOM_WIDTH;
+    const sprite = this.guestSprites.get(guest.id);
+    const seatPoint = this.tablePoints[guest.tableId - 1]?.seats[guest.seatIndex];
+    if (!bubble || !seatPoint) return;
+    const anchorX = sprite?.x ?? seatPoint.x;
+    const anchorY = sprite ? sprite.y - sprite.displayHeight : seatPoint.y - 35 * roomScale;
+    this.positionSpeechBubble(bubble, anchorX, anchorY - 3 * roomScale, roomScale);
+  }
+
+  private removeGuestEntryBubble(guestId: string): void {
+    const bubble = this.guestEntryBubbles.get(guestId);
+    if (!bubble) return;
+    bubble.destroy(true);
+    this.guestEntryBubbles.delete(guestId);
   }
 
   private drawGuestSprite(point: { x: number; y: number }, guest: DiningGuest): boolean {
@@ -492,9 +690,12 @@ export class DiningRoomScene extends Phaser.Scene {
       } else if (sprite.texture.key !== atlasKey) {
         sprite.setTexture(atlasKey, "down_idle-0");
       }
-      const seatDepth = guest.seatIndex === 0 ? 3.5 : guest.seatIndex === 2 ? 5 : 4.5;
+      // Show the back-facing guest's torso and seated pants while keeping feet tucked under the table.
+      const seatDepth = guest.seatIndex === 2 ? 5.5 : 4.5;
       const roomScale = this.roomMapWidth / ROOM_WIDTH;
-      sprite.setDepth(seatDepth).setDisplaySize(72 * roomScale, 116 * roomScale).setVisible(true);
+      sprite.setDepth(seatDepth)
+        .setDisplaySize(84 * roomScale, 136 * roomScale)
+        .setVisible(true);
       this.syncGuestMotion(guest);
       return true;
     }
@@ -531,7 +732,7 @@ export class DiningRoomScene extends Phaser.Scene {
     const prior = this.guestMotion.get(guest.id);
     if (prior?.status === guest.status) return;
     const elapsedBeforeAtlasLoad = guest.status === "entering" || guest.status === "leaving"
-      ? Math.max(0, diningTravelSeconds(guest.tableId) - guest.transitionSeconds) * 1000
+      ? Math.max(0, (guest.status === "entering" ? diningArrivalSeconds(guest.tableId) : diningTravelSeconds(guest.tableId)) + (guest.status === "entering" ? guest.arrivalDelaySeconds : 0) - guest.transitionSeconds) * 1000
       : 0;
     this.guestMotion.set(guest.id, { status: guest.status, startedAt: this.time.now - elapsedBeforeAtlasLoad });
   }

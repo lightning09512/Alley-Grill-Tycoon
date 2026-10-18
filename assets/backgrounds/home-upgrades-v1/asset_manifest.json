@@ -1,0 +1,243 @@
+{
+  "baseMap": "street-map-home-banh-mi-pho-scroll-v5.png",
+  "baseMapSize": {
+    "width": 2793,
+    "height": 1689
+  },
+  "overlayCanvas": {
+    "width": 1120,
+    "height": 620,
+    "background": "transparent"
+  },
+  "pasteOffset": {
+    "x": 836,
+    "y": 490
+  },
+  "baselineYWithinOverlay": 618,
+  "baselineYOnBaseMap": 1108,
+  "sheet": {
+    "file": "house-levels-sprite-sheet.png",
+    "layout": "4 columns x 3 rows, progression order"
+  },
+  "levels": [
+    {
+      "level": 1,
+      "name": "Lều bạt tạm",
+      "file": "house-level-01.png",
+      "sourceCell": 1,
+      "canvasWidth": 1120,
+      "canvasHeight": 620,
+      "visibleSize": {
+        "width": 372,
+        "height": 250
+      },
+      "offsetOnBaseMap": {
+        "x": 836,
+        "y": 490
+      },
+      "retainedConnectedComponentPixels": 57362
+    },
+    {
+      "level": 2,
+      "name": "Chòi gỗ vá",
+      "file": "house-level-02.png",
+      "sourceCell": 2,
+      "canvasWidth": 1120,
+      "canvasHeight": 620,
+      "visibleSize": {
+        "width": 332,
+        "height": 280
+      },
+      "offsetOnBaseMap": {
+        "x": 836,
+        "y": 490
+      },
+      "retainedConnectedComponentPixels": 61120
+    },
+    {
+      "level": 3,
+      "name": "Nhà tôn cũ",
+      "file": "house-level-03.png",
+      "sourceCell": 3,
+      "canvasWidth": 1120,
+      "canvasHeight": 620,
+      "visibleSize": {
+        "width": 365,
+        "height": 310
+      },
+      "offsetOnBaseMap": {
+        "x": 836,
+        "y": 490
+      },
+      "retainedConnectedComponentPixels": 67660
+    },
+    {
+      "level": 4,
+      "name": "Nhà cấp bốn nhỏ",
+      "file": "house-level-04.png",
+      "sourceCell": 5,
+      "canvasWidth": 1120,
+      "canvasHeight": 620,
+      "visibleSize": {
+        "width": 409,
+        "height": 340
+      },
+      "offsetOnBaseMap": {
+        "x": 836,
+        "y": 490
+      },
+      "retainedConnectedComponentPixels": 79893
+    },
+    {
+      "level": 5,
+      "name": "Nhà cấp bốn gọn",
+      "file": "house-level-05.png",
+      "sourceCell": 6,
+      "canvasWidth": 1120,
+      "canvasHeight": 620,
+      "visibleSize": {
+        "width": 440,
+        "height": 370
+      },
+      "offsetOnBaseMap": {
+        "x": 836,
+        "y": 490
+      },
+      "retainedConnectedComponentPixels": 77780
+    },
+    {
+      "level": 6,
+      "name": "Nhà phố hai tầng, xe máy",
+      "file": "house-level-06.png",
+      "sourceCell": 4,
+      "canvasWidth": 1120,
+      "canvasHeight": 620,
+      "visibleSize": {
+        "width": 391,
+        "height": 400
+      },
+      "offsetOnBaseMap": {
+        "x": 836,
+        "y": 490
+      },
+      "retainedConnectedComponentPixels": 79333
+    },
+    {
+      "level": 7,
+      "name": "Nhà ống nâng cấp",
+      "file": "house-level-07.png",
+      "sourceCell": 7,
+      "canvasWidth": 1120,
+      "canvasHeight": 620,
+      "visibleSize": {
+        "width": 389,
+        "height": 430
+      },
+      "offsetOnBaseMap": {
+        "x": 836,
+        "y": 490
+      },
+      "retainedConnectedComponentPixels": 83575
+    },
+    {
+      "level": 8,
+      "name": "Nhà hai tầng, mô tô",
+      "file": "house-level-08.png",
+      "sourceCell": 8,
+      "canvasWidth": 1120,
+      "canvasHeight": 620,
+      "visibleSize": {
+        "width": 490,
+        "height": 460
+      },
+      "offsetOnBaseMap": {
+        "x": 836,
+        "y": 490
+      },
+      "retainedConnectedComponentPixels": 97031
+    },
+    {
+      "level": 9,
+      "name": "Nhà phố cải tạo",
+      "file": "house-level-09.png",
+      "sourceCell": 9,
+      "canvasWidth": 1120,
+      "canvasHeight": 620,
+      "visibleSize": {
+        "width": 477,
+        "height": 490
+      },
+      "offsetOnBaseMap": {
+        "x": 836,
+        "y": 490
+      },
+      "retainedConnectedComponentPixels": 92646
+    },
+    {
+      "level": 10,
+      "name": "Nhà phố hiện đại, chỗ xe",
+      "file": "house-level-10.png",
+      "sourceCell": 10,
+      "canvasWidth": 1120,
+      "canvasHeight": 620,
+      "visibleSize": {
+        "width": 451,
+        "height": 520
+      },
+      "offsetOnBaseMap": {
+        "x": 836,
+        "y": 490
+      },
+      "retainedConnectedComponentPixels": 83860
+    },
+    {
+      "level": 11,
+      "name": "Biệt thự, ô tô thể thao",
+      "file": "house-level-11.png",
+      "sourceCell": 11,
+      "canvasWidth": 1120,
+      "canvasHeight": 620,
+      "visibleSize": {
+        "width": 577,
+        "height": 550
+      },
+      "offsetOnBaseMap": {
+        "x": 836,
+        "y": 490
+      },
+      "retainedConnectedComponentPixels": 100739
+    },
+    {
+      "level": 12,
+      "name": "Biệt thự hiện đại, siêu xe",
+      "file": "house-level-12.png",
+      "sourceCell": 12,
+      "canvasWidth": 1240,
+      "canvasHeight": 680,
+      "visibleSize": {
+        "width": 1210,
+        "height": 670
+      },
+      "offsetOnBaseMap": {
+        "x": 776,
+        "y": 430
+      },
+      "retainedConnectedComponentPixels": 1241438,
+      "revision": "foreground close-up enlarged to fill the lot",
+      "baselineYWithinOverlay": 678
+    }
+  ],
+  "level12Placement": {
+    "overlayCanvas": {
+      "width": 1240,
+      "height": 680,
+      "background": "transparent"
+    },
+    "pasteOffset": {
+      "x": 776,
+      "y": 430
+    },
+    "baselineYWithinOverlay": 678,
+    "baselineYOnBaseMap": 1108
+  }
+}

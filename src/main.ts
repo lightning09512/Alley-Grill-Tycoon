@@ -2,17 +2,20 @@ import Phaser from "phaser";
 import "./style.css";
 import { BUSINESS_STAGE_NAMES, CART_UPGRADE_COST, CUSTOMER_TYPES, INGREDIENTS, MAX_CART_LEVEL, RECIPES, RESTOCK_PACK_COST, STAFF_HIRE_COST } from "./game/data";
 import { GameStore, getDiningTableCapacity, type GameSnapshot } from "./game/GameStore";
+import { formatVndFromThousands } from "./game/currency";
+import { MENU_DISHES, MENU_CATEGORIES, type MenuCategory, type MenuDish } from "./game/menuCatalog";
 import { MusicPlayer } from "./game/MusicPlayer";
 import { NeighborhoodScene } from "./game/NeighborhoodScene";
 import { DiningRoomScene } from "./game/DiningRoomScene";
+import { WholesaleMarketScene, type WholesaleMarketBackgroundMood } from "./game/WholesaleMarketScene";
 import { GAME_NAME_VI, GAME_TITLE } from "./config/game";
 import { SHOP_STAGES } from "./config/shopStages";
 import { iconMarkup, setIcon, type UiIconName } from "./ui/icons";
-import kitchenShelfUrl from "../assets/interior-v2/stations/bowl_shelf.png?url";
-import kitchenHoodUrl from "../assets/interior-v2/stations/exhaust_hood_small.png?url";
-import kitchenGrillUrl from "../assets/interior-v2/stations/charcoal_grill_t1.png?url";
-import kitchenPrepUrl from "../assets/interior-v2/stations/prep_counter_short.png?url";
-import kitchenRiceUrl from "../assets/interior-v2/stations/rice_cooker.png?url";
+import kitchenRoomShellUrl from "../assets/interior-v2/kitchen-pack-v1/kitchen-room-shell-empty.png?url";
+import kitchenObjectsLayoutUrl from "../assets/interior-v2/kitchen-pack-v1/kitchen_objects_layout.png?url";
+import hotpotGrillSheetUrl from "../assets/interior-v2/food/food-spritesheet-hotpot-grill.png?url";
+import snacksRiceSheetUrl from "../assets/interior-v2/food/food-spritesheet-snacks-rice.png?url";
+import mixedGrillPlatterUrl from "../assets/interior-v2/food/mixed_grill_platter.png?url";
 
 document.title = GAME_TITLE;
 
@@ -41,6 +44,8 @@ const musicPlayer = new MusicPlayer((state) => {
 });
 const scene = new NeighborhoodScene(store);
 const diningScene = new DiningRoomScene(store);
+const wholesaleMarketScene = new WholesaleMarketScene();
+wholesaleMarketScene.setBackgroundMoodProvider((): WholesaleMarketBackgroundMood => scene.getWholesaleMarketBackgroundMood());
 const shopStageDebugControls = document.querySelector<HTMLDivElement>("#shop-stage-debug");
 const shopStageDebugValue = document.querySelector<HTMLElement>("#shop-stage-debug-value");
 const debugParams = new URLSearchParams(window.location.search);
@@ -51,8 +56,6 @@ if (shopStageDebugControls && shopStageDebugEnabled) {
   const initialStage = Number.isInteger(requestedStage) && requestedStage >= 1 && requestedStage <= SHOP_STAGES.length
     ? requestedStage
     : store.getSnapshot().cartLevel;
-  diningScene.setPreviewStage(initialStage);
-  store.setDiningPreviewLevel(initialStage);
   if (shopStageDebugValue) shopStageDebugValue.textContent = `${String(initialStage).padStart(2, "0")} / ${SHOP_STAGES.length}`;
   // Bind this before Phaser initializes so a quick click during its asset load
   // is queued instead of being lost while the rest of the UI is still booting.
@@ -62,23 +65,25 @@ if (shopStageDebugControls && shopStageDebugEnabled) {
     const button = target.closest<HTMLButtonElement>("button[data-shop-stage-step]");
     if (button) {
       scene.stepShopStage(Number(button.dataset.shopStageStep));
-      const previewStage = scene.getShopStageForDebug();
-      diningScene.setPreviewStage(previewStage);
-      store.setDiningPreviewLevel(previewStage);
     }
   });
 }
 let activeTab = "outside";
 let diningView: "tables" | "kitchen" = "tables";
+let wholesaleMarketOpen = false;
+let wholesaleMarketStarted = false;
+let wholesaleMarketSleeping = false;
+let selectedMenuCategory: MenuCategory | "all" = "all";
 const app = document.querySelector<HTMLDivElement>("#app");
 const phaserRoot = document.querySelector<HTMLDivElement>("#phaser-root");
-if (!app || !phaserRoot) throw new Error("Không tìm thấy khung game.");
+const wholesaleMarketInterface = document.querySelector<HTMLDivElement>("#market-interface");
+const wholesaleMarketSectionCopy = document.querySelector<HTMLElement>("#market-section-copy");
+const wholesaleMarketSectionButton = document.querySelector<HTMLButtonElement>("#market-section-button");
+const wholesaleMarketPanCopy = document.querySelector<HTMLElement>("#market-pan-copy");
+if (!app || !phaserRoot || !wholesaleMarketInterface) throw new Error("Không tìm thấy khung game.");
 const kitchenArt: [string, string][] = [
-  ["kitchen-shelf-art", kitchenShelfUrl],
-  ["kitchen-hood-art", kitchenHoodUrl],
-  ["kitchen-grill-art", kitchenGrillUrl],
-  ["kitchen-prep-art", kitchenPrepUrl],
-  ["kitchen-rice-art", kitchenRiceUrl],
+  ["kitchen-shell-art", kitchenRoomShellUrl],
+  ["kitchen-layout-art", kitchenObjectsLayoutUrl],
 ];
 let kitchenArtLoaded = false;
 
@@ -99,6 +104,80 @@ const game = new Phaser.Game({
   },
   scene: [scene, diningScene],
 });
+game.scene.add("wholesale-market", wholesaleMarketScene, false);
+const updateStreetStatus = (): void => {
+  const status = document.querySelector<HTMLElement>("#street-status");
+  const mapHint = document.querySelector<HTMLElement>("#map-hint-copy");
+  if (status) status.textContent = scene.isHomeZoneActive()
+    ? "Khu nhà dân"
+    : scene.isWholesaleMarketZoneActive()
+      ? "Chợ đầu mối"
+      : store.getSnapshot().inShift ? "Phố đang nhộn nhịp" : "Góc phố thân quen";
+  if (mapHint) mapHint.textContent = scene.isHomeZoneActive()
+    ? "Kéo cần tròn để đi sang phải về phố"
+    : scene.isWholesaleMarketZoneActive()
+      ? "Đi lên lối giữa chợ để vào · sang trái để về phố"
+      : "Đi lên cửa quán để vào · sang phải để tới chợ";
+};
+game.events.once(Phaser.Core.Events.READY, () => {
+  scene.events.on("street-zone-changed", updateStreetStatus);
+  scene.events.on("street-enter-dining", () => setLocation("dining"));
+  scene.events.on("street-enter-wholesale-market", openWholesaleMarket);
+  updateStreetStatus();
+});
+
+const movementJoystick = document.querySelector<HTMLButtonElement>("#street-joystick");
+const movementJoystickKnob = document.querySelector<HTMLElement>("#street-joystick-knob");
+let movementJoystickPointerId: number | null = null;
+const updateMovementJoystick = (event: PointerEvent): void => {
+  if (!movementJoystick || !movementJoystickKnob) return;
+  const bounds = movementJoystick.getBoundingClientRect();
+  const maxTravel = Math.max(1, Math.min(bounds.width, bounds.height) / 2 - movementJoystickKnob.offsetWidth / 2 - 4);
+  let offsetX = event.clientX - (bounds.left + bounds.width / 2);
+  let offsetY = event.clientY - (bounds.top + bounds.height / 2);
+  const distance = Math.hypot(offsetX, offsetY);
+  if (distance > maxTravel) {
+    offsetX *= maxTravel / distance;
+    offsetY *= maxTravel / distance;
+  }
+  let directionX = offsetX / maxTravel;
+  let directionY = offsetY / maxTravel;
+  if (Math.hypot(directionX, directionY) < 0.16) {
+    offsetX = 0;
+    offsetY = 0;
+    directionX = 0;
+    directionY = 0;
+  }
+  movementJoystickKnob.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0)`;
+  scene.setMovementVector(directionX, directionY);
+};
+const resetMovementJoystick = (pointerId?: number): void => {
+  if (pointerId !== undefined && movementJoystickPointerId !== pointerId) return;
+  movementJoystickPointerId = null;
+  if (movementJoystickKnob) movementJoystickKnob.style.transform = "translate3d(0,0,0)";
+  scene.setMovementVector(0, 0);
+};
+movementJoystick?.addEventListener("pointerdown", (event) => {
+  if (event.pointerType === "mouse" && event.button !== 0) return;
+  if (movementJoystickPointerId !== null) return;
+  event.preventDefault();
+  movementJoystickPointerId = event.pointerId;
+  updateMovementJoystick(event);
+  try {
+    movementJoystick.setPointerCapture(event.pointerId);
+  } catch {
+    // Pointer capture can fail if the browser cancels the gesture during resize.
+  }
+});
+movementJoystick?.addEventListener("pointermove", (event) => {
+  if (movementJoystickPointerId !== event.pointerId) return;
+  event.preventDefault();
+  updateMovementJoystick(event);
+});
+movementJoystick?.addEventListener("lostpointercapture", (event) => resetMovementJoystick(event.pointerId));
+window.addEventListener("pointerup", (event) => resetMovementJoystick(event.pointerId));
+window.addEventListener("pointercancel", (event) => resetMovementJoystick(event.pointerId));
+window.addEventListener("blur", () => resetMovementJoystick());
 
 const resizeGameCanvasForDpr = (): void => {
   const bounds = phaserRoot.getBoundingClientRect();
@@ -107,6 +186,7 @@ const resizeGameCanvasForDpr = (): void => {
   const height = Math.max(1, Math.round(bounds.height * dpr));
   scene.setDevicePixelRatio(dpr);
   diningScene.setDevicePixelRatio(dpr);
+  wholesaleMarketScene.setDevicePixelRatio(dpr);
   if (game.scale.width !== width || game.scale.height !== height) game.scale.resize(width, height);
   game.canvas.style.width = `${bounds.width}px`;
   game.canvas.style.height = `${bounds.height}px`;
@@ -121,6 +201,25 @@ game.events.once(Phaser.Core.Events.READY, resizeGameCanvasForDpr);
 let phaserReady = false;
 function applyLocationScenes(): void {
   if (!phaserReady) return;
+  if (wholesaleMarketOpen) {
+    scene.setMapInteractionEnabled(false);
+    diningScene.setInteractionEnabled(false);
+    scene.scene.setVisible(false, "neighborhood");
+    scene.scene.setVisible(false, "dining-room");
+    if (!wholesaleMarketStarted) {
+      scene.scene.launch("wholesale-market");
+      wholesaleMarketStarted = true;
+    } else if (wholesaleMarketSleeping) {
+      scene.scene.wake("wholesale-market");
+      wholesaleMarketSleeping = false;
+    }
+    scene.scene.setVisible(true, "wholesale-market");
+    return;
+  }
+  if (wholesaleMarketStarted && !wholesaleMarketSleeping) {
+    scene.scene.sleep("wholesale-market");
+    wholesaleMarketSleeping = true;
+  }
   if (store.getSnapshot().serviceMode === "dining") {
     scene.setMapInteractionEnabled(false);
     diningScene.setInteractionEnabled(diningView === "tables");
@@ -137,7 +236,72 @@ function applyLocationScenes(): void {
   }
 }
 
+function openWholesaleMarket(): void {
+  if (store.getSnapshot().serviceMode !== "street") return;
+  selectTab("outside");
+  wholesaleMarketScene.setSection("exterior");
+  updateWholesaleMarketSectionUI();
+  wholesaleMarketOpen = true;
+  if (wholesaleMarketInterface) wholesaleMarketInterface.hidden = false;
+  if (app) app.dataset.location = "market";
+  applyLocationScenes();
+}
+
+function closeWholesaleMarket(): void {
+  wholesaleMarketOpen = false;
+  wholesaleMarketScene.setSection("exterior");
+  if (wholesaleMarketInterface) wholesaleMarketInterface.hidden = true;
+  if (app) app.dataset.location = store.getSnapshot().serviceMode === "dining" ? "dining" : "street";
+  applyLocationScenes();
+}
+
+function updateWholesaleMarketSectionUI(): void {
+  const section = wholesaleMarketScene.getSection();
+  const sectionCopy = {
+    exterior: "Mặt tiền · bãi xe máy",
+    produce: "Khu rau củ và nông sản",
+    seafood: "Sạp thịt, cá & hải sản",
+  } as const;
+  const buttonCopy = {
+    exterior: "Vào khu rau củ ↑",
+    produce: "Qua khu thịt cá →",
+    seafood: "Ra mặt tiền ↓",
+  } as const;
+  const buttonLabels = {
+    exterior: "Vào khu rau củ trong chợ",
+    produce: "Đi sang khu thịt và hải sản",
+    seafood: "Quay ra mặt tiền chợ",
+  } as const;
+  const panCopy = {
+    exterior: "Kéo ngang để xem bãi xe và các dãy nhà",
+    produce: "Kéo ngang để xem các sạp rau củ",
+    seafood: "Kéo ngang để xem các sạp thịt cá",
+  } as const;
+  if (wholesaleMarketSectionCopy) {
+    wholesaleMarketSectionCopy.textContent = sectionCopy[section];
+  }
+  if (wholesaleMarketSectionButton) {
+    wholesaleMarketSectionButton.textContent = buttonCopy[section];
+    wholesaleMarketSectionButton.setAttribute("aria-label", buttonLabels[section]);
+  }
+  if (wholesaleMarketPanCopy) {
+    wholesaleMarketPanCopy.textContent = panCopy[section];
+  }
+}
+
+function toggleWholesaleMarketSection(): void {
+  const next = {
+    exterior: "produce",
+    produce: "seafood",
+    seafood: "exterior",
+  } as const;
+  wholesaleMarketScene.setSection(next[wholesaleMarketScene.getSection()]);
+  updateWholesaleMarketSectionUI();
+}
+
 function setLocation(location: "street" | "dining"): void {
+  wholesaleMarketOpen = false;
+  if (wholesaleMarketInterface) wholesaleMarketInterface.hidden = true;
   selectTab("outside");
   setDiningView("tables");
   store.setServiceMode(location);
@@ -157,39 +321,44 @@ function setDiningView(view: "tables" | "kitchen"): void {
   if (store.getSnapshot().serviceMode === "dining") diningScene.setInteractionEnabled(view === "tables");
   const locationName = document.querySelector<HTMLElement>("#dining-location-name");
   if (locationName) locationName.textContent = view === "kitchen" ? "GIAN BẾP" : "PHÒNG ĂN";
-  setDiningPanelMode(view === "kitchen" ? "kitchen" : null);
+  setDiningPanelMode(null);
   renderDining(store.getSnapshot());
 }
 
 function setDiningPanelMode(mode: "tables" | "kitchen" | null): void {
   const panel = document.querySelector<HTMLElement>("#dining-control-panel");
   const title = document.querySelector<HTMLElement>("#dining-panel-title");
+  const kitchenPanelToggle = document.querySelector<HTMLButtonElement>("#dining-panel-toggle");
+  const isOpen = mode !== null;
+  if (app) app.dataset.diningPanelOpen = String(isOpen);
   if (panel) {
-    panel.hidden = mode === null;
+    panel.hidden = !isOpen;
     panel.dataset.mode = mode ?? "tables";
     panel.scrollTop = 0;
   }
   if (title) title.textContent = mode === "kitchen" ? "Phiếu bếp" : "Bàn ăn";
+  kitchenPanelToggle?.setAttribute("aria-expanded", String(isOpen));
 }
 
 document.addEventListener("dining-table-selected", () => setDiningPanelMode("tables"));
 
 let diningSwipeStart: { x: number; y: number; pointerId: number } | null = null;
 const beginDiningSwipe = (event: PointerEvent): void => {
+  diningSwipeStart = null;
   if (store.getSnapshot().serviceMode !== "dining") return;
-  if (event.target instanceof Element && event.target.closest("button, .dining-ticket-list")) return;
+  if (!event.isPrimary) return;
+  if (event.target instanceof Element && event.target.closest("button, a, input, select, textarea, [role='button'], .dining-ticket-list")) return;
   diningSwipeStart = { x: event.clientX, y: event.clientY, pointerId: event.pointerId };
 };
-phaserRoot.addEventListener("pointerdown", beginDiningSwipe);
-document.querySelector("#dining-control-panel")?.addEventListener("pointerdown", (event) => beginDiningSwipe(event as PointerEvent));
+phaserRoot.closest<HTMLElement>(".street-section")?.addEventListener("pointerdown", beginDiningSwipe);
 window.addEventListener("pointerup", (event) => {
   if (!diningSwipeStart || diningSwipeStart.pointerId !== event.pointerId) return;
   const dx = event.clientX - diningSwipeStart.x;
   const dy = event.clientY - diningSwipeStart.y;
   diningSwipeStart = null;
   if (store.getSnapshot().serviceMode !== "dining" || Math.abs(dx) < 55 || Math.abs(dx) < Math.abs(dy) * 1.25) return;
-  if (dx < 0 && diningView === "tables") setDiningView("kitchen");
-  else if (dx > 0 && diningView === "kitchen") setDiningView("tables");
+  if (dx > 0 && diningView === "tables") setDiningView("kitchen");
+  else if (dx < 0 && diningView === "kitchen") setDiningView("tables");
 });
 window.addEventListener("pointercancel", () => { diningSwipeStart = null; });
 
@@ -267,6 +436,8 @@ function selectTab(tab: string, toggle = false): void {
     panel.hidden = !selectedPanel;
     panel.dataset.menu = activeTab;
   }
+  const catalogBackdrop = document.querySelector<HTMLButtonElement>("#menu-catalog-backdrop");
+  if (catalogBackdrop) catalogBackdrop.hidden = activeTab !== "recipes";
   for (const button of document.querySelectorAll<HTMLButtonElement>("[data-tab-target]")) {
     const selected = button.dataset.tabTarget === activeTab;
     button.classList.toggle("is-active", selected);
@@ -278,8 +449,8 @@ function selectTab(tab: string, toggle = false): void {
   const headings: Record<string, [string, string]> = {
     shop: ["GÓC QUẢN LÝ", "Cửa tiệm"],
     staff: ["ĐỘI NGŨ", "Nhân viên"],
-    menu: ["ĐANG PHỤC VỤ", "Thực đơn"],
-    recipes: ["SỔ TAY MÓN NGON", "Sổ món"],
+    menu: ["ĐANG PHỤC VỤ", "Đơn hàng"],
+    recipes: ["THỰC ĐƠN QUÁN NHẬU", "Món ngon nhà mình"],
     stock: ["KHO NGUYÊN LIỆU", "Cửa hàng"],
   };
   const [eyebrow, title] = headings[activeTab] ?? ["GÓC PHỐ SÀI GÒN", "Bảng quản lý"];
@@ -287,16 +458,62 @@ function selectTab(tab: string, toggle = false): void {
   const titleNode = document.querySelector<HTMLElement>("#sheet-title");
   if (eyebrowNode) eyebrowNode.textContent = eyebrow;
   if (titleNode) titleNode.textContent = title;
+  if (activeTab === "recipes") renderMenuCatalog();
   if (selectedPanel) activeButton?.scrollIntoView({ block: "nearest", inline: "nearest" });
 }
 
-function renderRecipes(snapshot: GameSnapshot): void {
-  const list = document.querySelector<HTMLElement>("#recipe-collection");
+function menuDishArtMarkup(dish: MenuDish): string {
+  if (dish.visual.type === "sheet") {
+    const imageUrl = dish.visual.sheet === "hotpot-grill" ? hotpotGrillSheetUrl : snacksRiceSheetUrl;
+    const column = dish.visual.cell % 4;
+    const row = Math.floor(dish.visual.cell / 4);
+    return `<span class="menu-dish-art menu-dish-art--sheet" role="img" aria-label="${dish.name}" style="--menu-sheet: url('${imageUrl}'); --menu-position-x: ${column * 100 / 3}%; --menu-position-y: ${row * 100 / 3}%"></span>`;
+  }
+  if (dish.visual.type === "image") return `<img class="menu-dish-art menu-dish-art--image" src="${mixedGrillPlatterUrl}" alt="${dish.name}">`;
+  return `<span class="menu-dish-art menu-dish-art--icon">${iconMarkup(dish.visual.icon, "ui-icon")}</span>`;
+}
+
+function renderMenuCatalog(): void {
+  const list = document.querySelector<HTMLElement>("#menu-dish-collection");
+  const count = document.querySelector<HTMLElement>("#menu-catalog-count");
   if (!list) return;
-  list.innerHTML = Object.values(RECIPES).map((recipe) => {
-    const unlocked = snapshot.cartLevel >= recipe.unlockLevel;
-    const ingredientNames = recipe.ingredients.map((id) => INGREDIENTS.find((item) => item.id === id)?.name ?? id).join(" · ");
-    return `<article class="recipe-card ${unlocked ? "" : "is-locked"}">${iconMarkup(unlocked ? "grill-meal" : "lock", "recipe-icon ui-icon")}<div><h3>${recipe.name}</h3><p>${unlocked ? ingredientNames : `Mở khóa ở cấp ${recipe.unlockLevel}`}</p></div><b>${unlocked ? `${recipe.salePrice} xu` : "Chưa mở"}</b></article>`;
+
+  const visibleDishes = selectedMenuCategory === "all"
+    ? MENU_DISHES
+    : MENU_DISHES.filter((dish) => dish.category === selectedMenuCategory);
+  const categoryName = selectedMenuCategory === "all"
+    ? "4 danh mục"
+    : MENU_CATEGORIES.find((category) => category.id === selectedMenuCategory)?.name ?? "Món ăn";
+  if (count) count.textContent = selectedMenuCategory === "all"
+    ? `${visibleDishes.length} món · ${categoryName}`
+    : `${categoryName} · ${visibleDishes.length} món`;
+
+  for (const button of document.querySelectorAll<HTMLButtonElement>("[data-menu-filter]")) {
+    const active = button.dataset.menuFilter === selectedMenuCategory;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", String(active));
+  }
+
+  list.innerHTML = visibleDishes.map((dish) => {
+    const profit = dish.suggestedPrice - dish.estimatedCost;
+    const priceLabel = dish.currentRecipe ? "Giá bán" : "Giá gợi ý";
+    const costLabel = dish.currentRecipe ? "Chi phí" : "Chi phí dự kiến";
+    const profitLabel = dish.currentRecipe ? "Lãi gộp" : "Lời dự kiến";
+    const categoryLabel = MENU_CATEGORIES.find((category) => category.id === dish.category)?.name ?? "Món ăn";
+    return `<article class="menu-dish-card">
+      <div class="menu-dish-art-frame">${menuDishArtMarkup(dish)}</div>
+      <div class="menu-dish-copy">
+        <div class="menu-dish-heading"><div><span class="menu-dish-category">${categoryLabel}</span><h3>${dish.name}</h3></div><span class="menu-dish-status ${dish.currentRecipe ? "is-current" : ""}">${dish.currentRecipe ? "Đang bán" : "Gợi ý"}</span></div>
+        <div class="menu-dish-metrics">
+          <span><small>${priceLabel}</small><b>${formatVndFromThousands(dish.suggestedPrice)}</b></span>
+          <span><small>${costLabel}</small><b>${formatVndFromThousands(dish.estimatedCost)}</b></span>
+          <span><small>${profitLabel}</small><b>${formatVndFromThousands(profit)}</b></span>
+          <span><small>Khẩu phần</small><b>${dish.portion}</b></span>
+        </div>
+        <div class="menu-dish-detail" hidden>Phù hợp bàn nhậu gia đình và nhóm bạn. ${dish.visual.type === "sheet" ? "Hình món đang dùng sprite mới trong thư viện món ăn." : "Món này dùng hình minh họa có sẵn trong game."}</div>
+        <button class="menu-dish-more" type="button" data-menu-dish-details aria-expanded="false">Xem thêm <span aria-hidden="true">⌄</span></button>
+      </div>
+    </article>`;
   }).join("");
 }
 
@@ -314,8 +531,8 @@ function renderDining(snapshot: GameSnapshot): void {
   const outsideLabel = document.querySelector<HTMLElement>("#outside-nav-label");
   const inside = snapshot.serviceMode === "dining";
   if (root) root.hidden = !inside;
-  if (app) app.dataset.location = inside ? "dining" : "street";
-  if (outsideLabel) outsideLabel.textContent = inside ? "Ra phố" : "Bên ngoài";
+  if (app) app.dataset.location = wholesaleMarketOpen ? "market" : inside ? "dining" : "street";
+  if (outsideLabel) outsideLabel.textContent = inside ? "Ra phố" : "Ngoài phố";
   if (!inside) return;
 
   const guestStatusNames: Record<string, string> = {
@@ -339,26 +556,38 @@ function renderDining(snapshot: GameSnapshot): void {
   const selectedTable = snapshot.dining.tables.find((table) => table.id === snapshot.dining.selectedTableId);
   const selectedSeat = selectedTable?.seats.find((seat) => seat.index === snapshot.dining.selectedSeatIndex);
   const guestOrder = selectedGuest && snapshot.dining.orders.find((order) => order.guestId === selectedGuest.id);
+  const selectedPartyGuests = selectedGuest ? snapshot.dining.guests.filter((guest) => guest.partyId === selectedGuest.partyId) : [];
+  const selectedPartyOrders = selectedGuest ? snapshot.dining.orders.filter((order) => order.partyId === selectedGuest.partyId) : [];
 
   if (shiftStatus) {
-    const capacity = getDiningTableCapacity(shopStageDebugEnabled ? scene.getShopStageForDebug() : snapshot.cartLevel);
+    const capacity = getDiningTableCapacity();
+    const partyCount = new Set(snapshot.dining.guests.map((guest) => guest.partyId)).size;
     shiftStatus.textContent = diningView === "kitchen"
-      ? "Vuốt phải về phòng ăn"
+      ? (snapshot.inShift ? "Ca đang chạy · vuốt trái về phòng ăn" : "Ca đã nghỉ · vuốt trái về phòng ăn")
       : snapshot.inShift
-        ? `${snapshot.dining.guests.length} khách · ${snapshot.dining.tables.filter((table) => table.id <= capacity).flatMap((table) => table.seats).filter((seat) => seat.status === "empty").length} chỗ trống`
-        : "Vuốt trái để vào bếp";
+        ? `${snapshot.dining.guests.length} khách · ${partyCount} nhóm · ${snapshot.dining.tables.filter((table) => table.id <= capacity).flatMap((table) => table.seats).filter((seat) => seat.status === "empty").length} chỗ trống`
+        : "Vuốt phải để vào bếp";
   }
-  if (guestName) guestName.textContent = selectedGuest ? `${CUSTOMER_TYPES[selectedGuest.type].name} · bàn ${selectedGuest.tableId}, chỗ ${selectedGuest.seatIndex + 1}` : "Chưa chọn khách";
+  if (guestName) {
+    const partyLabel = selectedGuest
+      ? `${selectedGuest.partyType === "family" ? "Gia đình" : "Nhóm bạn"} ${selectedGuest.partySize} người`
+      : "";
+    guestName.textContent = selectedGuest
+      ? `${partyLabel} · ${CUSTOMER_TYPES[selectedGuest.type].name} · bàn ${selectedGuest.tableId}, chỗ ${selectedGuest.seatIndex + 1}`
+      : "Chưa chọn khách";
+  }
   if (dialogue) {
     dialogue.textContent = selectedGuest
-      ? `“Cho tôi ${RECIPES[selectedGuest.recipe].name.toLowerCase()} nhé!”`
+      ? selectedGuest.status === "waiting-order"
+        ? `“${selectedGuest.orderDialogue}” · cả nhóm gọi ${selectedPartyOrders.length} món`
+        : `“${selectedGuest.orderDialogue}”`
       : selectedSeat?.status === "dirty"
         ? `Chỗ ${selectedSeat.index + 1} tại bàn ${selectedTable?.id} đang cần dọn.`
         : "Chạm khách đang ngồi để nghe lời gọi món.";
   }
   if (recipeLine) {
     recipeLine.textContent = selectedGuest
-      ? `${RECIPES[selectedGuest.recipe].name} · ${guestStatusNames[selectedGuest.status]}`
+      ? `${selectedPartyOrders.length} món: ${selectedPartyOrders.map((order) => RECIPES[order.recipe].name).join(" · ")} · ${guestStatusNames[selectedGuest.status]}`
       : "Chưa có món được gọi.";
   }
   if (contextActions) {
@@ -366,14 +595,22 @@ function renderDining(snapshot: GameSnapshot): void {
     if (selectedSeat?.status === "dirty") {
       actions.push(`<button class="dining-action-button" data-action="dining-clean" data-table-id="${selectedTable!.id}" data-seat-index="${selectedSeat.index}" type="button">Dọn chỗ ${selectedSeat.index + 1}</button>`);
     }
-    if (selectedGuest && guestOrder?.status === "called" && selectedGuest.status === "waiting-order") {
-      actions.push(`<button class="dining-action-button" data-action="dining-accept" type="button">Nhận order</button>`);
+    const canAcceptParty = selectedGuest
+      && selectedPartyGuests.length === selectedGuest.partySize
+      && selectedPartyGuests.every((guest) => guest.status === "waiting-order")
+      && selectedPartyOrders.length === selectedPartyGuests.length
+      && selectedPartyOrders.every((order) => order.status === "called");
+    if (canAcceptParty) {
+      actions.push(`<button class="dining-action-button" data-action="dining-accept" type="button">Nhận order nhóm · ${selectedPartyOrders.length} món</button>`);
+    } else if (selectedGuest && selectedPartyGuests.some((guest) => guest.status === "entering")) {
+      actions.push(`<span class="dining-empty-action">Đang chờ cả nhóm ngồi đủ chỗ (${selectedPartyGuests.filter((guest) => guest.status !== "entering").length}/${selectedPartyGuests.length}).</span>`);
     }
     if (selectedOrder?.status === "ready") {
       actions.push(`<button class="dining-action-button" data-action="dining-serve" type="button">Bưng món</button>`);
     }
-    if (selectedGuest && guestOrder?.status === "delivered" && selectedGuest.status === "awaiting-payment") {
-      actions.push(`<button class="dining-action-button" data-action="dining-pay" type="button">Thu tiền</button>`);
+    if (selectedGuest && guestOrder?.status === "delivered"
+      && selectedPartyGuests.length > 0 && selectedPartyGuests.every((guest) => guest.status === "awaiting-payment")) {
+      actions.push(`<button class="dining-action-button" data-action="dining-pay" type="button">Thu hóa đơn · ${selectedPartyOrders.length} món</button>`);
     }
     if (actions.length === 0 && !snapshot.inShift && selectedSeat?.status !== "dirty") {
       actions.push("<span class=\"dining-empty-action\">Khách sẽ tự chọn bàn khi quán tiếp tục bán.</span>");
@@ -384,7 +621,7 @@ function renderDining(snapshot: GameSnapshot): void {
   const visibleOrders = snapshot.dining.orders.filter((order) => order.status !== "paid" && order.status !== "called");
   if (ticketList) {
     ticketList.innerHTML = visibleOrders.length > 0
-      ? visibleOrders.map((order) => { const guest = snapshot.dining.guests.find((entry) => entry.id === order.guestId); return `<button type="button" class="dining-ticket-button ${selectedOrder?.id === order.id ? "is-selected" : ""}" data-dining-order="${order.id}" data-status="${order.status}">Bàn ${order.tableId}, chỗ ${(guest?.seatIndex ?? 0) + 1} · ${RECIPES[order.recipe].name} · ${orderStatusNames[order.status]}</button>`; }).join("")
+      ? visibleOrders.map((order) => { const guest = snapshot.dining.guests.find((entry) => entry.id === order.guestId); return `<button type="button" class="dining-ticket-button ${selectedOrder?.id === order.id ? "is-selected" : ""}" data-dining-order="${order.id}" data-status="${order.status}">Bàn ${order.tableId} · ${guest?.partyType === "family" ? "Gia đình" : "Nhóm bạn"} ${guest?.partySize ?? ""} người · ${RECIPES[order.recipe].name} · ${orderStatusNames[order.status]}</button>`; }).join("")
       : "<span class=\"dining-empty-action\">Chưa có phiếu bếp.</span>";
   }
   if (kitchenStatus) {
@@ -395,6 +632,16 @@ function renderDining(snapshot: GameSnapshot): void {
       kitchenStatus.textContent = `Phiếu bàn ${selectedOrder.tableId} · tiếp theo: ${nextName}.`;
     } else if (selectedOrder) kitchenStatus.textContent = `${RECIPES[selectedOrder.recipe].name} · ${orderStatusNames[selectedOrder.status]}.`;
     else kitchenStatus.textContent = "Chọn phiếu ở bếp; chỉ nấu một order mỗi lần.";
+  }
+  if (kitchenStatus && selectedOrder?.status === "ready") {
+    kitchenStatus.innerHTML = `Món đã sẵn sàng cho bàn ${selectedOrder.tableId}. <button class="dining-action-button" data-action="dining-serve" type="button">Bưng món tới bàn ${selectedOrder.tableId}</button>`;
+  }
+  const activeKitchenOrder = snapshot.dining.orders.find((order) => order.id === snapshot.dining.activeOrderId);
+  if (kitchenStatus && selectedOrder?.status === "queued"
+    && snapshot.dining.activeOrderId && snapshot.dining.activeOrderId !== selectedOrder.id) {
+    kitchenStatus.textContent = activeKitchenOrder
+      ? "Bếp đang xử lý " + RECIPES[activeKitchenOrder.recipe].name + " · bàn " + activeKitchenOrder.tableId + ". Hoàn tất phiếu đó trước."
+      : "Bếp đang khôi phục phiếu còn dang dở; hãy chờ nhịp cập nhật tiếp theo.";
   }
   const canChooseIngredient = snapshot.inShift
     && selectedOrder?.status === "queued"
@@ -408,6 +655,7 @@ function renderDining(snapshot: GameSnapshot): void {
 function render(snapshot: GameSnapshot): void {
   const $ = <T extends HTMLElement>(selector: string) => document.querySelector<T>(selector);
   const coins = $("#coins");
+  const walletPill = coins?.closest<HTMLElement>(".wallet-pill");
   const reputation = $("#reputation");
   const orderTitle = $("#order-title");
   const orderHint = $("#order-hint");
@@ -425,14 +673,16 @@ function render(snapshot: GameSnapshot): void {
   if (storeNameDisplay) storeNameDisplay.textContent = getDisplayStoreName(snapshot.storeName) || GAME_NAME_VI;
   if (storeNameShort) storeNameShort.textContent = getDisplayStoreName(snapshot.storeName) || "Chưa đặt tên";
   if (coins) coins.textContent = snapshot.coins.toLocaleString("vi-VN");
+  if (walletPill) walletPill.setAttribute("aria-label", `Số dư ${formatVndFromThousands(snapshot.coins)}`);
   if (reputation) reputation.textContent = snapshot.reputation.toLocaleString("vi-VN");
   if (feedback) feedback.textContent = snapshot.offlineNotice || snapshot.feedback;
   if (queueCount) queueCount.textContent = snapshot.customers.length.toString();
-  if (status) status.textContent = snapshot.inShift ? "Phố đang nhộn nhịp" : "Góc phố thân quen";
+  if (status) status.textContent = scene.isHomeZoneActive()
+    ? "Khu nhà dân"
+    : snapshot.inShift ? "Phố đang nhộn nhịp" : "Góc phố thân quen";
   if (level) level.textContent = `CẤP ${snapshot.cartLevel} / ${MAX_CART_LEVEL}`;
   if (level) level.title = BUSINESS_STAGE_NAMES[snapshot.cartLevel - 1];
   if (businessStage) businessStage.textContent = BUSINESS_STAGE_NAMES[snapshot.cartLevel - 1];
-  renderRecipes(snapshot);
   renderDining(snapshot);
 
   if (callout) {
@@ -476,7 +726,7 @@ function render(snapshot: GameSnapshot): void {
 
   for (const ingredient of INGREDIENTS) {
     const stock = $(`#stock-${ingredient.id}`);
-    const button = $(`[data-ingredient='${ingredient.id}']`) as HTMLButtonElement | null;
+    const button = $(`.ingredient-button[data-ingredient='${ingredient.id}']`) as HTMLButtonElement | null;
     const count = snapshot.inventory[ingredient.id];
     if (stock) stock.textContent = `${count} phần`;
     const stockCount = $(`[data-stock-count="${ingredient.id}"]`);
@@ -491,13 +741,13 @@ function render(snapshot: GameSnapshot): void {
   if (restockLabel) restockLabel.textContent = snapshot.emergencyRestockAvailable ? "Nhận nguyên liệu dự phòng" : "Nhập một chuyến hàng";
   if (restockCost) restockCost.textContent = snapshot.emergencyRestockAvailable
     ? "Miễn phí · thêm 4 phần mỗi món"
-    : `${RESTOCK_PACK_COST} xu · thêm 5 phần mỗi món`;
+    : `${formatVndFromThousands(RESTOCK_PACK_COST)} · thêm 5 phần mỗi món`;
 
   const nextUpgradeCost = CART_UPGRADE_COST[snapshot.cartLevel] ?? 0;
   const upgradeLabel = $("#upgrade-label");
   const upgradeCost = $("#upgrade-cost");
   if (upgradeLabel) upgradeLabel.querySelector<HTMLElement>(".action-label")!.textContent = snapshot.cartLevel < MAX_CART_LEVEL ? `Nâng quán lên cấp ${snapshot.cartLevel + 1}` : "Đã đạt cấp cao nhất";
-  if (upgradeCost) upgradeCost.textContent = nextUpgradeCost > 0 ? `${nextUpgradeCost.toLocaleString("vi-VN")} xu` : "Đã đạt cấp cao nhất";
+  if (upgradeCost) upgradeCost.textContent = nextUpgradeCost > 0 ? formatVndFromThousands(nextUpgradeCost) : "Đã đạt cấp cao nhất";
   if (upgradeButton) upgradeButton.disabled = nextUpgradeCost === 0 || snapshot.coins < nextUpgradeCost;
 
   const hireCost = $("#hire-cost");
@@ -506,11 +756,11 @@ function render(snapshot: GameSnapshot): void {
   const staffStatus = $("#staff-status");
   if (recentService) {
     recentService.textContent = snapshot.report
-      ? `2 phút vừa qua: phục vụ ${snapshot.report.served} khách · lãi ${snapshot.report.net >= 0 ? "+" : ""}${snapshot.report.net.toLocaleString("vi-VN")} xu.`
+      ? `2 phút vừa qua: phục vụ ${snapshot.report.served} khách · lãi ${snapshot.report.net >= 0 ? "+" : ""}${formatVndFromThousands(snapshot.report.net)}.`
       : "Quán đang đón khách. Doanh thu gần đây sẽ hiện ở đây.";
   }
   if (snapshot.hasStaff) {
-    if (hireCost) hireCost.textContent = "Đã có phụ bếp · lương 30 xu/2 phút";
+    if (hireCost) hireCost.textContent = `Đã có phụ bếp · lương ${formatVndFromThousands(30)}/2 phút`;
     if (businessNote) businessNote.textContent = "Phụ bếp tự phục vụ khách ngoài phố và trong quán, giúp quán có thu nhập ngoại tuyến tối đa 4 giờ.";
     if (staffStatus) {
       const cookingOrder = snapshot.dining.orders.find((order) => order.status === "cooking");
@@ -523,8 +773,8 @@ function render(snapshot: GameSnapshot): void {
       hireButton.querySelector<HTMLElement>(".action-label")!.textContent = "Đã thuê phụ bếp";
     }
   } else {
-    if (hireCost) hireCost.textContent = snapshot.cartLevel >= 2 ? `${STAFF_HIRE_COST.toLocaleString("vi-VN")} xu` : "1.200 xu · cần quán cấp 2";
-    if (businessNote) businessNote.textContent = "Phục vụ món để dành tiền nâng cấp. Có phụ bếp, quán vẫn kiếm xu khi bạn rời game.";
+    if (hireCost) hireCost.textContent = snapshot.cartLevel >= 2 ? formatVndFromThousands(STAFF_HIRE_COST) : "1.200.000đ · cần quán cấp 2";
+    if (businessNote) businessNote.textContent = "Phục vụ món để dành tiền nâng cấp. Có phụ bếp, quán vẫn kiếm tiền khi bạn rời game.";
     if (staffStatus) staffStatus.textContent = "Thuê phụ bếp từ cấp quán 2 để hỗ trợ phục vụ.";
     if (hireButton) {
       hireButton.disabled = snapshot.cartLevel < 2 || snapshot.coins < STAFF_HIRE_COST;
@@ -541,6 +791,33 @@ function render(snapshot: GameSnapshot): void {
 document.addEventListener("click", (event) => {
   const target = event.target;
   if (!(target instanceof Element)) return;
+  const categoryButton = target.closest<HTMLButtonElement>("button[data-menu-filter]");
+  if (categoryButton?.dataset.menuFilter) {
+    const filter = categoryButton.dataset.menuFilter;
+    selectedMenuCategory = filter === "all" ? "all" : filter as MenuCategory;
+    renderMenuCatalog();
+    return;
+  }
+  const detailsButton = target.closest<HTMLButtonElement>("button[data-menu-dish-details]");
+  if (detailsButton) {
+    const card = detailsButton.closest<HTMLElement>(".menu-dish-card");
+    const detail = card?.querySelector<HTMLElement>(".menu-dish-detail");
+    if (detail) {
+      detail.hidden = !detail.hidden;
+      detailsButton.setAttribute("aria-expanded", String(!detail.hidden));
+      detailsButton.innerHTML = detail.hidden ? 'Xem thêm <span aria-hidden="true">⌄</span>' : 'Thu gọn <span aria-hidden="true">⌃</span>';
+    }
+    return;
+  }
+  if (target.closest("#menu-catalog-backdrop")) {
+    selectTab("outside");
+    return;
+  }
+});
+
+document.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!(target instanceof Element)) return;
   const button = target.closest<HTMLButtonElement>("button[data-action]");
   const diningTicketButton = target.closest<HTMLButtonElement>("button[data-dining-order]");
   if (diningTicketButton?.dataset.diningOrder) {
@@ -550,11 +827,17 @@ document.addEventListener("click", (event) => {
   if (!button || button.disabled) return;
 
   switch (button.dataset.action) {
-    case "enter-dining":
-      setLocation("dining");
+    case "leave-wholesale-market":
+      closeWholesaleMarket();
+      break;
+    case "toggle-wholesale-market-section":
+      toggleWholesaleMarketSection();
       break;
     case "dining-close-panel":
       setDiningPanelMode(null);
+      break;
+    case "dining-toggle-panel":
+      setDiningPanelMode("kitchen");
       break;
     case "dining-accept":
       store.acceptDiningOrder();
@@ -652,11 +935,20 @@ document.addEventListener("click", (event) => {
   if (!(target instanceof Element)) return;
   const tabButton = target.closest<HTMLButtonElement>("button[data-tab-target]");
   if (tabButton?.dataset.tabTarget) {
+    if (wholesaleMarketOpen) {
+      closeWholesaleMarket();
+      if (tabButton.dataset.tabTarget === "outside") {
+        return;
+      }
+    }
     if (tabButton.dataset.tabTarget === "outside") {
       const wasDining = store.getSnapshot().serviceMode === "dining";
-      if (wasDining) setLocation("street");
-      selectTab("outside");
-      if (!wasDining) scene.centerOnShop();
+      if (wasDining) {
+        setLocation("street");
+        scene.centerOnShop();
+      } else {
+        selectTab("outside");
+      }
       return;
     }
     selectTab(tabButton.dataset.tabTarget, true);

@@ -1,0 +1,178 @@
+{
+  "formatVersion": 1,
+  "sourceScene": "assets/backgrounds/kitchen-stage-01-banh-mi-pho-concept.png",
+  "sourceCanvas": {
+    "width": 931,
+    "height": 1689,
+    "aspectRatio": 0.551214
+  },
+  "emptyRoomShell": {
+    "file": "kitchen-room-shell-empty.png",
+    "pixelSize": {
+      "width": 931,
+      "height": 1689
+    },
+    "description": "Empty room background retaining the original wall framing and floral floor tiles, with all modular kitchen stations and decor removed"
+  },
+  "assembledPreview": {
+    "file": "kitchen-room-composed-preview.png",
+    "pixelSize": {
+      "width": 931,
+      "height": 1689
+    },
+    "description": "Preview of the modular kitchen asset layers composited over the empty room shell"
+  },
+  "coordinateSpace": "pixels from top-left of source canvas",
+  "placementRule": "Place each cropped PNG at sourceRect.x/sourceRect.y at scale 1.0. All crops use original scene colors and retain original aspect ratio; do not resize non-uniformly.",
+  "fullCanvasLayers": [
+    "kitchen_station_layer.png",
+    "kitchen_decor_layer.png",
+    "kitchen_objects_layout.png"
+  ],
+  "assets": [
+    {
+      "file": "cookline_top.png",
+      "sourceRect": {
+        "x": 46,
+        "y": 79,
+        "width": 885,
+        "height": 424
+      },
+      "pixelSize": {
+        "width": 885,
+        "height": 424
+      },
+      "scale": 1.0,
+      "description": "Top cooking line, hood, cabinets and cookware",
+      "layer": "stations"
+    },
+    {
+      "file": "service_island_center.png",
+      "sourceRect": {
+        "x": 431,
+        "y": 608,
+        "width": 374,
+        "height": 637
+      },
+      "pixelSize": {
+        "width": 374,
+        "height": 637
+      },
+      "scale": 1.0,
+      "description": "Central plating and service island",
+      "layer": "stations"
+    },
+    {
+      "file": "dishwashing_line_bottom.png",
+      "sourceRect": {
+        "x": 157,
+        "y": 1352,
+        "width": 756,
+        "height": 269
+      },
+      "pixelSize": {
+        "width": 756,
+        "height": 269
+      },
+      "scale": 1.0,
+      "description": "Bottom dishwashing sink line",
+      "layer": "stations"
+    },
+    {
+      "file": "prep_station_left.png",
+      "sourceRect": {
+        "x": 0,
+        "y": 558,
+        "width": 213,
+        "height": 684
+      },
+      "pixelSize": {
+        "width": 213,
+        "height": 684
+      },
+      "scale": 1.0,
+      "description": "Left chopping and ingredient prep station with clear boards",
+      "layer": "stations"
+    },
+    {
+      "file": "hanging_plant_left.png",
+      "sourceRect": {
+        "x": 0,
+        "y": 0,
+        "width": 131,
+        "height": 627
+      },
+      "pixelSize": {
+        "width": 131,
+        "height": 627
+      },
+      "scale": 1.0,
+      "description": "Left hanging foliage and potted plant",
+      "layer": "decor"
+    },
+    {
+      "file": "lantern_left.png",
+      "sourceRect": {
+        "x": 201,
+        "y": 0,
+        "width": 94,
+        "height": 129
+      },
+      "pixelSize": {
+        "width": 94,
+        "height": 129
+      },
+      "scale": 1.0,
+      "description": "Left hanging lantern",
+      "layer": "decor"
+    },
+    {
+      "file": "teal_floral_panel.png",
+      "sourceRect": {
+        "x": 314,
+        "y": 14,
+        "width": 324,
+        "height": 88
+      },
+      "pixelSize": {
+        "width": 324,
+        "height": 88
+      },
+      "scale": 1.0,
+      "description": "Teal floral wall panel",
+      "layer": "decor"
+    },
+    {
+      "file": "lantern_right.png",
+      "sourceRect": {
+        "x": 657,
+        "y": 0,
+        "width": 96,
+        "height": 129
+      },
+      "pixelSize": {
+        "width": 96,
+        "height": 129
+      },
+      "scale": 1.0,
+      "description": "Right hanging lantern",
+      "layer": "decor"
+    },
+    {
+      "file": "hanging_plant_right.png",
+      "sourceRect": {
+        "x": 849,
+        "y": 0,
+        "width": 82,
+        "height": 209
+      },
+      "pixelSize": {
+        "width": 82,
+        "height": 209
+      },
+      "scale": 1.0,
+      "description": "Right hanging foliage",
+      "layer": "decor"
+    }
+  ]
+}

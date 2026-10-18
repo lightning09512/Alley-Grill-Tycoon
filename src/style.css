@@ -39,6 +39,7 @@ button { font: inherit; }
   background: #183d39;
 }
 #app[data-location="dining"] .game-frame { width: min(100vw, 45dvh, 720px); height: auto; max-height: 100dvh; aspect-ratio: 9 / 20; }
+#app[data-location="dining"][data-dining-view="kitchen"] .game-frame { width: min(100vw, 55.12dvh, 720px); aspect-ratio: 931 / 1689; }
 #app[data-location="dining"] .topbar { display: none; }
 
 .topbar, .brand-lockup, .wallet-row, .wallet-pill, .street-caption,
@@ -167,28 +168,35 @@ main, .street-section { position: absolute; inset: 0; }
 .map-hint { position: absolute; z-index: 4; top: max(96px, calc(env(safe-area-inset-top) + 88px)); left: 50%; padding: 5px 9px; border: 1px solid rgba(255,255,255,.45); border-radius: 999px; color: #fff9e7; background: rgba(31,62,52,.52); font-size: 9px; font-weight: 800; text-shadow: 0 1px 3px rgba(0,0,0,.55); transform: translateX(-50%); pointer-events: none; transition: opacity .3s ease; }
 .map-hint .ui-icon { width: 19px; height: 19px; margin-right: 4px; vertical-align: -5px; }
 .map-hint.is-dismissed { opacity: 0; }
-.room-door-button { position: absolute; z-index: 7; top: max(101px, calc(env(safe-area-inset-top) + 91px)); right: max(10px, env(safe-area-inset-right)); display: inline-flex; align-items: center; gap: 4px; min-height: 40px; padding: 4px 10px 4px 5px; border: 2px solid rgba(255,225,162,.88); border-radius: 12px; color: #fff8e4; background: linear-gradient(180deg,#d78b55,#9c5135); box-shadow: 0 4px 0 rgba(83,46,33,.56), 0 7px 16px rgba(27,28,19,.28); font-size: 9px; font-weight: 900; cursor: pointer; touch-action: manipulation; }
-.room-door-button .game-icon { width: 29px; height: 29px; }
-.room-door-button span { color: #fff4d4; line-height: 1.1; white-space: nowrap; }
-.room-door-button:active { transform: translateY(1px); }
-#app[data-location="dining"] .room-door-button { display: none; }
+.street-movement-controls { position: absolute; z-index: 6; bottom: calc(78px + env(safe-area-inset-bottom)); left: max(12px, env(safe-area-inset-left)); display: grid; place-items: center; width: 78px; height: 78px; pointer-events: auto; touch-action: none; }
+.street-joystick { position: relative; display: grid; place-items: center; width: 78px; height: 78px; padding: 0; border: 1px solid rgba(255,238,190,.62); border-radius: 50%; background: rgba(29,57,52,.55); box-shadow: 0 3px 8px rgba(19,35,30,.28), inset 0 1px 2px rgba(255,255,255,.14); cursor: grab; touch-action: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+.street-joystick:active { cursor: grabbing; }
+.street-joystick-knob { position: absolute; z-index: 1; width: 34px; height: 34px; border: 1px solid rgba(255,238,190,.8); border-radius: 50%; background: linear-gradient(145deg, #76a47a, #356a5b 72%); box-shadow: 0 2px 4px rgba(13,31,27,.4), inset 0 1px 2px rgba(255,255,255,.2); transform: translate3d(0,0,0); pointer-events: none; }
+.street-movement-controls[hidden] { display: none !important; }
+#app[data-location="dining"] .street-movement-controls,
+#app[data-location="market"] .street-movement-controls { display: none; }
+#app[data-location="market"] .street-caption,
+#app[data-location="market"] .map-hint { display: none !important; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; clip-path: inset(50%); }
+
+.market-interface { position: absolute; z-index: 8; inset: 0; pointer-events: none; }
+.market-interface[hidden] { display: none !important; }
+.market-toolbar { position: absolute; top: max(56px, calc(env(safe-area-inset-top) + 49px)); right: max(9px, env(safe-area-inset-right)); left: max(9px, env(safe-area-inset-left)); display: flex; align-items: center; justify-content: space-between; gap: 8px; pointer-events: none; }
+.market-location-title { display: grid; gap: 2px; min-width: 0; padding: 6px 9px; border: 1px solid rgba(255,244,213,.48); border-radius: 11px; color: #fff4d6; background: rgba(34,57,47,.91); box-shadow: 0 3px 12px rgba(15,22,18,.24); }
+.market-location-title strong { color: #ffdf99; font-size: 9px; letter-spacing: .12em; }
+.market-location-title span { color: #eee0bf; font-size: 8px; }
+.market-section-button, .market-exit-button { min-height: 34px; padding: 5px 9px; border: 1px solid rgba(255,244,213,.65); border-radius: 10px; color: #fff4d6; background: rgba(34,57,47,.92); box-shadow: 0 3px 10px rgba(15,22,18,.24); font-size: 9px; font-weight: 900; cursor: pointer; pointer-events: auto; touch-action: manipulation; white-space: nowrap; }
+.market-section-button { color: #312313; border-color: rgba(255,230,166,.9); background: linear-gradient(180deg, #ffe7a8, #e4b85d); }
+.market-pan-hint { position: absolute; top: max(101px, calc(env(safe-area-inset-top) + 91px)); left: 50%; display: inline-flex; align-items: center; gap: 3px; padding: 4px 8px; border: 1px solid rgba(255,255,255,.38); border-radius: 999px; color: #fff9e7; background: rgba(31,47,42,.65); font-size: 8px; font-weight: 800; text-shadow: 0 1px 3px rgba(0,0,0,.55); transform: translateX(-50%); pointer-events: none; }
+.market-pan-hint .ui-icon { width: 17px; height: 17px; }
 
 .dining-interface { position: absolute; z-index: 8; inset: 0; pointer-events: none; }
 .dining-interface[hidden] { display: none !important; }
 .dining-kitchen-view { position: absolute; inset: 0; display: none; overflow: hidden; background: #bf9e78; pointer-events: none; }
 #app[data-location="dining"][data-dining-view="kitchen"] .dining-kitchen-view { display: block; }
-.kitchen-wall { position: absolute; inset: 0 0 64%; border-bottom: 9px solid #594333; background: linear-gradient(90deg,rgba(72,47,32,.45) 0 5%,transparent 5% 95%,rgba(72,47,32,.45) 95%), linear-gradient(180deg,#603e2d 0 11%,#bd8053 11% 14%,#e4bc82 14% 86%,#ad7750 86% 100%); box-shadow: inset 0 -18px 22px rgba(55,31,22,.2); }
-.kitchen-wall::after { position: absolute; inset: 25% 5% 11%; border: 4px solid #9c6a47; background: repeating-linear-gradient(0deg,#f1dbad 0 22px,#bd9875 23px 25px), repeating-linear-gradient(90deg,transparent 0 44px,rgba(126,84,59,.2) 45px 47px); box-shadow: inset 0 3px 18px rgba(96,58,40,.25); content: ""; opacity: .72; }
-.kitchen-floor { position: absolute; inset: 36% 0 0; background: repeating-linear-gradient(0deg,transparent 0 39px,rgba(111,81,62,.36) 40px 42px), repeating-linear-gradient(90deg,transparent 0 39px,rgba(111,81,62,.36) 40px 42px), linear-gradient(180deg,#d5ac83,#e8c69d 52%,#bd8f6e); box-shadow: inset 0 18px 24px rgba(53,37,27,.28); }
-.kitchen-floor::after { position: absolute; inset: 0; background: linear-gradient(90deg,rgba(55,35,23,.2),transparent 14% 86%,rgba(55,35,23,.2)); content: ""; }
-.kitchen-scene-title { position: absolute; top: 17%; left: 38%; width: 27%; padding: 6px 0; border: 4px solid #9d6844; color: #edd49e; background: #614534; box-shadow: 0 4px 8px rgba(41,29,22,.3); font-size: clamp(10px,2.5cqi,16px); font-weight: 900; letter-spacing: .12em; text-align: center; }
-.kitchen-art { position: absolute; display: block; width: 50%; height: auto; filter: drop-shadow(0 8px 6px rgba(49,31,23,.3)); }
-.kitchen-shelf-art { top: 21%; left: -7%; width: 52%; }
-.kitchen-hood-art { top: 20%; right: -5%; width: 58%; }
-.kitchen-prep-art { top: 37%; left: -10%; width: 65%; }
-.kitchen-grill-art { top: 37%; right: -9%; width: 64%; }
-.kitchen-rice-art { top: 47%; left: 31%; width: 39%; }
+.kitchen-background-layer { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; }
+.kitchen-shell-art { z-index: 0; }
+.kitchen-layout-art { z-index: 1; }
 #app[data-location="dining"] .street-caption,
 #app[data-location="dining"] .map-hint { display: none !important; }
 #app[data-location="dining"] .shop-stage-debug { top: max(105px, calc(env(safe-area-inset-top) + 97px)); right: auto; bottom: auto; left: max(10px, env(safe-area-inset-left)); min-height: 34px; padding: 3px 5px; gap: 3px; transform: none; }
@@ -201,11 +209,13 @@ main, .street-section { position: absolute; inset: 0; }
 .dining-location-title { gap: 5px; min-height: 36px; }
 .dining-location-title strong { color: #ffdf99; font-size: 9px; letter-spacing: .12em; }
 .dining-location-title span { overflow: hidden; max-width: min(25cqi, 130px); color: #eee0bf; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.dining-panel-toggle { display: none; align-items: center; min-height: 32px; padding: 5px 9px; border: 1px solid rgba(255,244,213,.65); border-radius: 10px; color: #fff4d6; background: rgba(34,57,47,.92); box-shadow: 0 3px 10px rgba(15,22,18,.24); font-size: 9px; font-weight: 900; cursor: pointer; pointer-events: auto; touch-action: manipulation; }
+#app[data-location="dining"][data-dining-view="kitchen"][data-dining-panel-open="false"] .dining-panel-toggle { display: inline-flex; }
 .dining-control-panel { position: absolute; z-index: 3; right: 10px; bottom: calc(72px + env(safe-area-inset-bottom)); left: 10px; width: min(760px, calc(100% - 20px)); max-height: min(38cqh, 320px); margin: 0 auto; overflow-y: auto; padding: 8px; border: 1px solid rgba(255,250,231,.92); border-radius: 16px; color: #35443a; background: rgba(255,249,231,.98); box-shadow: 0 7px 24px rgba(19,27,22,.32); pointer-events: auto; scrollbar-width: thin; }
+#app[data-dining-view="kitchen"] .dining-control-panel { max-height: min(24cqh, 210px); }
 .dining-control-panel[hidden] { display: none; }
 .dining-panel-heading { position: sticky; z-index: 1; top: -8px; display: flex; align-items: center; justify-content: space-between; min-height: 29px; margin: -8px -8px 7px; padding: 5px 9px; border-bottom: 1px solid #ead8b4; color: #37594b; background: #fff4d7; font-size: 11px; }
 .dining-panel-close { display: grid; place-items: center; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 7px; color: #425a4f; background: #f0dfb7; font-size: 20px; line-height: 1; cursor: pointer; }
-#app[data-dining-view="kitchen"] .dining-panel-close { display: none; }
 .dining-control-panel[data-mode="tables"] .kitchen-card,
 .dining-control-panel[data-mode="kitchen"] .guest-card { display: none; }
 .dining-actions-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; }
@@ -394,7 +404,7 @@ button:disabled { opacity: .5; cursor: not-allowed; filter: grayscale(.2); }
   .wallet-pill { min-height: 28px; gap: 2px; padding: 0 4px; }
   .wallet-pill .wallet-icon, .wallet-icon .ui-icon { width: 14px; height: 14px; }
   .wallet-pill strong { font-size: 10px; }
-  .wallet-pill small { display: none; }
+  .wallet-pill small { display: inline; font-size: 7px; }
   .fullscreen-button, .music-control-button { width: 26px; height: 26px; border-radius: 50%; }
   .fullscreen-button .ui-icon, .music-control-button .ui-icon { width: 19px; height: 19px; }
   .nav-button small { font-size: 7px; }
@@ -429,4 +439,99 @@ button:disabled { opacity: .5; cursor: not-allowed; filter: grayscale(.2); }
 
 @media (min-width: 760px) and (min-height: 600px) {
   .game-frame { box-shadow: 0 18px 72px rgba(0,0,0,.42), 0 0 0 1px rgba(255,248,220,.12); }
+}
+
+.menu-catalog-backdrop {
+  position: absolute;
+  z-index: 9;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: rgba(20, 24, 19, .44);
+  cursor: pointer;
+}
+.menu-catalog-backdrop[hidden] { display: none; }
+#play-panel[data-menu="recipes"] {
+  top: max(56px, calc(env(safe-area-inset-top) + 48px));
+  bottom: calc(70px + env(safe-area-inset-bottom));
+  display: flex;
+  width: min(500px, calc(100% - 18px));
+  max-height: none;
+  flex-direction: column;
+  padding: 8px;
+  border: 3px solid #855537;
+  border-radius: 17px;
+  background: linear-gradient(180deg, #fff4d8 0%, #f3e2bc 100%);
+  box-shadow: 0 10px 32px rgba(18, 20, 16, .48), inset 0 0 0 1px rgba(255,255,255,.86);
+}
+#play-panel[data-menu="recipes"] .sheet-grabber { flex: 0 0 auto; background: #c8a478; }
+#play-panel[data-menu="recipes"] .sheet-heading {
+  flex: 0 0 auto;
+  min-height: 37px;
+  margin: 0 0 6px;
+  padding: 0 3px 6px;
+  border-bottom: 1px solid #d8c193;
+}
+#play-panel[data-menu="recipes"] .sheet-heading .eyebrow { color: #a7683d; }
+#play-panel[data-menu="recipes"] .sheet-heading h2 { color: #784b31; font-size: 16px; }
+#play-panel[data-menu="recipes"] .sheet-close { border: 2px solid #fff4df; color: #fff8e7; background: #bd5b3b; box-shadow: 0 2px 0 #85402d; }
+#play-panel .sheet-content[data-menu-content="recipes"] {
+  display: flex;
+  min-height: 0;
+  max-height: none;
+  flex: 1 1 auto;
+  flex-direction: column;
+  overflow: hidden;
+}
+#play-panel .sheet-content[data-menu-content="recipes"][hidden] { display: none; }
+.menu-catalog-intro { display: flex; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: 6px; margin: 0 1px 6px; }
+.menu-catalog-intro > div { display: grid; gap: 2px; }
+.menu-catalog-intro strong { color: #74533c; font-size: 9px; }
+.menu-catalog-intro small { color: #8e8168; font-size: 7px; }
+.menu-catalog-mark { flex: 0 0 auto; padding: 4px 7px; border: 1px solid #dfb95f; border-radius: 999px; color: #80572a; background: #ffedba; font-size: 7px; font-weight: 900; letter-spacing: .06em; }
+.menu-category-tabs { display: flex; flex: 0 0 auto; gap: 4px; overflow-x: auto; margin: 0 -1px 5px; padding: 2px 1px 4px; scrollbar-width: none; }
+.menu-category-tabs::-webkit-scrollbar { display: none; }
+.menu-category-tab { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 4px; min-height: 25px; padding: 4px 7px; border: 1px solid #d8c8a4; border-radius: 8px; color: #736b59; background: #f7efd9; font-size: 8px; font-weight: 800; cursor: pointer; touch-action: manipulation; }
+.menu-category-tab span { display: grid; place-items: center; min-width: 14px; height: 14px; padding: 0 3px; border-radius: 999px; color: #76613d; background: rgba(123,95,55,.1); font-size: 7px; }
+.menu-category-tab.is-active { border-color: #cc8b40; color: #68442a; background: #ffdfa0; box-shadow: inset 0 0 0 1px rgba(255,255,255,.55); }
+.menu-category-tab.is-active span { color: #fff8e7; background: #ae6036; }
+.menu-catalog-note { flex: 0 0 auto; margin: 0 2px 5px; color: #8a785c; font-size: 7px; line-height: 1.3; }
+.menu-dish-collection { display: grid; align-content: start; gap: 6px; min-height: 0; overflow-y: auto; padding: 1px 2px 8px 1px; scrollbar-color: #c6a374 #efe1c4; scrollbar-width: thin; }
+.menu-dish-card { display: grid; grid-template-columns: 66px minmax(0,1fr); gap: 7px; min-width: 0; padding: 5px; border: 1px solid #ddcba5; border-radius: 10px; background: rgba(255,253,244,.96); box-shadow: 0 2px 0 rgba(131,91,50,.12), inset 0 0 0 1px rgba(255,255,255,.8); }
+.menu-dish-art-frame { position: relative; display: grid; place-items: center; align-self: start; width: 66px; aspect-ratio: 1; overflow: hidden; border: 1px solid #e9cf86; border-radius: 8px; background: radial-gradient(circle at 50% 46%, #ffe8a3 0%, #f5cf6a 68%, #d69b46 100%); box-shadow: inset 0 0 0 2px rgba(255,255,255,.28); }
+.menu-dish-art-frame::before, .menu-dish-art-frame::after { position: absolute; z-index: 1; color: rgba(255,255,225,.86); font-size: 10px; line-height: 1; content: "✦"; pointer-events: none; }
+.menu-dish-art-frame::before { top: 4px; left: 5px; }
+.menu-dish-art-frame::after { right: 5px; bottom: 5px; font-size: 8px; }
+.menu-dish-art { display: block; width: 100%; height: 100%; }
+.menu-dish-art--sheet { position: absolute; inset: 0; background-image: var(--menu-sheet); background-repeat: no-repeat; background-size: 400% 400%; background-position: var(--menu-position-x) var(--menu-position-y); }
+.menu-dish-art--image { width: 94%; height: 94%; object-fit: contain; }
+.menu-dish-art--icon { display: grid; place-items: center; width: 88%; height: 88%; filter: drop-shadow(0 2px 1px rgba(79,46,18,.35)); }
+.menu-dish-art--icon .ui-icon { width: 100%; height: 100%; }
+.menu-dish-copy { min-width: 0; }
+.menu-dish-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 4px; min-height: 25px; }
+.menu-dish-heading > div { min-width: 0; }
+.menu-dish-category { display: block; margin-bottom: 1px; color: #a4773e; font-size: 6px; font-weight: 900; letter-spacing: .07em; text-transform: uppercase; }
+.menu-dish-heading h3 { overflow: hidden; margin: 0; color: #55402d; font-size: 9px; line-height: 1.15; text-overflow: ellipsis; }
+.menu-dish-status { flex: 0 0 auto; margin-top: 2px; padding: 2px 4px; border-radius: 999px; color: #77562b; background: #f5e6bc; font-size: 6px; font-weight: 900; }
+.menu-dish-status.is-current { color: #315a43; background: #e1eed9; }
+.menu-dish-metrics { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 3px 6px; margin-top: 4px; }
+.menu-dish-metrics > span { display: flex; align-items: center; justify-content: space-between; gap: 3px; min-width: 0; color: #8a806c; font-size: 6px; }
+.menu-dish-metrics small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.menu-dish-metrics b { flex: 0 0 auto; color: #4a694c; font-size: 7px; font-weight: 900; white-space: nowrap; }
+.menu-dish-metrics > span:first-child b { color: #9b5c32; }
+.menu-dish-detail { margin-top: 5px; padding: 5px 6px; border-left: 2px solid #d79645; border-radius: 0 5px 5px 0; color: #786a54; background: #f8f0dc; font-size: 7px; line-height: 1.35; }
+.menu-dish-more { display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 18px; margin: 3px 0 0 auto; padding: 2px 6px; border: 1px solid #e7d9bb; border-radius: 999px; color: #72563a; background: #f5eddb; font-size: 7px; font-weight: 800; cursor: pointer; touch-action: manipulation; }
+.menu-dish-more span { font-size: 10px; line-height: .7; }
+
+@container game-frame (max-height: 580px) {
+  #play-panel[data-menu="recipes"] { top: max(43px, calc(env(safe-area-inset-top) + 38px)); bottom: calc(62px + env(safe-area-inset-bottom)); }
+}
+@container game-frame (max-width: 370px) {
+  #play-panel[data-menu="recipes"] { width: calc(100% - 12px); padding: 6px; }
+  .menu-dish-card { grid-template-columns: 58px minmax(0,1fr); gap: 5px; padding: 4px; }
+  .menu-dish-art-frame { width: 58px; }
+  .menu-dish-heading h3 { font-size: 8px; }
+  .menu-dish-metrics { gap: 2px 4px; }
 }

@@ -1,21 +1,24 @@
-# Saigon street traffic sprite atlas prompt
+# Saigon street traffic sprite prompts
 
-Use case: stylized-concept  
-Asset type: production game sprite atlas for a side-scrolling contemporary Saigon street tycoon game
+Use case: individual production sprites for the contemporary Saigon street tycoon game.
 
-Create a transparent sprite atlas with exactly six distinct side-profile motorbike-and-rider sprites, arranged in a clean 3-column by 2-row grid. Each cell is 512 by 256 pixels; total canvas 1536 by 512 pixels. One complete vehicle and rider per cell, centered, facing RIGHT, with wheels aligned on the same local baseline at y=228. Leave clear transparent padding between cells.
+Generate one isolated motorbike-and-rider sprite per image. Do not combine vehicles into an atlas. Keep a strict orthographic side view with the bike facing right, both wheels fully visible, hands on the handlebars, and the rider seated naturally with both feet on the footrests. Leave transparent padding and align all vehicle wheels to a shared lower baseline so the sprites can share the same in-game placement.
 
-Read left to right, then top to bottom:
+## Character style
 
-1. Vietnamese app-delivery rider on a small scooter, vivid green jacket and green rear delivery box with a simple white location-pin icon, no words.
-2. Food-delivery rider on scooter, vivid orange jacket and orange square insulated box with a small white food-bag icon, no words.
-3. Classic lightweight Vietnamese underbone motorbike in black and dark red with chrome exhaust and a casually dressed helmeted adult rider.
-4. Compact step-through commuter scooter in pearl white and muted burgundy with a helmeted young woman rider in modest everyday Saigon clothes.
-5. Larger premium maxi-scooter in charcoal and silver with a helmeted office worker in a pale blue shirt.
-6. Sporty modern commuter scooter in graphite, black and restrained red accents with a helmeted casual rider.
+Match the game's cute chibi people: oversized expressive head, compact torso and limbs, large readable eyes, rounded shapes, friendly proportions, and polished 2D game illustration. The rider should look like one of the existing neighborhood game's characters, not a realistic adult or a miniature photo. Add a correctly fitted colorful helmet. Keep the rider fully visible and clearly seated on the bike.
 
-Make each vehicle silhouette, wheelbase, fairing and rider distinct and recognizable at small game scale; everyday Southeast Asian road-safe helmets, natural seated riding posture, hands on handlebars, feet positioned naturally on footrests.
+## Vehicle variants
 
-No environment; each vehicle is an isolated transparent cutout to layer over the asphalt road of a contemporary Saigon street map. Use polished 2D game illustration with a warm, detailed, slightly painterly pixel-cluster finish, crisp clean contours, rich but controlled highlights, realistic rubber tires and chrome details, and compact readable color shapes. Use warm natural daylight from upper left and a palette of charcoal tires, chrome, cream, teal, red, green and orange delivery accents.
+1. Everyday delivery courier on a compact scooter, green jacket and green rear delivery box with a simple white location-pin icon; no brand name or lettering.
+2. Food courier on a compact scooter, orange jacket and orange square insulated bag with a small white food icon; no brand name or lettering.
+3. Classic lightweight Vietnamese underbone motorbike, black and dark red with visible frame and chrome exhaust, ridden by a casually dressed chibi character.
+4. Compact step-through commuter scooter, pearl white and muted burgundy, ridden by a chibi young woman in everyday Saigon clothes.
+5. Larger premium maxi-scooter, charcoal and silver, ridden by a chibi office worker in a pale blue shirt.
+6. Sporty modern commuter scooter in graphite, black and restrained red accents, ridden by a chibi casual character.
 
-Strict orthographic side view, horizontally oriented, all six bikes facing right, whole wheels and mirrors visible, no crop, one vehicle per grid cell, consistent camera, scale and baseline. Each vehicle and rider should occupy roughly 430 by 190 pixels within its cell. True transparent RGBA background. No road, ground, cast shadows, text, lettering, logos, watermarks, extra vehicles, traffic cones, grid lines or checkerboard. Avoid duplicated bikes, merged silhouettes, front-facing or three-quarter views, cropped handlebars, cut-off wheels, impossible rider anatomy, motion blur, photography or tiny unreadable decals. Represent brand references only through green and orange delivery color schemes; do not render trademark wordmarks.
+## Rendering requirements
+
+Use the game's warm, colorful, detailed 2D game-art finish with crisp contours, gentle painterly highlights, readable vehicle silhouettes, and realistic tires and small chrome details. Brand references are represented only with green or orange delivery colors; never render trademark wordmarks. Keep the scooter and rider legible when displayed at roughly 130–180 pixels wide.
+
+Use a true transparent RGBA background. Include only one complete bike and rider. No environment, road, cast shadow, text, watermark, logo, extra vehicles, motion blur, front-facing view, three-quarter view, cropped mirror, cropped wheel, impossible anatomy, or missing hands/feet. Preserve the wheel baseline and leave a little clear margin around the silhouette.

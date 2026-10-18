@@ -24,8 +24,8 @@
             <h1 id="store-name-display">__GAME_NAME_VI__</h1>
           </div>
         </div>
-        <div class="wallet-row" aria-label="Tài sản cửa hàng">
-          <div class="wallet-pill"><span class="wallet-icon" aria-hidden="true"><svg class="ui-icon"><use href="/assets/saigon-ui-icons.svg#coin"></use></svg></span><strong id="coins">0</strong><small>xu</small></div>
+        <div class="wallet-row" aria-label="Tài sản cửa hàng, tiền Việt Nam">
+          <div class="wallet-pill" title="Số dư hiển thị gọn theo nghìn đồng"><span class="wallet-icon" aria-hidden="true"><svg class="ui-icon"><use href="/assets/saigon-ui-icons.svg#banknote"></use></svg></span><strong id="coins">0</strong><small>k</small></div>
           <div class="wallet-pill reputation-pill"><span class="wallet-icon" aria-hidden="true"><svg class="ui-icon"><use href="/assets/saigon-ui-icons.svg#reputation-star"></use></svg></span><strong id="reputation">0</strong></div>
           <details class="music-control">
             <summary class="music-control-button" id="music-control-trigger" aria-label="Mở điều khiển nhạc nền" title="Nhạc nền"><svg class="ui-icon"><use href="/assets/saigon-ui-icons.svg#music-note"></use></svg></summary>
@@ -50,7 +50,7 @@
 
       <main>
         <section class="street-section" aria-label="Phố có quán nhậu">
-          <div id="phaser-root" class="game-canvas" aria-label="Cảnh phố trong game, kéo ngang để xem thêm"></div>
+          <div id="phaser-root" class="game-canvas" aria-label="Phố và khu nhà dân trong game; kéo cần tròn để di chuyển nhân vật theo bốn hướng, kéo ngang để xem thêm"></div>
           <div class="shop-stage-debug" id="shop-stage-debug" hidden aria-label="Điều khiển thử cấp quán">
             <span>THỬ CẤP QUÁN</span>
             <button type="button" data-shop-stage-step="-1" aria-label="Giảm cấp quán"><svg class="ui-icon"><use href="/assets/saigon-ui-icons.svg#minus"></use></svg></button>
@@ -62,21 +62,28 @@
             <span id="weather-label"><svg id="weather-icon" class="ui-icon"><use href="/assets/saigon-ui-icons.svg#sun"></use></svg><span id="weather-copy">Nắng nhẹ · Sài Gòn</span></span>
             <span class="queue-badge">HÀNG <b id="queue-count">0</b></span>
           </div>
-          <div class="map-hint" id="map-hint"><svg class="ui-icon"><use href="/assets/saigon-ui-icons.svg#map-pan"></use></svg> Vuốt ngang để xem cả con phố</div>
-          <button class="room-door-button" id="room-door-button" data-action="enter-dining" type="button"><svg class="game-icon" aria-hidden="true"><use href="/assets/game-nav-icons.svg#table"></use></svg><span>Vào phòng ăn</span></button>
+          <div class="map-hint" id="map-hint"><svg class="ui-icon"><use href="/assets/saigon-ui-icons.svg#map-pan"></use></svg> <span id="map-hint-copy">Kéo cần tròn để di chuyển · lên cửa quán để vào</span></div>
+          <div class="street-movement-controls" id="street-movement-controls" role="group" aria-label="Điều khiển nhân vật">
+            <button type="button" class="street-joystick" id="street-joystick" aria-label="Kéo cần tròn để di chuyển nhân vật">
+              <span class="street-joystick-knob" id="street-joystick-knob" aria-hidden="true"></span>
+            </button>
+          </div>
+          <div class="market-interface" id="market-interface" hidden aria-label="Chợ đầu mối">
+            <div class="market-toolbar">
+              <div class="market-location-title"><strong>CHỢ ĐẦU MỐI</strong><span id="market-section-copy">Mặt tiền · bãi xe máy</span></div>
+              <button class="market-section-button" id="market-section-button" data-action="toggle-wholesale-market-section" type="button">Vào khu rau củ ↑</button>
+              <button class="market-exit-button" data-action="leave-wholesale-market" type="button">← Ra phố</button>
+            </div>
+            <div class="market-pan-hint"><svg class="ui-icon" aria-hidden="true"><use href="/assets/saigon-ui-icons.svg#map-pan"></use></svg> <span id="market-pan-copy">Kéo ngang để xem bãi xe và các dãy nhà</span></div>
+          </div>
           <div class="dining-interface" id="dining-interface" hidden aria-label="Phòng ăn của quán">
             <div class="dining-kitchen-view" aria-hidden="true">
-              <div class="kitchen-wall"></div>
-              <div class="kitchen-floor"></div>
-              <div class="kitchen-scene-title">GIAN BẾP</div>
-              <img id="kitchen-shelf-art" class="kitchen-art kitchen-shelf-art" alt="" />
-              <img id="kitchen-hood-art" class="kitchen-art kitchen-hood-art" alt="" />
-              <img id="kitchen-grill-art" class="kitchen-art kitchen-grill-art" alt="" />
-              <img id="kitchen-prep-art" class="kitchen-art kitchen-prep-art" alt="" />
-              <img id="kitchen-rice-art" class="kitchen-art kitchen-rice-art" alt="" />
+              <img id="kitchen-shell-art" class="kitchen-background-layer kitchen-shell-art" alt="" />
+              <img id="kitchen-layout-art" class="kitchen-background-layer kitchen-layout-art" alt="" />
             </div>
             <div class="dining-toolbar">
               <div class="dining-location-title"><strong id="dining-location-name">PHÒNG ĂN</strong><span id="dining-shift-status">Khách sẽ tự chọn bàn trống</span></div>
+              <button class="dining-panel-toggle" id="dining-panel-toggle" data-action="dining-toggle-panel" type="button" aria-controls="dining-control-panel" aria-expanded="false">Phiếu bếp</button>
             </div>
             <section class="dining-control-panel" id="dining-control-panel" data-mode="tables" hidden aria-label="Bàn ăn và phiếu bếp">
               <div class="dining-panel-heading"><strong id="dining-panel-title">Bàn ăn</strong><button class="dining-panel-close" data-action="dining-close-panel" type="button" aria-label="Đóng bảng phòng ăn">×</button></div>
@@ -100,6 +107,7 @@
           <p class="visually-hidden" id="customer-callout">Khách sẽ tự đến quán.</p>
         </section>
 
+        <button class="menu-catalog-backdrop" id="menu-catalog-backdrop" type="button" hidden aria-label="Đóng thực đơn"></button>
         <section class="play-panel" id="play-panel" hidden aria-label="Bảng quản lý">
           <div class="sheet-grabber" aria-hidden="true"></div>
           <div class="sheet-heading">
@@ -130,20 +138,31 @@
           <div class="sheet-content" data-menu-content="shop" hidden>
             <div class="shop-summary"><span class="shop-illustration"><svg class="ui-icon"><use href="/assets/saigon-ui-icons.svg#storefront"></use></svg></span><div><span class="mini-label">MẶT BẰNG HIỆN TẠI</span><h3 id="business-stage">Quầy nhậu vỉa hè</h3></div></div>
             <button class="management-action store-name-action" data-action="edit-store-name"><span><svg class="ui-icon"><use href="/assets/saigon-ui-icons.svg#edit-sign"></use></svg><span>Đổi tên biển hiệu</span></span><small id="store-name-short">Chưa đặt tên</small></button>
-            <button class="management-action upgrade-action" data-action="upgrade"><span id="upgrade-label"><svg class="ui-icon"><use href="/assets/saigon-ui-icons.svg#upgrade-shop"></use></svg><span class="action-label">Nâng quán lên cấp 2</span></span><small id="upgrade-cost">300 xu</small></button>
+            <button class="management-action upgrade-action" data-action="upgrade"><span id="upgrade-label"><svg class="ui-icon"><use href="/assets/saigon-ui-icons.svg#upgrade-shop"></use></svg><span class="action-label">Nâng quán lên cấp 2</span></span><small id="upgrade-cost">300.000đ</small></button>
             <p class="business-note" id="recent-service">Quán đang đón khách. Doanh thu gần đây sẽ hiện ở đây.</p>
-            <p class="business-note" id="business-note">Phục vụ món để dành tiền nâng cấp. Có phụ bếp, quán vẫn kiếm xu khi bạn rời game.</p>
+            <p class="business-note" id="business-note">Phục vụ món để dành tiền nâng cấp. Có phụ bếp, quán vẫn kiếm tiền khi bạn rời game.</p>
           </div>
 
           <div class="sheet-content" data-menu-content="staff" hidden>
             <div class="staff-card"><span class="staff-avatar"><svg class="ui-icon"><use href="/assets/saigon-ui-icons.svg#staff-chef"></use></svg></span><div><span class="mini-label">PHỤ BẾP</span><h3>Người đồng hành đầu tiên</h3><p>Đón khách, nấu, bưng món, thu tiền và dọn bàn; vẫn tích lũy thu nhập khi bạn nghỉ.</p></div></div>
-            <button class="management-action wide-action" id="hire-button" data-action="hire"><span><svg class="ui-icon"><use href="/assets/saigon-ui-icons.svg#staff-chef"></use></svg><span class="action-label">Thuê phụ bếp</span></span><small id="hire-cost">1.200 xu · cần quán cấp 2</small></button>
+            <button class="management-action wide-action" id="hire-button" data-action="hire"><span><svg class="ui-icon"><use href="/assets/saigon-ui-icons.svg#staff-chef"></use></svg><span class="action-label">Thuê phụ bếp</span></span><small id="hire-cost">1.200.000đ · cần quán cấp 2</small></button>
             <p class="business-note" id="staff-status">Thuê phụ bếp từ cấp quán 2.</p>
           </div>
 
           <div class="sheet-content" data-menu-content="recipes" hidden>
-            <p class="sheet-intro">Xem món đang bán và món sẽ mở theo cấp quán.</p>
-            <div id="recipe-collection" class="recipe-collection"></div>
+            <div class="menu-catalog-intro">
+              <div><strong id="menu-catalog-count">30 món · 4 danh mục</strong><small>Chọn món để xem khẩu phần và giá tham khảo.</small></div>
+              <span class="menu-catalog-mark">MỞ QUÁN</span>
+            </div>
+            <div class="menu-category-tabs" id="menu-category-tabs" role="group" aria-label="Lọc món theo danh mục">
+              <button type="button" class="menu-category-tab is-active" data-menu-filter="all" aria-pressed="true">Tất cả <span>30</span></button>
+              <button type="button" class="menu-category-tab" data-menu-filter="hotpot" aria-pressed="false">Lẩu <span>6</span></button>
+              <button type="button" class="menu-category-tab" data-menu-filter="grill" aria-pressed="false">Nướng <span>10</span></button>
+              <button type="button" class="menu-category-tab" data-menu-filter="snack" aria-pressed="false">Món nhắm <span>12</span></button>
+              <button type="button" class="menu-category-tab" data-menu-filter="meal" aria-pressed="false">Món no <span>2</span></button>
+            </div>
+            <p class="menu-catalog-note">Giá món mới là mức gợi ý; 3 món đang bán vẫn giữ giá hiện tại.</p>
+            <div id="menu-dish-collection" class="menu-dish-collection" aria-live="polite"></div>
           </div>
 
           <div class="sheet-content" data-menu-content="stock" hidden>
@@ -155,7 +174,7 @@
               <div><span><svg class="ui-icon"><use href="/assets/saigon-ui-icons.svg#egg-grill"></use></svg>Trứng nướng</span><b data-stock-count="egg">0</b></div>
               <div><span><svg class="ui-icon"><use href="/assets/saigon-ui-icons.svg#greens"></use></svg>Rau ăn kèm</span><b data-stock-count="greens">0</b></div>
             </div>
-            <button class="management-action wide-action" data-action="restock"><span><svg class="ui-icon"><use href="/assets/saigon-ui-icons.svg#crate"></use></svg><span id="restock-label">Nhập một chuyến hàng</span></span><small id="restock-cost">75 xu · thêm 5 phần mỗi món</small></button>
+            <button class="management-action wide-action" data-action="restock"><span><svg class="ui-icon"><use href="/assets/saigon-ui-icons.svg#crate"></use></svg><span id="restock-label">Nhập một chuyến hàng</span></span><small id="restock-cost">75.000đ · thêm 5 phần mỗi món</small></button>
           </div>
         </section>
 
@@ -163,8 +182,8 @@
           <button class="nav-button is-active" data-tab-target="outside" aria-pressed="true"><span><svg class="game-icon" aria-hidden="true"><use href="/assets/game-nav-icons.svg#outside"></use></svg></span><small id="outside-nav-label">Bên ngoài</small></button>
           <button class="nav-button" data-tab-target="shop" aria-pressed="false"><span><svg class="game-icon" aria-hidden="true"><use href="/assets/game-nav-icons.svg#shop"></use></svg></span><small>Cửa tiệm</small></button>
           <button class="nav-button" data-tab-target="staff" aria-pressed="false"><span><svg class="game-icon" aria-hidden="true"><use href="/assets/game-nav-icons.svg#staff"></use></svg></span><small>Nhân viên</small></button>
-          <button class="nav-button" data-tab-target="menu" aria-pressed="false"><span><svg class="game-icon" aria-hidden="true"><use href="/assets/game-nav-icons.svg#menu"></use></svg></span><small>Thực đơn</small></button>
-          <button class="nav-button" data-tab-target="recipes" aria-pressed="false"><span><svg class="game-icon" aria-hidden="true"><use href="/assets/game-nav-icons.svg#create"></use></svg></span><small>Sổ món</small></button>
+          <button class="nav-button" data-tab-target="menu" aria-pressed="false"><span><svg class="game-icon" aria-hidden="true"><use href="/assets/game-nav-icons.svg#menu"></use></svg></span><small>Đơn hàng</small></button>
+          <button class="nav-button" data-tab-target="recipes" aria-pressed="false"><span><svg class="game-icon" aria-hidden="true"><use href="/assets/game-nav-icons.svg#create"></use></svg></span><small>Thực đơn</small></button>
           <button class="nav-button" data-tab-target="stock" aria-pressed="false"><span><svg class="game-icon" aria-hidden="true"><use href="/assets/game-nav-icons.svg#stock"></use></svg></span><small>Cửa hàng</small></button>
         </nav>
       </main>

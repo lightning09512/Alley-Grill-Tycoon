@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://b0dbo48rvrrf"
+path="res://.godot/imported/Countryside Loop.mp3-8a5d5fc81c67949e40f904f1f72fe401.mp3str"
+
+[deps]
+
+source_file="res://assets/audio/Countryside Loop.mp3"
+dest_files=["res://.godot/imported/Countryside Loop.mp3-8a5d5fc81c67949e40f904f1f72fe401.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

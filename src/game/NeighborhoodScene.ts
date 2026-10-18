@@ -4,6 +4,7 @@ import afternoonStreetMapUrl from "../../assets/backgrounds/time-of-day/saigon-s
 import rainStreetMapUrl from "../../assets/backgrounds/time-of-day/saigon-street-four-shops-rain.png";
 import sunsetStreetMapUrl from "../../assets/backgrounds/time-of-day/saigon-street-four-shops-sunset.png";
 import nightStreetMapUrl from "../../assets/backgrounds/time-of-day/saigon-street-four-shops-night.png";
+import homeStreetMapUrl from "../../assets/backgrounds/street-map-home-banh-mi-pho-scroll-v5.png";
 import treeCanopyLayerUrl from "../../assets/effects/saigon-tree-canopy-depth-layer-v1.png";
 import dayNightEffectsUrl from "../../assets/effects/saigon-day-night-transition-atlas.png";
 import weatherEffectsUrl from "../../assets/effects/saigon-weather-effects-atlas.png";
@@ -44,6 +45,12 @@ import wardPoliceWalkUrl from "../../assets/characters/sprite-gen-walk/saigon-wa
 import wardInspectorWalkUrl from "../../assets/characters/sprite-gen-walk/saigon-ward-inspector-walk-16f.png";
 import youngMotherWalkUrl from "../../assets/characters/sprite-gen-walk/saigon-young-mother-walk-16f.png";
 import streetCatActionsUrl from "../../assets/characters/saigon-street-cat-actions.png";
+import deliveryGreenBikeUrl from "../../assets/vehicles/saigon-delivery-green-scooter.png";
+import deliveryOrangeBikeUrl from "../../assets/vehicles/saigon-delivery-orange-scooter.png";
+import waveBikeUrl from "../../assets/vehicles/saigon-motorbike-wave-style.png";
+import visionBikeUrl from "../../assets/vehicles/saigon-scooter-vision-style.png";
+import shBikeUrl from "../../assets/vehicles/saigon-scooter-sh-style.png";
+import airbladeBikeUrl from "../../assets/vehicles/saigon-scooter-airblade-style.png";
 import pigeonEatUrl from "../../assets/characters/pigeon_eat-Sheet.png";
 import pigeonFlyUrl from "../../assets/characters/pigeon_fiy-Sheet.png";
 import pigeonWalkUrl from "../../assets/characters/pigeon_walking-Sheet.png";
@@ -58,7 +65,14 @@ import backpackerCoffeeSeatUrl from "../../assets/characters/saigon-backpacker-t
 import olderRegularComTamSeatUrl from "../../assets/characters/saigon-older-regular-seated-com-tam-idle.png";
 import ownerMaleIdleUrl from "../../assets/characters/player-owner/owner_male_idle_8f.png";
 import ownerFemaleIdleUrl from "../../assets/characters/player-owner/owner_female_idle_8f.png";
+import ownerMaleWalkUrl from "../../assets/characters/player-owner/owner_male_walk_24f.png";
+import ownerFemaleWalkUrl from "../../assets/characters/player-owner/owner_female_walk_24f.png";
 import ownerGroundShadowUrl from "../../assets/characters/player-owner/owner_ground_shadow.png";
+import {
+  getHomeStageImageKey,
+  HOME_MAP_SIZE,
+  HOME_STAGES,
+} from "../config/homeStages";
 import {
   getShopStageImageKey,
   SHOP_BASE_SIZE,
@@ -67,10 +81,17 @@ import {
   SHOP_STAGE_FADE_MS,
   SHOP_STAGES,
 } from "../config/shopStages";
+import {
+  WHOLESALE_MARKET_EXTERIOR_ASSETS,
+  WHOLESALE_MARKET_EXTERIOR_SIZE,
+  WHOLESALE_MARKET_EXTERIOR_TEXTURE_KEYS,
+  type WholesaleMarketBackgroundMood,
+} from "../config/wholesaleMarket";
 import { SHOP_COOKING_STEAM_POINTS, STREET_COOKING_STEAM_POINTS } from "../config/cookingSteam";
 import { setIcon, type UiIconName } from "../ui/icons";
 import { RECIPES, type CustomerType } from "./data";
 import { GameStore, type GameSnapshot, type WaitingCustomer } from "./GameStore";
+import { STREET_WALKER_DIALOGUES } from "./streetDialogues";
 
 type CustomerAppearance = {
   key: string;
@@ -82,6 +103,19 @@ type CustomerAppearance = {
 
 type ShopArtworkAlphaBounds = { left: number; top: number; right: number; bottom: number };
 type ShopArtworkTransform = { offsetX: number; offsetY: number; scaleX: number; scaleY: number };
+type MapZone = "home" | "shop" | "market";
+type MapTransitionSign = {
+  from: MapZone;
+  to?: MapZone;
+  action?: "enter-market";
+  title: string;
+  container: Phaser.GameObjects.Container;
+  hitZone: Phaser.GameObjects.Zone;
+  frame: Phaser.GameObjects.Graphics;
+  titleText: Phaser.GameObjects.Text;
+  width: number;
+  height: number;
+};
 
 const CUSTOMER_APPEARANCES: Record<CustomerType, readonly CustomerAppearance[]> = {
   student: [
@@ -177,6 +211,28 @@ const AMBIENT_WALKER_ASSETS = [
   { key: "walk-ward-inspector", url: wardInspectorWalkUrl },
   { key: "walk-young-mother", url: youngMotherWalkUrl },
 ] as const;
+
+const TRAFFIC_BIKE_PROFILES = [
+  { key: "traffic-delivery-green", url: deliveryGreenBikeUrl, scale: 0.98, speed: 96 },
+  { key: "traffic-delivery-orange", url: deliveryOrangeBikeUrl, scale: 0.97, speed: 102 },
+  { key: "traffic-wave-style", url: waveBikeUrl, scale: 0.92, speed: 92 },
+  { key: "traffic-vision-style", url: visionBikeUrl, scale: 0.94, speed: 96 },
+  { key: "traffic-sh-style", url: shBikeUrl, scale: 1.04, speed: 104 },
+  { key: "traffic-airblade-style", url: airbladeBikeUrl, scale: 1.0, speed: 101 },
+] as const;
+// The source sheets have generous transparent margins. Use a larger game-space
+// frame so the visible bike and rider read at the same scale as street walkers.
+const TRAFFIC_BIKE_DISPLAY_WIDTH = 228;
+const TRAFFIC_BIKE_DISPLAY_HEIGHT = 152;
+const TRAFFIC_BIKE_SHADOW_WIDTH = 190;
+// The white dash separates opposing lanes: above it traffic goes right-to-left;
+// below it traffic goes left-to-right.
+const TRAFFIC_BIKE_LANES = [
+  { yRatio: 0.845, direction: -1 },
+  { yRatio: 0.883, direction: 1 },
+] as const;
+// One bike at a time avoids the tall chibi riders visually colliding between lanes.
+const MAX_ACTIVE_TRAFFIC_BIKES = 1;
 const CUSTOMER_FRAME_WIDTH = 247;
 const CUSTOMER_FRAME_HEIGHT = 396;
 const OWNER_FRAME_WIDTH = 247;
@@ -184,6 +240,11 @@ const OWNER_FRAME_HEIGHT = 396;
 const OWNER_FRAME_BASELINE = 390;
 const OWNER_ART_HEIGHT = 375;
 const OWNER_MAP_Y_RATIO = 0.74;
+const OWNER_MAP_Y_BOUNDS = {
+  home: { minRatio: 0.72, maxRatio: 0.9 },
+  shop: { minRatio: 0.69, maxRatio: 0.9 },
+  market: { minRatio: 0.72, maxRatio: 0.89 },
+} as const;
 const OWNER_DISPLAY_WIDTH = 54;
 const OWNER_DISPLAY_HEIGHT = 86;
 const OWNER_TARGET_VISIBLE_HEIGHT = 78;
@@ -197,13 +258,16 @@ const OWNER_IDLE_FRAME_SEQUENCE = [
 const CUSTOMER_DISPLAY_WIDTH = 54;
 const CUSTOMER_DISPLAY_HEIGHT = 86;
 const CHARACTER_TARGET_VISIBLE_HEIGHT = 78;
+const CHARACTER_DISPLAY_SCALE = 1.5;
 const WALKER_BASELINE_Y = 374;
 // A relaxed cadence keeps the generated eight-pose walk cycle from feeling hurried.
 const WALK_FRAME_RATE = 6;
 const CORE_WALKER_COUNT = 6;
 const SHOP_OVERLAY_DEPTH = 3.25;
 const COOKING_STEAM_DEPTH = 3.35;
-const MAX_ACTIVE_AMBIENT_WALKERS = WALKER_TEXTURES.length;
+const HOME_AMBIENT_WALKER_COUNT = 3;
+const MARKET_AMBIENT_WALKER_COUNT = 9;
+const MAX_ACTIVE_AMBIENT_WALKERS = WALKER_TEXTURES.length + HOME_AMBIENT_WALKER_COUNT + MARKET_AMBIENT_WALKER_COUNT;
 const WIND_MAP_WIDTH = SHOP_BASE_SIZE.width / 4;
 const WIND_MAP_HEIGHT = SHOP_BASE_SIZE.height / 4;
 const ENVIRONMENT_WIND_TEXTURE = "environment-wind-displacement";
@@ -330,6 +394,8 @@ const STREET_MAP_ASSETS: { mood: StreetMapMood; url: string }[] = [
   { mood: "sunset", url: sunsetStreetMapUrl },
   { mood: "night", url: nightStreetMapUrl },
 ];
+const OWNER_WALK_SPEED = 290;
+const ZONE_TRANSITION_FADE_MS = 170;
 
 // Exterior gains are measured against the matching areas of the painted street
 // maps. Warm shop lights retain their brightness as the surrounding facade dims.
@@ -339,7 +405,9 @@ const SHOP_LIGHTING_GAINS: Record<Exclude<StreetMapMood, "day">, {
 }> = {
   dawn: { ambient: [0.65, 0.63, 0.82], lit: [1.03, 0.94, 0.84] },
   sunset: { ambient: [0.96, 0.74, 0.64], lit: [1.08, 0.9, 0.77] },
-  night: { ambient: [0.38, 0.38, 0.56], lit: [0.98, 0.9, 0.78] },
+  // Keep the whole facade warm and readable at night; the darker ambient
+  // gain left roofs, timber, and plaster far below the brightness of the lamps.
+  night: { ambient: [0.7, 0.64, 0.58], lit: [1.08, 0.98, 0.84] },
   rain: { ambient: [0.78, 0.75, 0.79], lit: [0.97, 0.88, 0.85] },
 };
 
@@ -433,6 +501,7 @@ const WEATHER_FRAMES = {
 
 // Keep both foot baselines on the tiled sidewalk, behind the curb and road.
 const WALKER_LANE_RATIOS = [0.69, 0.745] as const;
+const HOME_WALKER_LANE_RATIOS = [0.665, 0.692] as const;
 
 const DAY_NIGHT_FRAMES = {
   sun: [327, 117, 128, 136],
@@ -447,10 +516,14 @@ const DAY_NIGHT_FRAMES = {
   ],
 } as const;
 
+type AmbientWalkerZone = "home" | "shop" | "market";
+
 type Walker = {
   textureKey: (typeof WALKER_TEXTURES)[number];
+  zone: AmbientWalkerZone;
   sprite: Phaser.GameObjects.Sprite;
   shadow: Phaser.GameObjects.Image;
+  speechBubble?: Phaser.GameObjects.Container;
   active: boolean;
   direction: -1 | 1;
   lane: 0 | 1;
@@ -466,6 +539,16 @@ type Walker = {
   petPauseUntil?: number;
   petPauseCycle?: number;
   petAnimationComplete?: () => void;
+};
+
+type TrafficBike = {
+  profile: (typeof TRAFFIC_BIKE_PROFILES)[number];
+  sprite: Phaser.GameObjects.Image;
+  shadow: Phaser.GameObjects.Image;
+  lane: 0 | 1;
+  direction: -1 | 1;
+  speed: number;
+  exitX: number;
 };
 
 type EnvironmentWindPixel = {
@@ -678,6 +761,11 @@ const GROCERY_SPAWN_MAX_MS = 12_500;
 
 export class NeighborhoodScene extends Phaser.Scene {
   private readonly store: GameStore;
+  private homeStreet!: Phaser.GameObjects.Image;
+  private homeArtwork?: Phaser.GameObjects.Image;
+  private marketExterior!: Phaser.GameObjects.Image;
+  private marketExteriorTransition!: Phaser.GameObjects.Image;
+  private marketExteriorOvercast!: Phaser.GameObjects.Image;
   private streetBackdrop!: Phaser.GameObjects.Image;
   private street!: Phaser.GameObjects.Image;
   private streetTransition!: Phaser.GameObjects.Image;
@@ -691,6 +779,8 @@ export class NeighborhoodScene extends Phaser.Scene {
   private shopArtworkTransition?: Phaser.GameObjects.Image;
   private shopArtworkOvercast?: Phaser.GameObjects.Image;
   private displayedShopStage = 0;
+  private homeStage = 0;
+  private displayedHomeStage = 0;
   private shopLightingState: { from: TimeOfDayMap; to: TimeOfDayMap; blend: number; overcast: number } = {
     from: "day", to: "day", blend: 0, overcast: 0,
   };
@@ -700,7 +790,19 @@ export class NeighborhoodScene extends Phaser.Scene {
   private ownerGender: OwnerGender = "male";
   private ownerCharacter?: Phaser.GameObjects.Sprite;
   private ownerShadow?: Phaser.GameObjects.Image;
+  private ownerWorldX = 0;
+  private ownerWorldY = 0;
+  private ownerMoving = false;
+  private ownerFacingDirection: -1 | 1 = 1;
+  private movementVector = { x: 0, y: 0 };
+  private keyboardMovementVector = { x: 0, y: 0 };
+  private activeZone: "home" | "shop" | "market" = "shop";
+  private zoneTransitioning = false;
+  private zoneTransitionCover?: Phaser.GameObjects.Rectangle;
+  private walkInEntryLatched = false;
+  private mapTransitionSigns: MapTransitionSign[] = [];
   private pendingShopStageImages = new Set<number>();
+  private pendingHomeStageImages = new Set<number>();
   private shopOverlayScale = 1;
   private shopArtworkTransform: ShopArtworkTransform = { offsetX: 0, offsetY: 0, scaleX: 1, scaleY: 1 };
   private shopArtworkAlphaBoundsCache = new Map<string, ShopArtworkAlphaBounds>();
@@ -722,6 +824,14 @@ export class NeighborhoodScene extends Phaser.Scene {
   private walkers: Walker[] = [];
   private walkerSpawnQueue: number[] = [];
   private ambientWalkerSpawnCooldownMs = 0;
+  private trafficBikes: TrafficBike[] = [];
+  private trafficBikeProfileBag: (typeof TRAFFIC_BIKE_PROFILES)[number][] = [];
+  private trafficSpawnCooldownMs = 1_800;
+  private streetSpeaker?: Walker;
+  private streetSpeechTimerMs = 0;
+  private streetSpeechCooldownMs = 4_000;
+  private streetDialogueBag: string[] = [];
+  private lastStreetDialogue = "";
   private clouds: SkyCloud[] = [];
   private pigeons: Pigeon[] = [];
   private rainDrops: RainDrop[] = [];
@@ -749,9 +859,12 @@ export class NeighborhoodScene extends Phaser.Scene {
   private cartWidth = 0;
   private cartHeight = 0;
   private unit = 1;
+  private characterUnit = 1;
   private layoutWidth = 0;
   private layoutHeight = 0;
   private mapWidth = 0;
+  private homeMapWidth = 0;
+  private marketMapWidth = 0;
   private cameraViewportWidth = 0;
   private mapTop = 0;
   private mapHeight = 0;
@@ -770,7 +883,6 @@ export class NeighborhoodScene extends Phaser.Scene {
     if (!this.mapInteractionEnabled) return;
     if (event.pointerType === "mouse" && event.button !== 0) return;
     if (event.target instanceof Element && event.target.closest("button, a, input, select, textarea, summary, [role='button']")) return;
-
     event.preventDefault();
     this.dragStart = {
       x: event.clientX,
@@ -801,6 +913,33 @@ export class NeighborhoodScene extends Phaser.Scene {
     if (this.dragStart?.pointerId === event.pointerId) this.dragStart = undefined;
   };
 
+  private readonly onStreetKeyDown = (event: KeyboardEvent): void => {
+    if (!this.mapInteractionEnabled || event.repeat) return;
+    if (event.target instanceof Element && event.target.closest("input, textarea, select, [contenteditable='true']")) return;
+    const key = event.key.toLowerCase();
+    if (key === "arrowleft" || key === "a") {
+      this.keyboardMovementVector.x = -1;
+      event.preventDefault();
+    } else if (key === "arrowright" || key === "d") {
+      this.keyboardMovementVector.x = 1;
+      event.preventDefault();
+    } else if (key === "arrowup" || key === "w") {
+      this.keyboardMovementVector.y = -1;
+      event.preventDefault();
+    } else if (key === "arrowdown" || key === "s") {
+      this.keyboardMovementVector.y = 1;
+      event.preventDefault();
+    }
+  };
+
+  private readonly onStreetKeyUp = (event: KeyboardEvent): void => {
+    const key = event.key.toLowerCase();
+    if ((key === "arrowleft" || key === "a") && this.keyboardMovementVector.x === -1) this.keyboardMovementVector.x = 0;
+    if ((key === "arrowright" || key === "d") && this.keyboardMovementVector.x === 1) this.keyboardMovementVector.x = 0;
+    if ((key === "arrowup" || key === "w") && this.keyboardMovementVector.y === -1) this.keyboardMovementVector.y = 0;
+    if ((key === "arrowdown" || key === "s") && this.keyboardMovementVector.y === 1) this.keyboardMovementVector.y = 0;
+  };
+
   constructor(store: GameStore) {
     super("neighborhood");
     this.store = store;
@@ -811,8 +950,24 @@ export class NeighborhoodScene extends Phaser.Scene {
     if (this.sys.isActive()) this.cameras.main.setZoom(this.devicePixelRatio);
   }
 
+  getWholesaleMarketBackgroundMood(): WholesaleMarketBackgroundMood {
+    if (this.getWeatherState(this.environmentElapsedMs / 1_000).rain > 0.22) return "rain";
+    const phaseByName = { dawn: 0.25, day: 0.5, sunset: 0.75, night: 0 } as const;
+    const phase = this.debugTimeOfDay
+      ? phaseByName[this.debugTimeOfDay]
+      : (START_DAY_PHASE + this.environmentElapsedMs / DAY_LENGTH_MS) % 1;
+    if (phase < 0.25 || phase >= 0.79) return "night";
+    if (phase < 0.46) return "morning";
+    if (phase < 0.64) return "noon";
+    return "afternoon";
+  }
+
   setMapInteractionEnabled(enabled: boolean): void {
     this.mapInteractionEnabled = enabled;
+    if (!enabled) {
+      this.movementVector = { x: 0, y: 0 };
+      this.keyboardMovementVector = { x: 0, y: 0 };
+    }
     if (!this.dragSurface) return;
     if (enabled) {
       this.dragSurface.addEventListener("pointerdown", this.onMapPointerDown);
@@ -830,6 +985,24 @@ export class NeighborhoodScene extends Phaser.Scene {
     }
   }
 
+  setMovementVector(x: number, y: number): void {
+    if (!this.mapInteractionEnabled || !Number.isFinite(x) || !Number.isFinite(y)) {
+      this.movementVector = { x: 0, y: 0 };
+      return;
+    }
+    const magnitude = Math.hypot(x, y);
+    const scale = magnitude > 1 ? 1 / magnitude : 1;
+    this.movementVector = { x: x * scale, y: y * scale };
+  }
+
+  isHomeZoneActive(): boolean {
+    return this.activeZone === "home";
+  }
+
+  isWholesaleMarketZoneActive(): boolean {
+    return this.activeZone === "market";
+  }
+
   private getLogicalWidth(): number {
     return this.scale.width / this.devicePixelRatio;
   }
@@ -839,14 +1012,30 @@ export class NeighborhoodScene extends Phaser.Scene {
   }
 
   preload(): void {
+    this.load.image("street-map-home", homeStreetMapUrl);
+    for (const asset of WHOLESALE_MARKET_EXTERIOR_ASSETS) {
+      this.load.image(asset.textureKey, asset.url);
+    }
+    this.preloadHomeStageImages(Phaser.Math.Clamp(this.getInitialShopStage(), 1, HOME_STAGES.length), true);
     for (const asset of STREET_MAP_ASSETS) {
       this.load.image(STREET_MAP_TEXTURES[asset.mood], asset.url);
+    }
+    for (const profile of TRAFFIC_BIKE_PROFILES) {
+      this.load.image(profile.key, profile.url);
     }
     this.load.spritesheet("player-owner-male-idle", ownerMaleIdleUrl, {
       frameWidth: OWNER_FRAME_WIDTH,
       frameHeight: OWNER_FRAME_HEIGHT,
     });
     this.load.spritesheet("player-owner-female-idle", ownerFemaleIdleUrl, {
+      frameWidth: OWNER_FRAME_WIDTH,
+      frameHeight: OWNER_FRAME_HEIGHT,
+    });
+    this.load.spritesheet("player-owner-male-walk", ownerMaleWalkUrl, {
+      frameWidth: OWNER_FRAME_WIDTH,
+      frameHeight: OWNER_FRAME_HEIGHT,
+    });
+    this.load.spritesheet("player-owner-female-walk", ownerFemaleWalkUrl, {
       frameWidth: OWNER_FRAME_WIDTH,
       frameHeight: OWNER_FRAME_HEIGHT,
     });
@@ -907,6 +1096,12 @@ export class NeighborhoodScene extends Phaser.Scene {
     this.registerEnvironmentFrames();
     this.createCharacterShadowTexture();
     this.createCookingSteamTexture();
+    this.homeStreet = this.add.image(0, 0, "street-map-home").setOrigin(0.5).setDepth(-1.4);
+    this.homeStage = Phaser.Math.Clamp(this.getInitialShopStage(), 1, HOME_STAGES.length);
+    this.displayedHomeStage = this.homeStage;
+    this.homeArtwork = this.add.image(0, 0, getHomeStageImageKey(this.homeStage))
+      .setOrigin(0)
+      .setDepth(-1.25);
     this.streetBackdrop = this.add.image(0, 0, STREET_MAP_TEXTURES.day)
       .setOrigin(0.5).setDepth(-2).setAlpha(0.7).setTint(0x9d8c72);
     this.streetBackdrop.enableFilters();
@@ -916,12 +1111,22 @@ export class NeighborhoodScene extends Phaser.Scene {
       .setOrigin(0.5).setDepth(-1.2).setAlpha(0).setVisible(false);
     this.streetOvercast = this.add.image(0, 0, STREET_MAP_TEXTURES.rain)
       .setOrigin(0.5).setDepth(-1.1).setAlpha(0).setVisible(false);
+    const initialMarketTexture = WHOLESALE_MARKET_EXTERIOR_TEXTURE_KEYS[this.getWholesaleMarketBackgroundMood()];
+    this.marketExterior = this.add.image(0, 0, initialMarketTexture)
+      .setOrigin(0, 0)
+      .setDepth(-1.3);
+    this.marketExteriorTransition = this.add.image(0, 0, initialMarketTexture)
+      .setOrigin(0, 0).setDepth(-1.2).setAlpha(0).setVisible(false);
+    this.marketExteriorOvercast = this.add.image(0, 0, WHOLESALE_MARKET_EXTERIOR_TEXTURE_KEYS.rain)
+      .setOrigin(0, 0).setDepth(-1.1).setAlpha(0).setVisible(false);
     this.createEnvironmentWindEffect();
     this.createCanopyDepthLayers();
     this.createShopStageOverlay();
     this.nightOverlay = this.add.rectangle(0, 0, 1, 1, 0x111c3a, 0).setOrigin(0).setDepth(9);
     this.duskOverlay = this.add.rectangle(0, 0, 1, 1, 0xff9360, 0).setOrigin(0).setDepth(9);
     this.weatherOverlay = this.add.rectangle(0, 0, 1, 1, 0x6c8da6, 0).setOrigin(0).setDepth(9);
+    this.zoneTransitionCover = this.add.rectangle(0, 0, 1, 1, 0x111817, 0)
+      .setOrigin(0).setDepth(20).setScrollFactor(0).setVisible(false);
     this.streetBackdrop.setScrollFactor(0);
     this.nightOverlay.setScrollFactor(0);
     this.duskOverlay.setScrollFactor(0);
@@ -957,15 +1162,33 @@ export class NeighborhoodScene extends Phaser.Scene {
       frameRate: 8,
       repeat: -1,
     });
+    for (const gender of ["male", "female"] as const) {
+      const textureKey = `player-owner-${gender}-walk`;
+      this.anims.create({
+        key: `${textureKey}-left`,
+        frames: this.anims.generateFrameNumbers(textureKey, { start: 0, end: 11 }),
+        frameRate: 10,
+        repeat: -1,
+      });
+      this.anims.create({
+        key: `${textureKey}-right`,
+        frames: this.anims.generateFrameNumbers(textureKey, { start: 12, end: 23 }),
+        frameRate: 10,
+        repeat: -1,
+      });
+    }
 
     this.createAmbientWalkers(0, CORE_WALKER_COUNT);
     this.createPlayerOwner();
+    this.createMapTransitionSigns();
     this.loadBackgroundWalkerAssets();
     this.createLivingEnvironment();
     // Capture drags on the canvas itself so touch/mouse gestures keep working
     // after the pointer leaves the canvas edge.
     this.dragSurface = this.game.canvas;
     this.setMapInteractionEnabled(this.mapInteractionEnabled);
+    window.addEventListener("keydown", this.onStreetKeyDown);
+    window.addEventListener("keyup", this.onStreetKeyUp);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.dragSurface?.removeEventListener("pointerdown", this.onMapPointerDown);
       this.dragSurface?.removeEventListener("pointermove", this.onMapPointerMove);
@@ -974,6 +1197,8 @@ export class NeighborhoodScene extends Phaser.Scene {
       this.dragSurface?.removeEventListener("lostpointercapture", this.onMapPointerUp);
       this.dragSurface = undefined;
       this.dragStart = undefined;
+      window.removeEventListener("keydown", this.onStreetKeyDown);
+      window.removeEventListener("keyup", this.onStreetKeyUp);
     });
     if (this.shopDebugEnabled) {
       this.input.keyboard?.on("keydown", (event: KeyboardEvent) => {
@@ -1137,11 +1362,11 @@ export class NeighborhoodScene extends Phaser.Scene {
     sprite.setTexture(diner.profile.walkTexture, getWalkerStartFrame(diner.profile.walkTexture, diner.direction));
     setCharacterDisplaySize(
       sprite,
-      DINER_DISPLAY_WIDTH * this.unit,
-      DINER_DISPLAY_HEIGHT * this.unit,
+      DINER_DISPLAY_WIDTH * this.characterUnit,
+      DINER_DISPLAY_HEIGHT * this.characterUnit,
       getWalkerFrameHeight(diner.profile.walkTexture),
       getWalkerArtHeight(diner.profile.walkTexture),
-      CHARACTER_TARGET_VISIBLE_HEIGHT * this.unit,
+      CHARACTER_TARGET_VISIBLE_HEIGHT * this.characterUnit,
     );
     sprite.setPosition(0, 0).play(animation);
   }
@@ -1154,11 +1379,11 @@ export class NeighborhoodScene extends Phaser.Scene {
     diner.sprite.setTexture(diner.profile.seatedTexture, 0);
     setCharacterDisplaySize(
       diner.sprite,
-      DINER_DISPLAY_WIDTH * this.unit,
-      DINER_DISPLAY_HEIGHT * this.unit,
+      DINER_DISPLAY_WIDTH * this.characterUnit,
+      DINER_DISPLAY_HEIGHT * this.characterUnit,
       getDinerFrameHeight(diner.profile.seatedTexture),
       DINER_ART_HEIGHTS[diner.profile.seatedTexture] ?? 342,
-      CHARACTER_TARGET_VISIBLE_HEIGHT * this.unit,
+      CHARACTER_TARGET_VISIBLE_HEIGHT * this.characterUnit,
     );
     diner.sprite.setPosition(0, -4 * this.unit).play(diner.profile.seatedAnimation);
     this.tweens.add({
@@ -1198,6 +1423,236 @@ export class NeighborhoodScene extends Phaser.Scene {
       .setDepth(8);
   }
 
+  private setStreetSpeechBubbleText(bubble: Phaser.GameObjects.Container, dialogue: string): void {
+    const graphics = bubble.getAt(0) as Phaser.GameObjects.Graphics;
+    const label = bubble.getAt(1) as Phaser.GameObjects.Text;
+    label.setText(dialogue);
+    const width = Math.max(84, label.width + 18);
+    const height = label.height + 12;
+
+    graphics.clear();
+    graphics.fillStyle(0xfff9e9, 0.98);
+    graphics.fillRoundedRect(-width / 2, -height, width, height, 8);
+    graphics.lineStyle(1.5, 0x624a34, 0.95);
+    graphics.strokeRoundedRect(-width / 2, -height, width, height, 8);
+    graphics.fillStyle(0xfff9e9, 0.98);
+    graphics.fillTriangle(-6, 0, 6, 0, 0, 8);
+    graphics.lineStyle(1.5, 0x624a34, 0.95);
+    graphics.lineBetween(-5, 1, 0, 8);
+    graphics.lineBetween(0, 8, 5, 1);
+    label.setPosition(0, -height / 2);
+  }
+
+  private takeStreetDialogue(): string {
+    if (this.streetDialogueBag.length === 0) {
+      this.streetDialogueBag = [...STREET_WALKER_DIALOGUES];
+      Phaser.Utils.Array.Shuffle(this.streetDialogueBag);
+      if (this.streetDialogueBag[0] === this.lastStreetDialogue && this.streetDialogueBag.length > 1) {
+        [this.streetDialogueBag[0], this.streetDialogueBag[1]] = [
+          this.streetDialogueBag[1],
+          this.streetDialogueBag[0],
+        ];
+      }
+    }
+    const dialogue = this.streetDialogueBag.pop() ?? "Đi thôi, kiếm gì ngon ăn nào!";
+    this.lastStreetDialogue = dialogue;
+    return dialogue;
+  }
+
+  private takeTrafficBikeProfile(): (typeof TRAFFIC_BIKE_PROFILES)[number] {
+    if (this.trafficBikeProfileBag.length === 0) {
+      this.trafficBikeProfileBag = Phaser.Utils.Array.Shuffle([...TRAFFIC_BIKE_PROFILES]);
+    }
+    return this.trafficBikeProfileBag.pop() ?? TRAFFIC_BIKE_PROFILES[0];
+  }
+
+  private getTrafficLaneY(lane: 0 | 1): number {
+    return this.mapTop + this.mapHeight * TRAFFIC_BIKE_LANES[lane].yRatio;
+  }
+
+  private getTrafficLaneDirection(lane: 0 | 1): -1 | 1 {
+    return TRAFFIC_BIKE_LANES[lane].direction;
+  }
+
+  private layoutTrafficBikes(): void {
+    const camera = this.cameras.main;
+    const viewportLeft = camera.scrollX + (camera.width - camera.displayWidth) / 2;
+    const viewportRight = viewportLeft + this.getLogicalWidth();
+    const exitMargin = 100 * this.unit;
+    for (const bike of this.trafficBikes) {
+      const laneY = this.getTrafficLaneY(bike.lane);
+      bike.direction = this.getTrafficLaneDirection(bike.lane);
+      const scale = this.unit * bike.profile.scale;
+      bike.speed = bike.profile.speed * this.unit;
+      bike.exitX = bike.direction > 0 ? viewportRight + exitMargin : viewportLeft - exitMargin;
+      bike.sprite.setPosition(bike.sprite.x, laneY)
+        .setOrigin(0.5, 0.95)
+        .setDisplaySize(TRAFFIC_BIKE_DISPLAY_WIDTH * scale, TRAFFIC_BIKE_DISPLAY_HEIGHT * scale)
+        .setFlipX(bike.direction < 0)
+        .setDepth(getStreetCharacterDepth(laneY));
+      bike.shadow.setPosition(bike.sprite.x, laneY + 1.5 * this.unit)
+        .setDisplaySize(TRAFFIC_BIKE_SHADOW_WIDTH * this.unit, 11 * this.unit)
+        .setDepth(getStreetCharacterDepth(laneY) - 0.02);
+    }
+  }
+
+  private trySpawnTrafficBike(): boolean {
+    if (!this.mapWidth || this.trafficBikes.length >= MAX_ACTIVE_TRAFFIC_BIKES) return false;
+
+    const camera = this.cameras.main;
+    const viewportLeft = camera.scrollX + (camera.width - camera.displayWidth) / 2;
+    const viewportRight = viewportLeft + this.getLogicalWidth();
+    const entranceMargin = 86 * this.unit;
+    const firstLane: 0 | 1 = Math.random() < 0.5 ? 0 : 1;
+    const lanes: readonly (0 | 1)[] = [firstLane, firstLane === 0 ? 1 : 0];
+    const lane = lanes.find((candidate) => !this.trafficBikes.some((bike) => bike.lane === candidate));
+    if (lane === undefined) return false;
+
+    const direction = this.getTrafficLaneDirection(lane);
+    const spawnX = direction > 0
+      ? Math.max(-entranceMargin, viewportLeft - entranceMargin)
+      : Math.min(this.mapWidth + entranceMargin, viewportRight + entranceMargin);
+    const exitX = direction > 0
+      ? Math.min(this.mapWidth + entranceMargin, viewportRight + entranceMargin)
+      : Math.max(-entranceMargin, viewportLeft - entranceMargin);
+    const laneY = this.getTrafficLaneY(lane);
+    const profile = this.takeTrafficBikeProfile();
+    const scale = this.unit * profile.scale;
+    const shadow = this.add.image(spawnX, laneY + 1.5 * this.unit, "character-contact-shadow-soft")
+      .setOrigin(0.5)
+      .setDisplaySize(TRAFFIC_BIKE_SHADOW_WIDTH * this.unit, 11 * this.unit)
+      .setAlpha(0.38)
+      .setDepth(getStreetCharacterDepth(laneY) - 0.02);
+    const sprite = this.add.image(spawnX, laneY, profile.key)
+      .setOrigin(0.5, 0.95)
+      .setDisplaySize(TRAFFIC_BIKE_DISPLAY_WIDTH * scale, TRAFFIC_BIKE_DISPLAY_HEIGHT * scale)
+      .setFlipX(direction < 0)
+      .setDepth(getStreetCharacterDepth(laneY));
+
+    this.trafficBikes.push({
+      profile,
+      sprite,
+      shadow,
+      lane,
+      direction,
+      speed: profile.speed * this.unit,
+      exitX,
+    });
+    return true;
+  }
+
+  private updateTrafficBikes(delta: number): void {
+    if (this.activeZone !== "shop") {
+      for (const bike of this.trafficBikes) {
+        bike.sprite.destroy();
+        bike.shadow.destroy();
+      }
+      this.trafficBikes.length = 0;
+      this.trafficSpawnCooldownMs = 1_800;
+      return;
+    }
+
+    const elapsed = Math.min(Math.max(delta, 0), 100) / 1_000;
+    for (let index = this.trafficBikes.length - 1; index >= 0; index -= 1) {
+      const bike = this.trafficBikes[index];
+      const laneDirection = this.getTrafficLaneDirection(bike.lane);
+      // Re-derive all directional state from the lane. A sprite may outlive a
+      // lane configuration change during a live preview, so matching direction
+      // values alone are not enough to guarantee that its art is facing correctly.
+      const camera = this.cameras.main;
+      const viewportLeft = camera.scrollX + (camera.width - camera.displayWidth) / 2;
+      const viewportRight = viewportLeft + this.getLogicalWidth();
+      const exitMargin = 100 * this.unit;
+      bike.direction = laneDirection;
+      bike.exitX = laneDirection > 0 ? viewportRight + exitMargin : viewportLeft - exitMargin;
+      bike.sprite.setFlipX(laneDirection < 0);
+      const laneY = this.getTrafficLaneY(bike.lane);
+      const x = bike.sprite.x + bike.direction * bike.speed * elapsed;
+      const reachedExit = bike.direction > 0 ? x >= bike.exitX : x <= bike.exitX;
+      if (reachedExit) {
+        bike.sprite.destroy();
+        bike.shadow.destroy();
+        this.trafficBikes.splice(index, 1);
+        continue;
+      }
+      bike.sprite.setPosition(x, laneY).setDepth(getStreetCharacterDepth(laneY));
+      bike.shadow.setPosition(x, laneY + 1.5 * this.unit)
+        .setDepth(getStreetCharacterDepth(laneY) - 0.02);
+    }
+
+    this.trafficSpawnCooldownMs = Math.max(0, this.trafficSpawnCooldownMs - Math.max(0, delta));
+    if (this.trafficSpawnCooldownMs > 0) return;
+    const started = this.trySpawnTrafficBike();
+    this.trafficSpawnCooldownMs = started ? Phaser.Math.Between(4_500, 7_000) : 1_000;
+  }
+
+  private updateStreetWalkerDialogue(delta: number): void {
+    const dtMs = Math.min(Math.max(0, delta), 100);
+    const speaker = this.streetSpeaker;
+    if (speaker) {
+      const bubble = speaker.speechBubble;
+      if (!speaker.active || !bubble) {
+        bubble?.setVisible(false);
+        this.streetSpeaker = undefined;
+        this.streetSpeechCooldownMs = 1_500;
+      } else {
+        this.streetSpeechTimerMs -= dtMs;
+        bubble.setPosition(speaker.sprite.x, speaker.sprite.y - 101 * this.unit)
+          .setScale(this.unit)
+          .setDepth(getStreetCharacterDepth(speaker.sprite.y) + 0.0001);
+        if (this.streetSpeechTimerMs <= 0) {
+          this.streetSpeaker = undefined;
+          this.streetSpeechCooldownMs = Phaser.Math.Between(5_500, 9_000);
+          this.tweens.add({
+            targets: bubble,
+            alpha: 0,
+            duration: 180,
+            onComplete: () => bubble.setVisible(false).setAlpha(1),
+          });
+        }
+        return;
+      }
+    }
+
+    this.streetSpeechCooldownMs -= dtMs;
+    if (this.streetSpeechCooldownMs > 0) return;
+
+    const camera = this.cameras.main;
+    const viewportLeft = camera.scrollX + (camera.width - camera.displayWidth) / 2;
+    const viewportRight = viewportLeft + this.getLogicalWidth();
+    const margin = 36 * this.unit;
+    const candidates = this.walkers.filter((walker) =>
+      walker.active
+      && walker.speechBubble
+      && walker.textureKey !== "walk-street-cat"
+      && walker.sprite.x >= viewportLeft - margin
+      && walker.sprite.x <= viewportRight + margin,
+    );
+    if (candidates.length === 0) {
+      this.streetSpeechCooldownMs = 1_200;
+      return;
+    }
+
+    const nextSpeaker = Phaser.Utils.Array.GetRandom(candidates);
+    const bubble = nextSpeaker.speechBubble!;
+    this.setStreetSpeechBubbleText(bubble, this.takeStreetDialogue());
+    bubble.setPosition(nextSpeaker.sprite.x, nextSpeaker.sprite.y - 101 * this.unit)
+      .setDepth(getStreetCharacterDepth(nextSpeaker.sprite.y) + 0.0001)
+      .setScale(this.unit * 0.86)
+      .setAlpha(0)
+      .setVisible(true);
+    this.tweens.add({
+      targets: bubble,
+      alpha: 1,
+      scaleX: this.unit,
+      scaleY: this.unit,
+      duration: 180,
+      ease: "Back.Out",
+    });
+    this.streetSpeaker = nextSpeaker;
+    this.streetSpeechTimerMs = Phaser.Math.Between(2_200, 3_000);
+  }
+
   private setGroceryWalkingPose(shopper: GroceryShopper): void {
     const animation = `${shopper.profile.walkTexture}-${shopper.direction > 0 ? "right" : "left"}`;
     shopper.sprite.anims.stop();
@@ -1208,11 +1663,11 @@ export class NeighborhoodScene extends Phaser.Scene {
       .play(animation);
     setCharacterDisplaySize(
       shopper.sprite,
-      GROCERY_DISPLAY_WIDTH * this.unit,
-      GROCERY_DISPLAY_HEIGHT * this.unit,
+      GROCERY_DISPLAY_WIDTH * this.characterUnit,
+      GROCERY_DISPLAY_HEIGHT * this.characterUnit,
       getWalkerFrameHeight(shopper.profile.walkTexture),
       getWalkerArtHeight(shopper.profile.walkTexture),
-      CHARACTER_TARGET_VISIBLE_HEIGHT * this.unit,
+      CHARACTER_TARGET_VISIBLE_HEIGHT * this.characterUnit,
     );
   }
 
@@ -1248,7 +1703,7 @@ export class NeighborhoodScene extends Phaser.Scene {
         .setAlpha(0.8);
       const sprite = this.add.sprite(0, 0, profile.walkTexture, getWalkerStartFrame(profile.walkTexture, direction))
         .setOrigin(0.5, getWalkerOriginY(profile.walkTexture))
-        .setDisplaySize(GROCERY_DISPLAY_WIDTH * this.unit, GROCERY_DISPLAY_HEIGHT * this.unit)
+        .setDisplaySize(GROCERY_DISPLAY_WIDTH * this.characterUnit, GROCERY_DISPLAY_HEIGHT * this.characterUnit)
         .setAlpha(0.98);
       const bubble = this.createGrocerySpeechBubble(Phaser.Utils.Array.GetRandom([...profile.dialogues]));
       const container = this.add.container(startRatio * this.mapWidth, this.groundY, [shadow, sprite, bubble])
@@ -1304,11 +1759,11 @@ export class NeighborhoodScene extends Phaser.Scene {
             .play(shopper.profile.browseAnimation);
           setCharacterDisplaySize(
             shopper.sprite,
-            GROCERY_DISPLAY_WIDTH * this.unit,
-            GROCERY_DISPLAY_HEIGHT * this.unit,
+            GROCERY_DISPLAY_WIDTH * this.characterUnit,
+            GROCERY_DISPLAY_HEIGHT * this.characterUnit,
             795,
             GROCERY_BROWSE_ART_HEIGHTS[shopper.profile.browseTexture] ?? 760,
-            CHARACTER_TARGET_VISIBLE_HEIGHT * this.unit,
+            CHARACTER_TARGET_VISIBLE_HEIGHT * this.characterUnit,
           );
           shopper.bubble.setVisible(true).setAlpha(0).setScale(this.unit * 0.84);
           this.tweens.add({
@@ -1373,21 +1828,21 @@ export class NeighborhoodScene extends Phaser.Scene {
         shopper.sprite.setOrigin(0.5, getGroceryBrowseOriginY(shopper.profile.browseTexture));
         setCharacterDisplaySize(
           shopper.sprite,
-          GROCERY_DISPLAY_WIDTH * this.unit,
-          GROCERY_DISPLAY_HEIGHT * this.unit,
+          GROCERY_DISPLAY_WIDTH * this.characterUnit,
+          GROCERY_DISPLAY_HEIGHT * this.characterUnit,
           795,
           GROCERY_BROWSE_ART_HEIGHTS[shopper.profile.browseTexture] ?? 760,
-          CHARACTER_TARGET_VISIBLE_HEIGHT * this.unit,
+          CHARACTER_TARGET_VISIBLE_HEIGHT * this.characterUnit,
         );
       } else {
         shopper.sprite.setOrigin(0.5, getWalkerOriginY(shopper.profile.walkTexture));
         setCharacterDisplaySize(
           shopper.sprite,
-          GROCERY_DISPLAY_WIDTH * this.unit,
-          GROCERY_DISPLAY_HEIGHT * this.unit,
+          GROCERY_DISPLAY_WIDTH * this.characterUnit,
+          GROCERY_DISPLAY_HEIGHT * this.characterUnit,
           getWalkerFrameHeight(shopper.profile.walkTexture),
           getWalkerArtHeight(shopper.profile.walkTexture),
-          CHARACTER_TARGET_VISIBLE_HEIGHT * this.unit,
+          CHARACTER_TARGET_VISIBLE_HEIGHT * this.characterUnit,
         );
       }
       shopper.bubble.setPosition(0, -101 * this.unit).setScale(this.unit);
@@ -1433,7 +1888,7 @@ export class NeighborhoodScene extends Phaser.Scene {
         .setAlpha(0.8);
       const sprite = this.add.sprite(0, 0, profile.walkTexture, getWalkerStartFrame(profile.walkTexture, direction))
         .setOrigin(0.5, getWalkerOriginY(profile.walkTexture))
-        .setDisplaySize(DINER_DISPLAY_WIDTH * this.unit, DINER_DISPLAY_HEIGHT * this.unit)
+        .setDisplaySize(DINER_DISPLAY_WIDTH * this.characterUnit, DINER_DISPLAY_HEIGHT * this.characterUnit)
         .setAlpha(0.98)
         .play(`${profile.walkTexture}-${direction > 0 ? "right" : "left"}`);
       sprite.anims.setProgress(Math.random());
@@ -1534,11 +1989,11 @@ export class NeighborhoodScene extends Phaser.Scene {
       diner.sprite.setOrigin(0.5, isWalking ? getWalkerOriginY(diner.profile.walkTexture) : getDinerOriginY(textureKey));
       setCharacterDisplaySize(
         diner.sprite,
-        DINER_DISPLAY_WIDTH * this.unit,
-        DINER_DISPLAY_HEIGHT * this.unit,
+        DINER_DISPLAY_WIDTH * this.characterUnit,
+        DINER_DISPLAY_HEIGHT * this.characterUnit,
         frameHeight,
         artHeight,
-        CHARACTER_TARGET_VISIBLE_HEIGHT * this.unit,
+        CHARACTER_TARGET_VISIBLE_HEIGHT * this.characterUnit,
       );
     }
 
@@ -1561,6 +2016,8 @@ export class NeighborhoodScene extends Phaser.Scene {
     this.load.once("complete", () => {
       this.registerWalkerAnimations(CORE_WALKER_COUNT, WALKER_TEXTURES.length);
       this.createAmbientWalkers(CORE_WALKER_COUNT, WALKER_TEXTURES.length);
+      this.createAmbientWalkers(0, HOME_AMBIENT_WALKER_COUNT, "home");
+      this.createAmbientWalkers(4, 4 + MARKET_AMBIENT_WALKER_COUNT, "market");
       this.layout();
     });
     this.load.start();
@@ -1577,6 +2034,74 @@ export class NeighborhoodScene extends Phaser.Scene {
       if (requested !== null) return requested;
     }
     return this.store.getSnapshot().cartLevel;
+  }
+
+  private preloadHomeStageImages(stageId: number, duringScenePreload = false): void {
+    const safeStageId = Phaser.Math.Clamp(Math.round(stageId), 1, HOME_STAGES.length);
+    const ids = [...new Set([
+      safeStageId,
+      Math.min(HOME_STAGES.length, safeStageId + 1),
+    ])];
+    let queued = false;
+    for (const id of ids) {
+      const stage = HOME_STAGES[id - 1];
+      const textureKey = getHomeStageImageKey(id);
+      if (!stage?.image || this.textures.exists(textureKey) || this.pendingHomeStageImages.has(id)) continue;
+      this.pendingHomeStageImages.add(id);
+      this.load.image(textureKey, stage.image);
+      queued = true;
+    }
+
+    if (duringScenePreload) {
+      this.load.once("complete", () => this.pendingHomeStageImages.clear());
+      return;
+    }
+    if (!queued) return;
+    this.load.once("complete", () => {
+      this.pendingHomeStageImages.clear();
+      this.refreshHomeArtwork();
+      this.layout();
+    });
+    this.load.start();
+  }
+
+  private transitionHomeStage(stageId: number): void {
+    const nextStage = Phaser.Math.Clamp(Math.round(stageId), 1, HOME_STAGES.length);
+    if (nextStage === this.homeStage) {
+      this.refreshHomeArtwork();
+      return;
+    }
+
+    this.homeStage = nextStage;
+    this.preloadHomeStageImages(nextStage);
+    this.refreshHomeArtwork();
+  }
+
+  private refreshHomeArtwork(): void {
+    if (!this.homeArtwork || this.homeStage < 1) return;
+    const textureKey = getHomeStageImageKey(this.homeStage);
+    if (!this.textures.exists(textureKey)) return;
+
+    const previousStage = this.displayedHomeStage;
+    if (this.homeArtwork.texture.key !== textureKey) this.homeArtwork.setTexture(textureKey);
+    this.homeArtwork.setVisible(true);
+    this.displayedHomeStage = this.homeStage;
+    this.layoutHomeArtwork();
+    if (previousStage && previousStage !== this.displayedHomeStage) {
+      const previousTextureKey = getHomeStageImageKey(previousStage);
+      if (this.textures.exists(previousTextureKey)) this.textures.remove(previousTextureKey);
+    }
+  }
+
+  private layoutHomeArtwork(): void {
+    if (!this.homeArtwork || this.homeMapWidth <= 0 || this.mapHeight <= 0) return;
+    const stage = HOME_STAGES[this.displayedHomeStage - 1];
+    if (!stage) return;
+    const sourceScale = this.mapHeight / HOME_MAP_SIZE.height;
+    this.homeArtwork
+      .setPosition(-this.homeMapWidth + stage.offsetX * sourceScale, this.mapTop + stage.offsetY * sourceScale)
+      .setDisplaySize(stage.canvasWidth * sourceScale, stage.canvasHeight * sourceScale)
+      .setDepth(-1.25);
   }
 
   private preloadShopStageImages(stageId: number, duringScenePreload = false): void {
@@ -1645,21 +2170,35 @@ export class NeighborhoodScene extends Phaser.Scene {
       .play(animationKey);
   }
 
+  private syncPlayerOwnerAnimation(): void {
+    if (!this.ownerCharacter) return;
+    const idleTextureKey = this.getPlayerOwnerTextureKey();
+    const desiredTextureKey = this.ownerMoving ? idleTextureKey.replace("-idle", "-walk") : idleTextureKey;
+    if (this.ownerCharacter.texture.key !== desiredTextureKey) {
+      this.ownerCharacter.setTexture(desiredTextureKey, 0);
+    }
+    const animationKey = this.ownerMoving
+      ? `${desiredTextureKey}-${this.ownerFacingDirection < 0 ? "left" : "right"}`
+      : `${idleTextureKey}-loop`;
+    this.ownerCharacter.play(animationKey, true);
+  }
+
   setPlayerOwnerGender(gender: OwnerGender): void {
     if (gender !== "male" && gender !== "female") return;
     this.ownerGender = gender;
     if (!this.ownerCharacter) return;
     const textureKey = this.getPlayerOwnerTextureKey();
-    if (!this.textures.exists(textureKey)) return;
+    const walkTextureKey = textureKey.replace("-idle", "-walk");
+    if (!this.textures.exists(textureKey) || !this.textures.exists(walkTextureKey)) return;
     this.ownerCharacter.anims.stop();
-    this.ownerCharacter
-      .setTexture(textureKey, 0)
-      .setOrigin(0.5, OWNER_FRAME_BASELINE / OWNER_FRAME_HEIGHT)
-      .play(`${textureKey}-loop`);
+    this.ownerCharacter.setOrigin(0.5, OWNER_FRAME_BASELINE / OWNER_FRAME_HEIGHT);
+    this.syncPlayerOwnerAnimation();
   }
 
-  private layoutPlayerOwner(x: number, y: number, unit: number): void {
+  private layoutPlayerOwner(x: number, y: number, unit: number, characterUnit: number): void {
     if (!this.ownerCharacter || !this.ownerShadow) return;
+    this.ownerWorldX = x;
+    this.ownerWorldY = y;
     const depth = getStreetCharacterDepth(y);
     this.ownerShadow
       .setPosition(x, y + 1.5 * unit)
@@ -1671,17 +2210,278 @@ export class NeighborhoodScene extends Phaser.Scene {
       .setOrigin(0.5, OWNER_FRAME_BASELINE / OWNER_FRAME_HEIGHT);
     setCharacterDisplaySize(
       this.ownerCharacter,
-      OWNER_DISPLAY_WIDTH * unit,
-      OWNER_DISPLAY_HEIGHT * unit,
+      OWNER_DISPLAY_WIDTH * characterUnit,
+      OWNER_DISPLAY_HEIGHT * characterUnit,
       OWNER_FRAME_HEIGHT,
       OWNER_ART_HEIGHT,
-      OWNER_TARGET_VISIBLE_HEIGHT * unit,
+      OWNER_TARGET_VISIBLE_HEIGHT * characterUnit,
     );
+  }
+
+  private setZoneCameraBounds(zone: "home" | "shop" | "market"): void {
+    if (!this.mapWidth || !this.homeMapWidth || !this.marketMapWidth) return;
+    const camera = this.cameras.main;
+    if (zone === "home") camera.setBounds(-this.homeMapWidth, 0, this.homeMapWidth, this.getLogicalHeight(), false);
+    else if (zone === "market") camera.setBounds(this.mapWidth, 0, this.marketMapWidth, this.getLogicalHeight(), false);
+    else camera.setBounds(0, 0, this.mapWidth, this.getLogicalHeight(), false);
+  }
+
+  private createMapTransitionSigns(): void {
+    const signDefinitions: Omit<MapTransitionSign, "container" | "hitZone" | "frame" | "titleText" | "width" | "height">[] = [
+      { from: "shop", to: "home", title: "Vào nhà" },
+      { from: "market", action: "enter-market", title: "Vào chợ" },
+    ];
+
+    this.mapTransitionSigns = signDefinitions.map((definition) => {
+      const frame = this.add.graphics();
+      const titleText = this.add.text(0, 0, definition.title, {
+        fontFamily: "Trebuchet MS, sans-serif",
+        fontSize: "12px",
+        fontStyle: "bold",
+        color: "#fff4dc",
+        stroke: "#211810",
+        strokeThickness: 2,
+        align: "center",
+      }).setOrigin(0.5);
+      const container = this.add.container(0, 0, [frame, titleText])
+        .setDepth(8.4)
+        .setScrollFactor(1)
+        .setVisible(false);
+      const hitZone = this.add.zone(0, 0, 1, 1).setOrigin(0).setDepth(8.5).setVisible(false);
+      const sign: MapTransitionSign = { ...definition, container, hitZone, frame, titleText, width: 0, height: 0 };
+      hitZone.on(Phaser.Input.Events.POINTER_UP, (pointer: Phaser.Input.Pointer) => {
+        if (!this.mapInteractionEnabled || this.zoneTransitioning || this.activeZone !== sign.from) return;
+        if (pointer.getDistance() > 14) return;
+        if (sign.action === "enter-market") this.enterWholesaleMarket();
+        else if (sign.to) this.transitionToZone(sign.to);
+      });
+      this.resizeMapTransitionSign(sign);
+      return sign;
+    });
+  }
+
+  private resizeMapTransitionSign(sign: MapTransitionSign): void {
+    const fontScale = Math.max(1, this.unit);
+    const dpr = Math.max(1, window.devicePixelRatio || 1);
+    sign.titleText
+      .setFontSize(Math.max(11, Math.round(13 * fontScale)))
+      .setResolution(dpr);
+    sign.width = sign.titleText.width + 18 * fontScale;
+    sign.height = sign.titleText.height + 12 * fontScale;
+    sign.titleText.setPosition(0, 0);
+    sign.frame.clear()
+      .fillStyle(0x211810, 0.82)
+      .fillRoundedRect(-sign.width / 2, -sign.height / 2, sign.width, sign.height, 5 * fontScale)
+      .lineStyle(Math.max(1, fontScale), 0xd3aa68, 0.88)
+      .strokeRoundedRect(-sign.width / 2, -sign.height / 2, sign.width, sign.height, 5 * fontScale);
+    sign.container.setSize(sign.width, sign.height);
+    sign.hitZone
+      .setSize(sign.width, sign.height)
+      .setInteractive(new Phaser.Geom.Rectangle(0, 0, sign.width, sign.height), Phaser.Geom.Rectangle.Contains);
+  }
+
+  private layoutMapTransitionSigns(): void {
+    if (!this.mapTransitionSigns.length || this.mapWidth <= 0 || this.homeMapWidth <= 0 || this.marketMapWidth <= 0) return;
+    const boardY = this.mapTop + this.mapHeight * 0.55;
+    for (const sign of this.mapTransitionSigns) {
+      this.resizeMapTransitionSign(sign);
+      const edgeInset = Math.max(56 * this.unit, this.getLogicalWidth() * 0.13, sign.width / 2 + 8 * this.unit);
+      const x = sign.from === "market"
+        ? this.mapWidth + this.marketMapWidth * 0.5
+        : sign.to === "home" ? edgeInset : this.mapWidth - edgeInset;
+      const y = sign.action === "enter-market" ? this.mapTop + this.mapHeight * 0.58 : boardY;
+      sign.container.setPosition(x, y);
+    }
+    this.updateMapTransitionSigns();
+  }
+
+  private updateMapTransitionSigns(): void {
+    const revealDistance = Math.max(this.getLogicalWidth() * 0.52, this.mapHeight * 0.28);
+    for (const sign of this.mapTransitionSigns) {
+      const revealDistance = Math.max(this.getLogicalWidth() * 0.52, this.mapHeight * 0.28);
+      const visible = this.mapInteractionEnabled
+        && !this.zoneTransitioning
+        && this.activeZone === sign.from
+        && Math.hypot(this.ownerWorldX - sign.container.x, this.ownerWorldY - sign.container.y) <= revealDistance;
+      sign.container.setVisible(visible);
+      sign.hitZone
+        .setPosition(sign.container.x - sign.width / 2, sign.container.y - sign.height / 2)
+        .setActive(visible);
+    }
+  }
+
+  private clampOwnerWorldY(y: number, zone: "home" | "shop" | "market" = this.activeZone): number {
+    if (this.mapHeight <= 0) return y;
+    const { minRatio, maxRatio } = OWNER_MAP_Y_BOUNDS[zone];
+    return Phaser.Math.Clamp(
+      y,
+      this.mapTop + this.mapHeight * minRatio,
+      this.mapTop + this.mapHeight * maxRatio,
+    );
+  }
+
+  private transitionToZone(zone: "home" | "shop" | "market"): void {
+    if (this.zoneTransitioning || zone === this.activeZone) return;
+    const previousZone = this.activeZone;
+    const cover = this.zoneTransitionCover;
+    if (!cover) {
+      this.activeZone = zone;
+      this.ownerWorldY = this.clampOwnerWorldY(zone === "home" ? this.mapTop + this.mapHeight * 0.745 : this.ownerWorldY, zone);
+      if (zone === "home") this.ownerWorldX = this.getHomeEntryWorldX();
+      this.ownerCharacter?.setPosition(this.ownerWorldX, this.ownerWorldY)
+        .setDepth(getStreetCharacterDepth(this.ownerWorldY));
+      this.ownerShadow?.setPosition(this.ownerWorldX, this.ownerWorldY + 1.5 * this.unit)
+        .setDepth(getStreetCharacterDepth(this.ownerWorldY) - 0.02);
+      this.setZoneCameraBounds(zone);
+      return;
+    }
+
+    this.zoneTransitioning = true;
+    cover.setSize(this.getLogicalWidth(), this.getLogicalHeight()).setVisible(true).setAlpha(0);
+    this.tweens.add({
+      targets: cover,
+      alpha: 1,
+      duration: ZONE_TRANSITION_FADE_MS,
+      ease: "Sine.easeIn",
+      onComplete: () => {
+        this.activeZone = zone;
+        this.ownerWorldY = this.clampOwnerWorldY(zone === "home" ? this.mapTop + this.mapHeight * 0.745 : this.ownerWorldY, zone);
+        const edgeInset = 70 * this.unit;
+        this.ownerWorldX = zone === "home"
+          ? this.getHomeEntryWorldX()
+          : zone === "market"
+            ? this.mapWidth + edgeInset
+            : previousZone === "market"
+              ? this.mapWidth - edgeInset
+              : edgeInset;
+        this.setZoneCameraBounds(zone);
+        const camera = this.cameras.main;
+        camera.setScroll(camera.clampX(this.ownerWorldX - camera.width / 2), 0);
+        this.ownerCharacter?.setPosition(this.ownerWorldX, this.ownerWorldY)
+          .setDepth(getStreetCharacterDepth(this.ownerWorldY));
+        this.ownerShadow?.setPosition(this.ownerWorldX, this.ownerWorldY + 1.5 * this.unit)
+          .setDepth(getStreetCharacterDepth(this.ownerWorldY) - 0.02);
+        this.events.emit("street-zone-changed", zone);
+        this.tweens.add({
+          targets: cover,
+          alpha: 0,
+          duration: ZONE_TRANSITION_FADE_MS,
+          ease: "Sine.easeOut",
+          onComplete: () => {
+            cover.setVisible(false);
+            this.zoneTransitioning = false;
+          },
+        });
+      },
+    });
+  }
+
+  private getHomeEntryWorldX(): number {
+    const stage = HOME_STAGES[this.displayedHomeStage - 1] ?? HOME_STAGES[0];
+    const sourceScale = this.mapHeight / HOME_MAP_SIZE.height;
+    return -this.homeMapWidth + (stage.offsetX + stage.canvasWidth * 0.5) * sourceScale;
+  }
+
+  private enterWholesaleMarket(): void {
+    if (!this.mapInteractionEnabled || this.zoneTransitioning || this.activeZone !== "market") return;
+    this.walkInEntryLatched = true;
+    this.movementVector = { x: 0, y: 0 };
+    this.keyboardMovementVector = { x: 0, y: 0 };
+    this.ownerMoving = false;
+    this.syncPlayerOwnerAnimation();
+    this.events.emit("street-enter-wholesale-market");
+  }
+
+  private updatePlayerMovement(elapsed: number): void {
+    let inputX = this.movementVector.x + this.keyboardMovementVector.x;
+    let inputY = this.movementVector.y + this.keyboardMovementVector.y;
+    const inputMagnitude = Math.hypot(inputX, inputY);
+    if (inputMagnitude > 1) {
+      inputX /= inputMagnitude;
+      inputY /= inputMagnitude;
+    }
+    const moving = this.mapInteractionEnabled && inputMagnitude > 0.08 && !this.zoneTransitioning;
+    if (!moving || !this.ownerCharacter || !this.ownerShadow) {
+      if (this.ownerMoving) {
+        this.ownerMoving = false;
+        this.syncPlayerOwnerAnimation();
+      }
+      return;
+    }
+
+    const startedMoving = !this.ownerMoving;
+    this.ownerMoving = true;
+    const nextFacingDirection = Math.abs(inputX) > 0.18 ? (inputX < 0 ? -1 : 1) : this.ownerFacingDirection;
+    if (startedMoving || nextFacingDirection !== this.ownerFacingDirection) {
+      this.ownerFacingDirection = nextFacingDirection;
+      this.syncPlayerOwnerAnimation();
+    }
+    const distance = OWNER_WALK_SPEED * this.unit * elapsed;
+    const nextX = this.ownerWorldX + inputX * distance;
+    this.ownerWorldY = this.clampOwnerWorldY(this.ownerWorldY + inputY * distance);
+    if (this.activeZone === "shop" && nextX <= 0) {
+      this.ownerWorldX = 0;
+      this.transitionToZone("home");
+    } else if (this.activeZone === "shop" && nextX >= this.mapWidth) {
+      this.ownerWorldX = this.mapWidth;
+      this.transitionToZone("market");
+    } else if (this.activeZone === "home" && nextX >= 0) {
+      this.ownerWorldX = 0;
+      this.transitionToZone("shop");
+    } else if (this.activeZone === "market" && nextX <= this.mapWidth) {
+      this.ownerWorldX = this.mapWidth;
+      this.transitionToZone("shop");
+    } else {
+      const leftEdge = this.activeZone === "home"
+        ? -this.homeMapWidth + 48 * this.unit
+        : this.activeZone === "market" ? this.mapWidth : 0;
+      const rightEdge = this.activeZone === "home"
+        ? 0
+        : this.activeZone === "market"
+          ? this.mapWidth + this.marketMapWidth - 48 * this.unit
+          : this.mapWidth;
+      this.ownerWorldX = Phaser.Math.Clamp(nextX, leftEdge, rightEdge);
+    }
+
+    this.ownerCharacter.setPosition(this.ownerWorldX, this.ownerWorldY)
+      .setDepth(getStreetCharacterDepth(this.ownerWorldY));
+    this.ownerShadow.setPosition(this.ownerWorldX, this.ownerWorldY + 1.5 * this.unit)
+      .setDepth(getStreetCharacterDepth(this.ownerWorldY) - 0.02);
+    const camera = this.cameras.main;
+    camera.setScroll(camera.clampX(this.ownerWorldX - camera.width / 2), camera.scrollY);
+  }
+
+  private updateWalkInEntrances(): void {
+    const shopDoorX = this.mapWidth * 0.5;
+    const marketDoorX = this.mapWidth + this.marketMapWidth * 0.5;
+    const nearShopDoor = this.activeZone === "shop"
+      && Math.abs(this.ownerWorldX - shopDoorX) <= this.mapWidth * 0.055
+      && this.ownerWorldY <= this.mapTop + this.mapHeight * 0.72;
+    const nearMarketEntrance = this.activeZone === "market"
+      && Math.abs(this.ownerWorldX - marketDoorX) <= this.marketMapWidth * 0.055
+      && this.ownerWorldY <= this.mapTop + this.mapHeight * 0.73;
+    if (!nearShopDoor && !nearMarketEntrance) {
+      this.walkInEntryLatched = false;
+      return;
+    }
+    if (!this.mapInteractionEnabled || this.zoneTransitioning || this.walkInEntryLatched) return;
+
+    if (nearMarketEntrance) {
+      this.enterWholesaleMarket();
+      return;
+    }
+    this.walkInEntryLatched = true;
+    this.movementVector = { x: 0, y: 0 };
+    this.keyboardMovementVector = { x: 0, y: 0 };
+    this.ownerMoving = false;
+    this.syncPlayerOwnerAnimation();
+    this.events.emit("street-enter-dining");
   }
 
   setShopStage(stageId: number): void {
     if (!Number.isFinite(stageId)) return;
     this.debugShopStage = Phaser.Math.Clamp(Math.round(stageId), 1, SHOP_STAGES.length);
+    this.transitionHomeStage(this.debugShopStage);
     this.transitionShopStage(this.debugShopStage, true);
     const stageValue = document.querySelector<HTMLElement>("#shop-stage-debug-value");
     if (stageValue) stageValue.textContent = `${String(this.debugShopStage).padStart(2, "0")} / ${SHOP_STAGES.length}`;
@@ -1785,8 +2585,18 @@ export class NeighborhoodScene extends Phaser.Scene {
     const texture = this.textures.createCanvas(displayTextureKey, source.width, source.height);
     if (!texture) return sourceTextureKey;
 
-    texture.context.clearRect(0, 0, source.width, source.height);
-    texture.context.drawImage(source, 0, 0);
+    const context = texture.context;
+    context.clearRect(0, 0, source.width, source.height);
+    // The painted interiors read too shadowy at phone size. Lift the artwork
+    // slightly and add a restrained amber fill so every time-of-day variant
+    // keeps a welcoming, lantern-lit feel without flattening the highlights.
+    context.filter = "brightness(1.08)";
+    context.drawImage(source, 0, 0);
+    context.filter = "none";
+    context.globalCompositeOperation = "source-atop";
+    context.fillStyle = "rgba(255, 184, 104, 0.045)";
+    context.fillRect(0, 0, source.width, source.height);
+    context.globalCompositeOperation = "source-over";
     // The four-shop map has an empty lot, so every upgrade supplies its own
     // roof and upper facade as well as its storefront.
     texture.refresh();
@@ -1983,12 +2793,17 @@ export class NeighborhoodScene extends Phaser.Scene {
     const width = this.mapWidth || this.getLogicalWidth();
     const elapsed = Math.min(delta / 1_000, 0.05);
     this.environmentElapsedMs += Math.max(0, delta);
+    this.updatePlayerMovement(elapsed);
+    this.updateWalkInEntrances();
+    this.updateMapTransitionSigns();
     this.updateLivingEnvironment(_time, elapsed, width);
+    this.updateTrafficBikes(delta);
 
     for (const [index, walker] of this.walkers.entries()) {
       if (!walker.active) continue;
       const isPet = walker.textureKey === "walk-street-cat";
-      const laneY = this.getWalkerLaneY(walker.lane) + Math.sin(index * 1.9) * 2 * this.unit;
+      const zoneBounds = this.getWalkerZoneBounds(walker.zone);
+      const laneY = this.getWalkerLaneY(walker.lane, walker.zone) + Math.sin(index * 1.9) * 2 * this.unit;
       if (isPet) {
         if (walker.petMode === "paused" && _time >= (walker.petPauseUntil ?? 0)) {
           this.resumePet(walker, _time, index);
@@ -2009,12 +2824,12 @@ export class NeighborhoodScene extends Phaser.Scene {
       // the leg motion, so an extra high-frequency bob only makes sprites jitter.
       walker.sprite.y = laneY;
       walker.sprite.setDepth(getStreetCharacterDepth(walker.sprite.y));
-      walker.positionRatio = walker.sprite.x / width;
-      // Recycle at the panorama edges, not at the camera edges. Viewport-based
-      // recycling made walkers vanish while the player dragged across the map.
+      walker.positionRatio = (walker.sprite.x - zoneBounds.left) / zoneBounds.width;
+      // Recycle at the assigned map edges, not the camera edges. This keeps
+      // each area's pedestrian flow local when the player changes zones.
       const mapMargin = 60 * this.unit;
-      const leftMapEdge = walker.direction < 0 && walker.sprite.x < -mapMargin;
-      const rightMapEdge = walker.direction > 0 && walker.sprite.x > width + mapMargin;
+      const leftMapEdge = walker.direction < 0 && walker.sprite.x < zoneBounds.left - mapMargin;
+      const rightMapEdge = walker.direction > 0 && walker.sprite.x > zoneBounds.left + zoneBounds.width + mapMargin;
       if (leftMapEdge || rightMapEdge) {
         walker.active = false;
         walker.sprite.setVisible(false);
@@ -2030,6 +2845,7 @@ export class NeighborhoodScene extends Phaser.Scene {
         .setDepth(getStreetCharacterDepth(laneY) - 0.02);
     }
 
+    this.updateStreetWalkerDialogue(delta);
     this.updateStreetDiners(delta);
     this.updateGroceryShoppers(delta);
 
@@ -2043,18 +2859,19 @@ export class NeighborhoodScene extends Phaser.Scene {
       const walkerIndex = this.walkerSpawnQueue.shift()!;
       const walker = this.walkers[walkerIndex];
       if (walker) {
+        const zoneBounds = this.getWalkerZoneBounds(walker.zone);
         const spawnX = walker.direction > 0
-          ? -60 * this.unit
-          : width + 60 * this.unit;
+          ? zoneBounds.left - 60 * this.unit
+          : zoneBounds.left + zoneBounds.width + 60 * this.unit;
         const animation = `${walker.textureKey}-${walker.direction > 0 ? "right" : "left"}`;
         walker.active = true;
-        walker.positionRatio = spawnX / width;
+        walker.positionRatio = (spawnX - zoneBounds.left) / zoneBounds.width;
         if (walker.petMode) {
           walker.petMode = "walking";
           walker.petNextPauseAt = _time + 5_500 + (walkerIndex % 2) * 4_000;
           walker.petPauseUntil = undefined;
         }
-        const laneY = this.getWalkerLaneY(walker.lane);
+        const laneY = this.getWalkerLaneY(walker.lane, walker.zone);
         walker.sprite.setPosition(spawnX, laneY)
           .setAlpha(0.96 + (walkerIndex % 3) * 0.02)
           .setDepth(getStreetCharacterDepth(laneY))
@@ -2092,8 +2909,8 @@ export class NeighborhoodScene extends Phaser.Scene {
             CUSTOMER_DISPLAY_HEIGHT,
           );
           sprite.setScale(
-            (CUSTOMER_DISPLAY_WIDTH * this.unit / CUSTOMER_FRAME_WIDTH) * visualScale,
-            (CUSTOMER_DISPLAY_HEIGHT * this.unit / getWalkerFrameHeight(walkTexture)) * visualScale,
+            (CUSTOMER_DISPLAY_WIDTH * this.characterUnit / CUSTOMER_FRAME_WIDTH) * visualScale,
+            (CUSTOMER_DISPLAY_HEIGHT * this.characterUnit / getWalkerFrameHeight(walkTexture)) * visualScale,
           );
           sprite.y = 0;
           sprite.setTexture(walkTexture, getWalkerStartFrame(walkTexture, direction));
@@ -2123,8 +2940,8 @@ export class NeighborhoodScene extends Phaser.Scene {
             CUSTOMER_FRAME_HEIGHT,
             CUSTOMER_DISPLAY_HEIGHT,
           );
-          const baseScaleX = (CUSTOMER_DISPLAY_WIDTH * this.unit / CUSTOMER_FRAME_WIDTH) * visualScale;
-          const baseScaleY = (CUSTOMER_DISPLAY_HEIGHT * this.unit / CUSTOMER_FRAME_HEIGHT) * visualScale;
+          const baseScaleX = (CUSTOMER_DISPLAY_WIDTH * this.characterUnit / CUSTOMER_FRAME_WIDTH) * visualScale;
+          const baseScaleY = (CUSTOMER_DISPLAY_HEIGHT * this.characterUnit / CUSTOMER_FRAME_HEIGHT) * visualScale;
           // Anchor the subtle breathing scale at the soles so the contact shadow stays grounded.
           sprite.setScale(baseScaleX, baseScaleY * (1 + breath * 0.014));
         }
@@ -2167,16 +2984,20 @@ export class NeighborhoodScene extends Phaser.Scene {
     walker.sprite.play(`${walker.textureKey}-${walker.direction > 0 ? "right" : "left"}`);
   }
 
-  private createAmbientWalkers(startIndex: number, endIndex: number): void {
-    const width = this.mapWidth || this.getLogicalWidth();
+  private createAmbientWalkers(startIndex: number, endIndex: number, zone: AmbientWalkerZone = "shop"): void {
+    const zoneBounds = this.getWalkerZoneBounds(zone);
+    const zoneCount = zone === "home"
+      ? HOME_AMBIENT_WALKER_COUNT
+      : zone === "market" ? MARKET_AMBIENT_WALKER_COUNT : WALKER_TEXTURES.length;
     const directions = [1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, -1, -1, 1, -1, 1, -1] as const;
     for (let index = startIndex; index < endIndex; index += 1) {
       const textureKey = WALKER_TEXTURES[index];
       if (!this.textures.exists(textureKey) || !this.anims.exists(`${textureKey}-left`)) continue;
       const direction = textureKey === "walk-street-cat" ? 1 : directions[index % directions.length];
       const lane: 0 | 1 = direction > 0 ? 0 : 1;
-      const laneY = this.getWalkerLaneY(lane);
+      const laneY = this.getWalkerLaneY(lane, zone);
       const isPet = textureKey === "walk-street-cat";
+      const zoneWalkerIndex = this.walkers.filter((walker) => walker.zone === zone).length;
       const size = isPet
         ? (0.88 + ((index * 3) % 5) * 0.07) * 0.92
         : getCharacterScaleFactor(
@@ -2187,25 +3008,29 @@ export class NeighborhoodScene extends Phaser.Scene {
       const footprint = WALKER_FOOTPRINTS[textureKey] ?? { width: 60, height: 96, shadowWidth: 42, shadowHeight: 12 };
       const positionRatio = textureKey === "walk-street-cat"
         ? 0.43
-        : ((index % MAX_ACTIVE_AMBIENT_WALKERS) + 0.5) / MAX_ACTIVE_AMBIENT_WALKERS;
+        : (zoneWalkerIndex + 0.5) / zoneCount;
+      const x = zoneBounds.left + positionRatio * zoneBounds.width;
       const animationKey = `${textureKey}-${direction > 0 ? "right" : "left"}`;
       const active = this.walkers.reduce((count, walker) => count + Number(walker.active), 0) < MAX_ACTIVE_AMBIENT_WALKERS;
-      const shadow = this.add.image(positionRatio * width, laneY + 1.5 * this.unit, "character-contact-shadow-soft")
+      const shadow = this.add.image(x, laneY + 1.5 * this.unit, "character-contact-shadow-soft")
         .setOrigin(0.5)
         .setDepth(getStreetCharacterDepth(laneY) - 0.02)
         .setAlpha(isPet ? 0.48 : 0.8)
         .setVisible(active);
-      const sprite = this.add.sprite(positionRatio * width, laneY, textureKey, getWalkerStartFrame(textureKey, direction))
+      const sprite = this.add.sprite(x, laneY, textureKey, getWalkerStartFrame(textureKey, direction))
         .setOrigin(0.5, getWalkerOriginY(textureKey))
         .setDepth(getStreetCharacterDepth(laneY))
         .setAlpha(0.96 + (index % 3) * 0.02)
         .setVisible(active);
+      const speechBubble = isPet ? undefined : this.createGrocerySpeechBubble("").setVisible(false);
       if (active) sprite.play(animationKey).anims.setProgress((index * 0.173) % 1);
       else this.walkerSpawnQueue.push(this.walkers.length);
       this.walkers.push({
         textureKey,
+        zone,
         shadow,
         sprite,
+        speechBubble,
         active,
         direction,
         lane,
@@ -2220,8 +3045,21 @@ export class NeighborhoodScene extends Phaser.Scene {
     }
   }
 
-  private getWalkerLaneY(lane: 0 | 1): number {
-    return this.mapTop + this.mapHeight * WALKER_LANE_RATIOS[lane];
+  private getWalkerZoneBounds(zone: AmbientWalkerZone): { left: number; width: number } {
+    const left = zone === "home" ? -this.homeMapWidth : zone === "market" ? this.mapWidth : 0;
+    const width = zone === "home" ? this.homeMapWidth : zone === "market" ? this.marketMapWidth : this.mapWidth;
+    if (width > 0) return { left, width };
+
+    const fallbackWidth = Math.max(1, this.getLogicalWidth());
+    return {
+      left: zone === "home" ? -fallbackWidth : zone === "market" ? fallbackWidth : 0,
+      width: fallbackWidth,
+    };
+  }
+
+  private getWalkerLaneY(lane: 0 | 1, zone: AmbientWalkerZone = "shop"): number {
+    const ratios = zone === "home" ? HOME_WALKER_LANE_RATIOS : WALKER_LANE_RATIOS;
+    return this.mapTop + this.mapHeight * ratios[lane];
   }
 
   private createCharacterShadowTexture(): void {
@@ -2543,6 +3381,38 @@ export class NeighborhoodScene extends Phaser.Scene {
     if (this.streetBackdrop.texture.key !== backdropTexture) this.streetBackdrop.setTexture(backdropTexture);
   }
 
+  private updateMarketExteriorLighting(phase: number, daylight: number, rain: number): void {
+    const stops: { phase: number; mood: TimeOfDayMap }[] = [
+      { phase: 0, mood: "night" },
+      { phase: 0.25, mood: "dawn" },
+      { phase: 0.5, mood: "day" },
+      { phase: 0.75, mood: "sunset" },
+      { phase: 1, mood: "night" },
+    ];
+    const marketMoodByTime: Record<TimeOfDayMap, WholesaleMarketBackgroundMood> = {
+      dawn: "morning",
+      day: "noon",
+      sunset: "afternoon",
+      night: "night",
+    };
+    let segment = 0;
+    while (segment < stops.length - 2 && phase >= stops[segment + 1].phase) segment += 1;
+
+    const fromMood = marketMoodByTime[stops[segment].mood];
+    const toMood = marketMoodByTime[stops[segment + 1].mood];
+    const transition = this.smoothStep(stops[segment].phase, stops[segment + 1].phase, phase);
+    const fromTexture = WHOLESALE_MARKET_EXTERIOR_TEXTURE_KEYS[fromMood];
+    const toTexture = WHOLESALE_MARKET_EXTERIOR_TEXTURE_KEYS[toMood];
+    if (this.marketExterior.texture.key !== fromTexture) this.marketExterior.setTexture(fromTexture);
+    if (this.marketExteriorTransition.texture.key !== toTexture) this.marketExteriorTransition.setTexture(toTexture);
+    this.marketExteriorTransition.setAlpha(transition).setVisible(transition > 0.001);
+
+    // Use the same rain blend as the main street so the two connected maps
+    // change weather together without replacing the underlying time-of-day art.
+    const overcastAmount = this.smoothStep(0.08, 0.72, rain) * daylight * 0.95;
+    this.marketExteriorOvercast.setAlpha(overcastAmount).setVisible(overcastAmount > 0.001);
+  }
+
   private updateLivingEnvironment(time: number, elapsed: number, mapWidth: number): void {
     const seconds = this.environmentElapsedMs / 1_000;
     const naturalPhase = (START_DAY_PHASE + this.environmentElapsedMs / DAY_LENGTH_MS) % 1;
@@ -2554,6 +3424,7 @@ export class NeighborhoodScene extends Phaser.Scene {
     const twilight = Phaser.Math.Clamp(1 - Math.abs(sunHeight) / 0.34, 0, 1);
     const weather = this.getWeatherState(seconds);
     this.updateStreetMap(phase, daylight, weather.rain);
+    this.updateMarketExteriorLighting(phase, daylight, weather.rain);
     this.canopyLayers.forEach((layer, index) => {
       const anchor = TREE_CANOPY_LAYERS[index];
       // The two foliage pieces on each map edge share nearly the same sway,
@@ -2873,6 +3744,10 @@ export class NeighborhoodScene extends Phaser.Scene {
     const width = this.getLogicalWidth();
     const height = this.getLogicalHeight();
     const previousMapWidth = this.mapWidth;
+    const previousHomeMapWidth = this.homeMapWidth;
+    const previousMarketMapWidth = this.marketMapWidth;
+    const previousOwnerWorldX = this.ownerWorldX;
+    const previousOwnerWorldY = this.ownerWorldY;
     const previousMapHeight = this.mapHeight;
     const previousMapTop = this.mapTop;
     const portrait = width / height < 0.85;
@@ -2892,7 +3767,10 @@ export class NeighborhoodScene extends Phaser.Scene {
       : gameplayMapHeight;
     const mapHeight = Math.min(gameplayMapHeight, debugPreviewMapHeight);
     const mapWidth = mapHeight * (SHOP_BASE_SIZE.width / SHOP_BASE_SIZE.height);
+    const homeMapWidth = mapHeight * (HOME_MAP_SIZE.width / HOME_MAP_SIZE.height);
+    const marketMapWidth = mapHeight * (WHOLESALE_MARKET_EXTERIOR_SIZE.width / WHOLESALE_MARKET_EXTERIOR_SIZE.height);
     const sourceScale = mapHeight / SHOP_BASE_SIZE.height;
+    const characterUnit = sourceScale * CHARACTER_DISPLAY_SCALE;
     const overlayHeight = SHOP_OVERLAY_BOX.h * sourceScale;
     const mapTop = (height - mapHeight) / 2;
     // Place character feet on the lower half of the map's tiled sidewalk, above the curb.
@@ -2901,16 +3779,51 @@ export class NeighborhoodScene extends Phaser.Scene {
     const overlayY = mapTop + SHOP_OVERLAY_BOX.y * sourceScale;
     const overlayWidth = SHOP_OVERLAY_BOX.w * sourceScale;
     const centerX = overlayX + overlayWidth / 2;
-    // Keep interactive props at a readable game scale as the panoramic backdrop
-    // grows to cover a full-screen viewport.
-    const unit = Math.max(0.8, Math.min(width / 1_280, 1.5));
+    const resized = width !== this.layoutWidth
+      || height !== this.layoutHeight
+      || mapWidth !== previousMapWidth
+      || homeMapWidth !== previousHomeMapWidth
+      || marketMapWidth !== previousMarketMapWidth
+      || mapHeight !== previousMapHeight
+      || mapTop !== previousMapTop;
+    if (resized) {
+      if (!this.layoutWidth) {
+        this.ownerWorldX = centerX;
+        this.ownerWorldY = mapTop + mapHeight * OWNER_MAP_Y_RATIO;
+      } else {
+        if (previousMapHeight > 0) {
+          const { minRatio, maxRatio } = OWNER_MAP_Y_BOUNDS[this.activeZone];
+          const previousYRatio = Phaser.Math.Clamp(
+            (previousOwnerWorldY - previousMapTop) / previousMapHeight,
+            minRatio,
+            maxRatio,
+          );
+          this.ownerWorldY = mapTop + mapHeight * previousYRatio;
+        }
+        if (this.activeZone === "home" && previousHomeMapWidth > 0) {
+          const homeProgress = Phaser.Math.Clamp((previousOwnerWorldX + previousHomeMapWidth) / previousHomeMapWidth, 0, 1);
+          this.ownerWorldX = -homeMapWidth + homeProgress * homeMapWidth;
+        } else if (this.activeZone === "market" && previousMarketMapWidth > 0) {
+          const marketProgress = Phaser.Math.Clamp((previousOwnerWorldX - previousMapWidth) / previousMarketMapWidth, 0, 1);
+          this.ownerWorldX = mapWidth + marketProgress * marketMapWidth;
+        } else if (previousMapWidth > 0) {
+          this.ownerWorldX = Phaser.Math.Clamp(previousOwnerWorldX / previousMapWidth, 0, 1) * mapWidth;
+        }
+      }
+    }
+    // World effects follow the map scale; actors get a small visual boost.
+    // Both remain proportional across viewport sizes.
+    const unit = sourceScale;
     const stage = this.debugShopStage ?? this.lastSnapshot.cartLevel;
     const cartWidth = overlayWidth;
     const cartHeight = overlayHeight;
 
     this.unit = unit;
+    this.characterUnit = characterUnit;
     this.mapTop = mapTop;
     this.mapHeight = mapHeight;
+    this.homeMapWidth = homeMapWidth;
+    this.marketMapWidth = marketMapWidth;
     this.cartX = centerX;
     this.groundY = groundY;
     this.cartWidth = cartWidth;
@@ -2918,12 +3831,22 @@ export class NeighborhoodScene extends Phaser.Scene {
 
     // The panorama already covers a portrait phone; skip the blurred duplicate
     // and its full-screen filter unless a wide viewport exposes side margins.
+    const activeZoneWidth = this.activeZone === "home"
+      ? homeMapWidth
+      : this.activeZone === "market" ? marketMapWidth : mapWidth;
     this.streetBackdrop.setPosition(width / 2, height / 2)
       .setDisplaySize(width, height)
-      .setVisible(mapWidth < width);
+      .setVisible(activeZoneWidth < width);
+    this.homeStreet.setPosition(-homeMapWidth / 2, mapTop + mapHeight / 2)
+      .setDisplaySize(homeMapWidth, mapHeight);
+    this.transitionHomeStage(stage);
+    this.layoutHomeArtwork();
     this.street.setPosition(mapWidth / 2, mapTop + mapHeight / 2).setDisplaySize(mapWidth, mapHeight);
     this.streetTransition.setPosition(mapWidth / 2, mapTop + mapHeight / 2).setDisplaySize(mapWidth, mapHeight);
     this.streetOvercast.setPosition(mapWidth / 2, mapTop + mapHeight / 2).setDisplaySize(mapWidth, mapHeight);
+    for (const background of [this.marketExterior, this.marketExteriorTransition, this.marketExteriorOvercast]) {
+      background.setPosition(mapWidth, mapTop).setDisplaySize(marketMapWidth, mapHeight);
+    }
     this.canopyLayers.forEach((layer, index) => {
       const anchor = TREE_CANOPY_LAYERS[index];
       const layerHeight = mapHeight * anchor.height;
@@ -2936,6 +3859,7 @@ export class NeighborhoodScene extends Phaser.Scene {
     this.nightOverlay.setPosition(0, 0).setSize(width, height);
     this.duskOverlay.setPosition(0, 0).setSize(width, height);
     this.weatherOverlay.setPosition(0, 0).setSize(width, height);
+    this.zoneTransitionCover?.setPosition(0, 0).setSize(width, height);
 
     this.shopOverlay.setPosition(overlayX, overlayY);
     this.shopPlaceholder.setSize(overlayWidth, overlayHeight);
@@ -2955,14 +3879,9 @@ export class NeighborhoodScene extends Phaser.Scene {
     this.shopOverlayScale = sourceScale;
     this.layoutShopArtwork();
     this.syncCookingSteamEmitters();
-    this.layoutPlayerOwner(centerX, mapTop + mapHeight * OWNER_MAP_Y_RATIO, unit);
+    this.layoutPlayerOwner(this.ownerWorldX, this.ownerWorldY, unit, characterUnit);
     this.transitionShopStage(stage, this.shopStage > 0);
 
-    const resized = width !== this.layoutWidth
-      || height !== this.layoutHeight
-      || mapWidth !== previousMapWidth
-      || mapHeight !== previousMapHeight
-      || mapTop !== previousMapTop;
     if (resized) {
       const camera = this.cameras.main;
       // Preserve normal gameplay's visible world center when the canvas resizes.
@@ -2972,12 +3891,13 @@ export class NeighborhoodScene extends Phaser.Scene {
       this.layoutWidth = width;
       this.layoutHeight = height;
       this.mapWidth = mapWidth;
-      camera.setBounds(0, 0, mapWidth, height, false);
+      this.setZoneCameraBounds(this.activeZone);
       const targetCenterX = this.shopDebugEnabled ? centerX : oldCenterX;
       camera.setScroll(camera.clampX(targetCenterX - camera.width / 2), 0);
       this.cameraViewportWidth = camera.width;
       this.walkers.forEach((walker) => {
-        walker.sprite.x = walker.positionRatio * mapWidth;
+        const zoneBounds = this.getWalkerZoneBounds(walker.zone);
+        walker.sprite.x = zoneBounds.left + walker.positionRatio * zoneBounds.width;
       });
       this.clouds.forEach((cloud, index) => {
         cloud.x = mapWidth * (0.05 + index * 0.19);
@@ -3001,16 +3921,21 @@ export class NeighborhoodScene extends Phaser.Scene {
 
     this.walkers.forEach((walker, index) => {
       walker.speed = getAmbientWalkerSpeed(index, walker.textureKey, unit);
-      const laneY = mapTop + mapHeight * WALKER_LANE_RATIOS[walker.lane] + Math.sin(index * 1.9) * 2 * unit;
+      const laneY = this.getWalkerLaneY(walker.lane, walker.zone) + Math.sin(index * 1.9) * 2 * unit;
       walker.shadow.setPosition(walker.sprite.x, laneY + 1.5 * unit)
         .setDisplaySize(walker.shadowWidth * walker.size * unit, walker.shadowHeight * walker.size * unit)
         .setDepth(getStreetCharacterDepth(laneY) - 0.02)
         .setVisible(walker.active);
+      const actorScale = walker.textureKey === "walk-street-cat" ? unit : characterUnit;
       walker.sprite.setPosition(walker.sprite.x, laneY)
-        .setDisplaySize(walker.width * walker.size * unit, walker.height * walker.size * unit)
+        .setDisplaySize(walker.width * walker.size * actorScale, walker.height * walker.size * actorScale)
         .setDepth(getStreetCharacterDepth(laneY))
         .setVisible(walker.active);
+      walker.speechBubble?.setPosition(walker.sprite.x, laneY - 101 * unit)
+        .setScale(unit)
+        .setDepth(getStreetCharacterDepth(laneY) + 0.0001);
     });
+    this.layoutTrafficBikes();
     this.clouds.forEach((cloud, index) => {
       cloud.sprite.setPosition(cloud.x, cloud.y).setDisplaySize(cloud.width * unit, cloud.height * unit);
       cloud.shadow.setPosition(cloud.x, mapTop + mapHeight * 0.805)
@@ -3026,11 +3951,29 @@ export class NeighborhoodScene extends Phaser.Scene {
       pigeon.sprite.setPosition(pigeon.x, pigeon.y).setDisplaySize(pigeon.width * unit, pigeon.height * unit);
       pigeon.shadow.setPosition(pigeon.x, pigeon.y + 1.5 * unit).setDisplaySize(pigeon.width * unit * 0.54, 5 * unit);
     });
-    this.syncCrowd(this.lastSnapshot.customers, centerX, groundY, cartWidth, unit);
+    // Keep order customers out of the sidewalk scene; the street crowd here is ambient walkers.
+    this.syncCrowd([], centerX, groundY, cartWidth, unit, characterUnit);
+    this.layoutMapTransitionSigns();
   }
 
   centerOnShop(): void {
     if (!this.mapWidth) return;
+    this.activeZone = "shop";
+    this.zoneTransitioning = false;
+    this.movementVector = { x: 0, y: 0 };
+    this.keyboardMovementVector = { x: 0, y: 0 };
+    if (this.zoneTransitionCover) {
+      this.tweens.killTweensOf(this.zoneTransitionCover);
+      this.zoneTransitionCover.setAlpha(0).setVisible(false);
+    }
+    this.ownerMoving = false;
+    this.ownerWorldX = this.cartX;
+    this.ownerWorldY = this.mapTop + this.mapHeight * OWNER_MAP_Y_RATIO;
+    this.ownerCharacter?.setPosition(this.ownerWorldX, this.ownerWorldY);
+    this.ownerShadow?.setPosition(this.ownerWorldX, this.ownerWorldY + 1.5 * this.unit);
+    this.syncPlayerOwnerAnimation();
+    this.setZoneCameraBounds("shop");
+    this.events.emit("street-zone-changed", "shop");
     const camera = this.cameras.main;
     camera.setScroll(camera.clampX(this.cartX - camera.width / 2), 0);
   }
@@ -3079,6 +4022,7 @@ export class NeighborhoodScene extends Phaser.Scene {
     groundY = this.getLogicalHeight() * 0.7,
     shopWidth = this.cartWidth,
     unit = this.unit,
+    characterUnit = this.characterUnit,
   ): void {
     const liveIds = new Set(customers.map((customer) => customer.id));
     for (const [id, container] of this.crowd) {
@@ -3099,21 +4043,22 @@ export class NeighborhoodScene extends Phaser.Scene {
       const walkKey = appearance.walkKey;
       const frontKey = appearance.key;
       const recipe = RECIPES[customer.recipe];
-      const targetX = centerX - shopWidth * 0.32 - index * 66 * unit;
+      const crowdGap = Math.max(66 * unit, CUSTOMER_DISPLAY_WIDTH * characterUnit * 1.08);
+      const targetX = centerX - shopWidth * 0.32 - index * crowdGap;
 
       if (!container) {
         const shadow = this.add.image(0, 1.5 * unit, "character-contact-shadow-soft")
           .setDisplaySize(38 * unit, 11 * unit)
           .setAlpha(0.8);
         const sprite = this.add.sprite(0, 0, walkKey, getWalkerStartFrame(walkKey, 1)).setOrigin(0.5, getWalkerOriginY(walkKey));
-        const label = this.add.text(0, -92 * unit, appearance.shortName, {
+        const label = this.add.text(0, -98 * characterUnit, appearance.shortName, {
           fontFamily: "Trebuchet MS, sans-serif",
           fontSize: `${Math.max(9, 10 * unit)}px`,
           color: "#3f3023",
           backgroundColor: "#fff4dc",
           padding: { x: 5, y: 3 },
         }).setOrigin(0.5, 1);
-        const orderTag = this.add.text(0, -108 * unit, recipe.name, {
+        const orderTag = this.add.text(0, -116 * characterUnit, recipe.name, {
           fontFamily: "Trebuchet MS, sans-serif",
           fontSize: `${Math.max(8, 9 * unit)}px`,
           color: "#ffffff",
@@ -3149,9 +4094,9 @@ export class NeighborhoodScene extends Phaser.Scene {
       const label = container.getAt(2) as Phaser.GameObjects.Text;
       const orderTag = container.getAt(3) as Phaser.GameObjects.Text;
       shadow.setDisplaySize(38 * unit, 11 * unit).setPosition(0, 1.5 * unit);
-      sprite.setDisplaySize(CUSTOMER_DISPLAY_WIDTH * unit, CUSTOMER_DISPLAY_HEIGHT * unit);
-      label.setY(-92 * unit).setFontSize(`${Math.max(9, 10 * unit)}px`).setText(appearance.shortName);
-      orderTag.setY(-108 * unit).setFontSize(`${Math.max(8, 9 * unit)}px`).setText(recipe.name);
+      sprite.setDisplaySize(CUSTOMER_DISPLAY_WIDTH * characterUnit, CUSTOMER_DISPLAY_HEIGHT * characterUnit);
+      label.setY(-98 * characterUnit).setFontSize(`${Math.max(9, 10 * unit)}px`).setText(appearance.shortName);
+      orderTag.setY(-116 * characterUnit).setFontSize(`${Math.max(8, 9 * unit)}px`).setText(recipe.name);
       const isWalking = motion.moving || customer.status === "walking";
       if (isWalking) {
         const direction: -1 | 1 = targetX >= container.x ? 1 : -1;
@@ -3164,8 +4109,8 @@ export class NeighborhoodScene extends Phaser.Scene {
             CUSTOMER_DISPLAY_HEIGHT,
           );
           sprite.setScale(
-            (CUSTOMER_DISPLAY_WIDTH * unit / CUSTOMER_FRAME_WIDTH) * visualScale,
-            (CUSTOMER_DISPLAY_HEIGHT * unit / getWalkerFrameHeight(walkKey)) * visualScale,
+            (CUSTOMER_DISPLAY_WIDTH * characterUnit / CUSTOMER_FRAME_WIDTH) * visualScale,
+            (CUSTOMER_DISPLAY_HEIGHT * characterUnit / getWalkerFrameHeight(walkKey)) * visualScale,
           );
           sprite.y = 0;
           sprite.setTexture(walkKey, getWalkerStartFrame(walkKey, direction));
@@ -3188,11 +4133,11 @@ export class NeighborhoodScene extends Phaser.Scene {
       const normalizedFrameHeight = isWalking ? getWalkerFrameHeight(walkKey) : CUSTOMER_FRAME_HEIGHT;
       setCharacterDisplaySize(
         sprite,
-        CUSTOMER_DISPLAY_WIDTH * unit,
-        CUSTOMER_DISPLAY_HEIGHT * unit,
+        CUSTOMER_DISPLAY_WIDTH * characterUnit,
+        CUSTOMER_DISPLAY_HEIGHT * characterUnit,
         normalizedFrameHeight,
         normalizedHeight,
-        CHARACTER_TARGET_VISIBLE_HEIGHT * unit,
+        CHARACTER_TARGET_VISIBLE_HEIGHT * characterUnit,
       );
       const showOrder = index === 0 && !isWalking;
       label.setVisible(showOrder);
@@ -3213,8 +4158,8 @@ export class NeighborhoodScene extends Phaser.Scene {
       CUSTOMER_DISPLAY_HEIGHT,
     );
     sprite.setScale(
-      (CUSTOMER_DISPLAY_WIDTH * this.unit / CUSTOMER_FRAME_WIDTH) * visualScale,
-      (CUSTOMER_DISPLAY_HEIGHT * this.unit / getWalkerFrameHeight(walkKey)) * visualScale,
+      (CUSTOMER_DISPLAY_WIDTH * this.characterUnit / CUSTOMER_FRAME_WIDTH) * visualScale,
+      (CUSTOMER_DISPLAY_HEIGHT * this.characterUnit / getWalkerFrameHeight(walkKey)) * visualScale,
     );
     sprite.y = 0;
     sprite.setTexture(walkKey, getWalkerStartFrame(walkKey, direction)).play(`${walkKey}-${direction > 0 ? "right" : "left"}`);
