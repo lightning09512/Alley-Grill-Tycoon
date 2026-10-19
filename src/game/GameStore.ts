@@ -21,7 +21,17 @@ import {
   type Inventory,
   type RecipeId,
 } from "./data";
-import { diningArrivalSeconds, diningPartyForArrival, diningTravelSeconds, type DiningPartyType } from "./diningCharacters";
+import {
+  cloneDiningPartySelectionState,
+  createDiningPartySelectionState,
+  diningArrivalSeconds,
+  diningFamilyContext,
+  diningPartyForArrival,
+  diningTravelSeconds,
+  restoreDiningPartySelectionState,
+  type DiningPartySelectionState,
+  type DiningPartyType,
+} from "./diningCharacters";
 import { diningArrivalDialogue, diningConversationDialogue, diningOrderDialogue } from "./diningDialogues";
 import { formatVndFromThousands } from "./currency";
 
@@ -90,6 +100,13 @@ export interface DiningDialogueEvent {
   endsAt: number;
 }
 
+export interface CashCollectionEvent {
+  id: number;
+  amount: number;
+  source: "street" | "dining";
+  tableId?: number;
+}
+
 export interface DiningState {
   tables: DiningTable[];
   guests: DiningGuest[];
@@ -136,6 +153,7 @@ export interface GameSnapshot {
   emergencyRestockAvailable: boolean;
   serviceMode: ServiceMode;
   dining: DiningState;
+  cashCollection: CashCollectionEvent | null;
 }
 
 interface SavedGame {
@@ -148,6 +166,7 @@ interface SavedGame {
   inventory: Inventory;
   totalServed: number;
   diningDialogueNumber?: number;
+  diningPartySelection?: DiningPartySelectionState;
   lastSavedAt: number;
 }
 
@@ -208,15 +227,19 @@ export class GameStore {
   private staffClock = 0;
   private customerId = 0;
   private diningPartyNumber = 0;
+  private diningPartySelection = createDiningPartySelectionState();
   private diningDialogueNumber = 0;
   private diningConversationNumber = 0;
   private diningConversationClock = 0;
   private diningDialogueId = 0;
   private diningDialogueAvailableAt = 0;
   private pendingDiningDialogues: { event: DiningDialogueEvent; startsAt: number }[] = [];
+  private cashCollectionId = 0;
+  private cashCollection: CashCollectionEvent | null = null;
   private lastPersistAt = 0;
   private totalServed = 0;
   private serviceMode: ServiceMode = "street";
+  private streetDemandMultiplier = 1;
   private dining = createDiningState();
   private readonly listeners = new Set<(snapshot: GameSnapshot) => void>();
 
@@ -255,6 +278,7 @@ export class GameStore {
       totalServed: this.totalServed,
       emergencyRestockAvailable: this.coins < RESTOCK_PACK_COST && !this.canMakeAnyRecipe(),
       serviceMode: this.serviceMode,
+      cashCollection: this.cashCollection ? { ...this.cashCollection } : null,
       dining: {
         ...this.dining,
         dialogueEvent: this.dining.dialogueEvent ? { ...this.dining.dialogueEvent } : null,
@@ -275,6 +299,10 @@ export class GameStore {
       ? "Khách sẽ tự vào và chọn bàn trống. Chạm khách để xem lời gọi món."
       : "Bạn đang ở ngoài phố; vòng phục vụ tại quầy vẫn giữ nguyên.";
     this.publish();
+  }
+
+  setStreetDemandMultiplier(multiplier: number): void {
+    this.streetDemandMultiplier = Math.max(0.65, Math.min(1.25, multiplier));
   }
 
   selectDiningTable(tableId: number): void {
@@ -720,7 +748,8 @@ export class GameStore {
       this.assembly = [];
       this.feedback = "Có khách đi mất vì đợi lâu. Nâng cấp quán hoặc nhờ phụ bếp để phục vụ nhanh hơn.";
     }
-    if (this.arrivalClock >= CUSTOMER_ARRIVAL_SECONDS) {
+    const arrivalInterval = Math.max(1, Math.round(CUSTOMER_ARRIVAL_SECONDS / this.streetDemandMultiplier));
+    if (this.arrivalClock >= arrivalInterval) {
       this.arrivalClock = 0;
       if (this.customers.length < 3) this.customers.push(this.makeCustomer());
     }
@@ -851,10 +880,13 @@ export class GameStore {
     if (!this.inShift || this.serviceMode !== "dining") return;
     const unlockedTableCount = getDiningTableCapacity();
     const nextPartyNumber = this.diningPartyNumber + 1;
-    const party = diningPartyForArrival(nextPartyNumber);
+    const previousSelectionState = cloneDiningPartySelectionState(this.diningPartySelection);
+    const party = diningPartyForArrival(this.diningPartySelection);
     let partySize = party.characterIds.length;
+    const usesBackFacingSeat = (size: number) => size === 4
+      || (size === 3 && party.characterIds.length === 3 && party.hasBackFacingGuest);
     const preferredSeatOrder = (size: number): readonly number[] => {
-      if (size <= 2 || (size === 3 && !party.hasBackFacingGuest)) return [1, 3, 0];
+      if (size <= 2 || !usesBackFacingSeat(size)) return [1, 3, 0];
       return [1, 3, 2, 0];
     };
     const findTableForParty = (size: number) => this.dining.tables
@@ -868,16 +900,17 @@ export class GameStore {
       partySize -= 1;
       table = findTableForParty(partySize);
     }
-    if (!table) return;
+    if (!table) {
+      this.diningPartySelection = previousSelectionState;
+      return;
+    }
 
     this.diningPartyNumber = nextPartyNumber;
     this.diningDialogueNumber += 1;
     const partyId = `dining-party-${this.diningPartyNumber}`;
     const memberCharacterIds = party.characterIds.slice(0, partySize);
-    const familyHasFather = memberCharacterIds.some((characterId) =>
-      characterId === "saigon-older-regular" || characterId === "saigon-comic-uncle",
-    );
-    const arrivalDialogue = diningArrivalDialogue(party.type, this.diningDialogueNumber, partySize, familyHasFather);
+    const familyContext = diningFamilyContext(memberCharacterIds);
+    const arrivalDialogue = diningArrivalDialogue(party.type, this.diningDialogueNumber, partySize, familyContext, memberCharacterIds);
     const seatIndices = preferredSeatOrder(partySize).filter((index) => table!.seats[index].status === "empty").slice(0, partySize);
     memberCharacterIds.forEach((characterId, memberIndex) => {
       const customer = this.makeCustomer();
@@ -889,7 +922,8 @@ export class GameStore {
         this.diningDialogueNumber,
         partySize,
         memberIndex,
-        familyHasFather,
+        familyContext,
+        memberCharacterIds,
       );
       seat.status = "reserved";
       seat.guestId = guestId;
@@ -966,7 +1000,7 @@ export class GameStore {
 
     const partyMap = new Map<string, DiningGuest[]>();
     for (const guest of this.dining.guests) {
-      if (!["waiting-order", "waiting-food", "eating"].includes(guest.status)) continue;
+      if (!["waiting-order", "waiting-food", "eating", "awaiting-payment"].includes(guest.status)) continue;
       const party = partyMap.get(guest.partyId) ?? [];
       party.push(guest);
       partyMap.set(guest.partyId, party);
@@ -978,11 +1012,20 @@ export class GameStore {
     const party = parties[this.diningConversationNumber % parties.length];
     const partyLeader = party[0];
     if (!partyLeader) return;
+    const phase = party.some((member) => member.status === "eating")
+      ? "eating"
+      : party.some((member) => member.status === "awaiting-payment")
+        ? "awaiting-payment"
+      : party.some((member) => member.status === "waiting-food")
+        ? "waiting-food"
+        : "waiting-order";
     const conversation = diningConversationDialogue(
       partyLeader.partyType,
       this.diningDialogueNumber * 17 + this.diningConversationNumber,
       party.length,
-      party.some((member) => member.characterId === "saigon-older-regular"),
+      diningFamilyContext(party.map((member) => member.characterId)),
+      phase,
+      party.map((member) => member.characterId),
     );
     const speaker = party[conversation.speakerIndex];
     const replySpeaker = party[conversation.replySpeakerIndex];
@@ -1025,6 +1068,12 @@ export class GameStore {
       member.transitionSeconds = transitionSeconds;
     }
     this.coins += revenue + tip;
+    this.cashCollection = {
+      id: ++this.cashCollectionId,
+      amount: revenue + tip,
+      source: "dining",
+      tableId: guest.tableId,
+    };
     this.shiftRevenue += revenue;
     this.shiftTips += tip;
     this.shiftServed += partyOrders.length;
@@ -1217,6 +1266,11 @@ export class GameStore {
 
     for (const ingredient of recipe.ingredients) this.inventory[ingredient] -= 1;
     this.coins += recipe.salePrice + tip;
+    this.cashCollection = {
+      id: ++this.cashCollectionId,
+      amount: recipe.salePrice + tip,
+      source: "street",
+    };
     this.shiftRevenue += recipe.salePrice;
     this.shiftTips += tip;
     this.shiftIngredientCosts += ingredientCost;
@@ -1252,6 +1306,7 @@ export class GameStore {
       this.diningDialogueNumber = Number.isFinite(saved.diningDialogueNumber)
         ? Math.max(0, Math.trunc(saved.diningDialogueNumber!))
         : 0;
+      this.diningPartySelection = restoreDiningPartySelectionState(saved.diningPartySelection);
 
       if (this.hasStaff && Number.isFinite(saved.lastSavedAt)) {
         const elapsedMinutes = Math.min(
@@ -1282,6 +1337,7 @@ export class GameStore {
       inventory: this.inventory,
       totalServed: this.totalServed,
       diningDialogueNumber: this.diningDialogueNumber,
+      diningPartySelection: cloneDiningPartySelectionState(this.diningPartySelection),
       lastSavedAt: this.lastPersistAt,
     };
     try {

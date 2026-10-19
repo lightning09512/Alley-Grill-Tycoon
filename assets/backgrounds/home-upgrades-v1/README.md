@@ -8,6 +8,7 @@ Bộ này có 12 asset nhà PNG nền trong suốt, đi từ chỗ ở tạm đ�
 - Cấp 1–11: **1120×620 px**, ghép tại **x=836, y=490**.
 - Cấp 12 là biệt thự cỡ lớn: **1240×680 px**, ghép tại **x=776, y=430**.
 - Cả 12 cấp có chung đường chân tại hàng **1108** trên map.
+- Cấp 7–11 đã được vẽ lại với kích thước tăng dần, nền trong suốt và chân nhà căn theo cùng đường nền. Cấp 7 nối tiếp dáng nhà cấp 6; cấp 10 là nhà phố hiện đại vừa phải; cấp 11 là biệt thự rõ nét hơn, còn cấp 12 vẫn lớn nhất.
 - Dùng một PNG cấp nhà ở mỗi lần nâng cấp; mỗi cấp thay thế cùng vị trí trên lô đất.
 
 ## Các cấp

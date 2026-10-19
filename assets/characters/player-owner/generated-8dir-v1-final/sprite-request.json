@@ -1,0 +1,293 @@
+{
+  "version": 1,
+  "kind": "sprite-gen-request",
+  "engine": "component-row",
+  "character": {
+    "id": "player-owner-8dir-v1",
+    "description": "Young chibi Vietnamese restaurant owner: tousled black hair, blue shirt, dark olive apron, dark trousers, light sneakers, matching the existing player-owner art.",
+    "base_image": "base-source.jpg"
+  },
+  "cell": {
+    "shape": "rect",
+    "width": 247,
+    "height": 396,
+    "safe_margin_x": 23,
+    "safe_margin_y": 37
+  },
+  "chroma_key": {
+    "name": "cyan",
+    "hex": "#00FFFF",
+    "rgb": [
+      0,
+      255,
+      255
+    ],
+    "selection": "auto",
+    "score": 234.56,
+    "min_subject_distance": 220.41,
+    "background": {
+      "mode": "flat",
+      "hex": "#000000",
+      "rgb": [
+        0,
+        0,
+        0
+      ],
+      "opaque_border_fraction": 1.0,
+      "border_coverage": 1.0,
+      "enclosed_background_pixels": 358,
+      "enclosed_material_pixels": 183,
+      "subject_pixels": 7672
+    },
+    "candidates": [
+      {
+        "name": "magenta",
+        "hex": "#FF00FF",
+        "score": 216.79,
+        "min_subject_distance": 205.52,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "green",
+        "hex": "#00FF00",
+        "score": 201.2,
+        "min_subject_distance": 198.24,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "cyan",
+        "hex": "#00FFFF",
+        "score": 234.56,
+        "min_subject_distance": 220.41,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "blue",
+        "hex": "#004DFF",
+        "score": 171.42,
+        "min_subject_distance": 164.55,
+        "clears_erase_radius": true
+      }
+    ],
+    "selection_reason": "highest 1st-percentile subject distance among the 4 candidate(s) clearing the 96 erase radius"
+  },
+  "states": {
+    "n_idle": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "Full-body standing idle viewed from exactly this direction: back view facing away from the viewer; oriented toward screen-up. Neutral relaxed posture, subtle breathing and one natural blink when the face is visible. Feet planted in the same spot; no stepping or turning. Seamless four-frame loop."
+    },
+    "ne_idle": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "Full-body standing idle viewed from exactly this direction: three-quarter back view, facing away from the viewer and toward screen-right. Neutral relaxed posture, subtle breathing and one natural blink when the face is visible. Feet planted in the same spot; no stepping or turning. Seamless four-frame loop."
+    },
+    "e_idle": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "Full-body standing idle viewed from exactly this direction: pure right-facing side profile. Neutral relaxed posture, subtle breathing and one natural blink when the face is visible. Feet planted in the same spot; no stepping or turning. Seamless four-frame loop."
+    },
+    "se_idle": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "Full-body standing idle viewed from exactly this direction: three-quarter front view, facing toward the viewer and toward screen-right. Neutral relaxed posture, subtle breathing and one natural blink when the face is visible. Feet planted in the same spot; no stepping or turning. Seamless four-frame loop."
+    },
+    "s_idle": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "Full-body standing idle viewed from exactly this direction: front view facing the viewer; oriented toward screen-down. Neutral relaxed posture, subtle breathing and one natural blink when the face is visible. Feet planted in the same spot; no stepping or turning. Seamless four-frame loop."
+    },
+    "sw_idle": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "Full-body standing idle viewed from exactly this direction: three-quarter front view, facing toward the viewer and toward screen-left. Neutral relaxed posture, subtle breathing and one natural blink when the face is visible. Feet planted in the same spot; no stepping or turning. Seamless four-frame loop."
+    },
+    "w_idle": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "Full-body standing idle viewed from exactly this direction: pure left-facing side profile. Neutral relaxed posture, subtle breathing and one natural blink when the face is visible. Feet planted in the same spot; no stepping or turning. Seamless four-frame loop."
+    },
+    "nw_idle": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "Full-body standing idle viewed from exactly this direction: three-quarter back view, facing away from the viewer and toward screen-left. Neutral relaxed posture, subtle breathing and one natural blink when the face is visible. Feet planted in the same spot; no stepping or turning. Seamless four-frame loop."
+    },
+    "n_idle_glance": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "Full-body stationary idle viewed from exactly this direction: back view facing away from the viewer; oriented toward screen-up. Make a tiny eye glance and slight head glance; on back views use only a very small head or shoulder glance and never reveal the face. Keep the torso and feet facing the same direction and planted in place. Return close to the opening pose for a seamless four-frame loop."
+    },
+    "ne_idle_glance": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "Full-body stationary idle viewed from exactly this direction: three-quarter back view, facing away from the viewer and toward screen-right. Make a tiny eye glance and slight head glance; on back views use only a very small head or shoulder glance and never reveal the face. Keep the torso and feet facing the same direction and planted in place. Return close to the opening pose for a seamless four-frame loop."
+    },
+    "e_idle_glance": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "Full-body stationary idle viewed from exactly this direction: pure right-facing side profile. Make a tiny eye glance and slight head glance; on back views use only a very small head or shoulder glance and never reveal the face. Keep the torso and feet facing the same direction and planted in place. Return close to the opening pose for a seamless four-frame loop."
+    },
+    "se_idle_glance": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "Full-body stationary idle viewed from exactly this direction: three-quarter front view, facing toward the viewer and toward screen-right. Make a tiny eye glance and slight head glance; on back views use only a very small head or shoulder glance and never reveal the face. Keep the torso and feet facing the same direction and planted in place. Return close to the opening pose for a seamless four-frame loop."
+    },
+    "s_idle_glance": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "Full-body stationary idle viewed from exactly this direction: front view facing the viewer; oriented toward screen-down. Make a tiny eye glance and slight head glance; on back views use only a very small head or shoulder glance and never reveal the face. Keep the torso and feet facing the same direction and planted in place. Return close to the opening pose for a seamless four-frame loop."
+    },
+    "sw_idle_glance": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "Full-body stationary idle viewed from exactly this direction: three-quarter front view, facing toward the viewer and toward screen-left. Make a tiny eye glance and slight head glance; on back views use only a very small head or shoulder glance and never reveal the face. Keep the torso and feet facing the same direction and planted in place. Return close to the opening pose for a seamless four-frame loop."
+    },
+    "w_idle_glance": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "Full-body stationary idle viewed from exactly this direction: pure left-facing side profile. Make a tiny eye glance and slight head glance; on back views use only a very small head or shoulder glance and never reveal the face. Keep the torso and feet facing the same direction and planted in place. Return close to the opening pose for a seamless four-frame loop."
+    },
+    "nw_idle_glance": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "Full-body stationary idle viewed from exactly this direction: three-quarter back view, facing away from the viewer and toward screen-left. Make a tiny eye glance and slight head glance; on back views use only a very small head or shoulder glance and never reveal the face. Keep the torso and feet facing the same direction and planted in place. Return close to the opening pose for a seamless four-frame loop."
+    },
+    "n_idle_apron_shift": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "Full-body stationary idle viewed from exactly this direction: back view facing away from the viewer; oriented toward screen-up. Gently shift body weight and make a small natural touch or smoothing motion at the apron side or visible tie, then return close to the opening pose. Do not turn toward the viewer, step, or add props. Seamless four-frame loop."
+    },
+    "ne_idle_apron_shift": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "Full-body stationary idle viewed from exactly this direction: three-quarter back view, facing away from the viewer and toward screen-right. Gently shift body weight and make a small natural touch or smoothing motion at the apron side or visible tie, then return close to the opening pose. Do not turn toward the viewer, step, or add props. Seamless four-frame loop."
+    },
+    "e_idle_apron_shift": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "Full-body stationary idle viewed from exactly this direction: pure right-facing side profile. Gently shift body weight and make a small natural touch or smoothing motion at the apron side or visible tie, then return close to the opening pose. Do not turn toward the viewer, step, or add props. Seamless four-frame loop."
+    },
+    "se_idle_apron_shift": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "Full-body stationary idle viewed from exactly this direction: three-quarter front view, facing toward the viewer and toward screen-right. Gently shift body weight and make a small natural touch or smoothing motion at the apron side or visible tie, then return close to the opening pose. Do not turn toward the viewer, step, or add props. Seamless four-frame loop."
+    },
+    "s_idle_apron_shift": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "Full-body stationary idle viewed from exactly this direction: front view facing the viewer; oriented toward screen-down. Gently shift body weight and make a small natural touch or smoothing motion at the apron side or visible tie, then return close to the opening pose. Do not turn toward the viewer, step, or add props. Seamless four-frame loop."
+    },
+    "sw_idle_apron_shift": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "Full-body stationary idle viewed from exactly this direction: three-quarter front view, facing toward the viewer and toward screen-left. Gently shift body weight and make a small natural touch or smoothing motion at the apron side or visible tie, then return close to the opening pose. Do not turn toward the viewer, step, or add props. Seamless four-frame loop."
+    },
+    "w_idle_apron_shift": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "Full-body stationary idle viewed from exactly this direction: pure left-facing side profile. Gently shift body weight and make a small natural touch or smoothing motion at the apron side or visible tie, then return close to the opening pose. Do not turn toward the viewer, step, or add props. Seamless four-frame loop."
+    },
+    "nw_idle_apron_shift": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "Full-body stationary idle viewed from exactly this direction: three-quarter back view, facing away from the viewer and toward screen-left. Gently shift body weight and make a small natural touch or smoothing motion at the apron side or visible tie, then return close to the opening pose. Do not turn toward the viewer, step, or add props. Seamless four-frame loop."
+    },
+    "n_walk": {
+      "frames": 8,
+      "fps": 6,
+      "loop": true,
+      "action": "Full-body walk-in-place cycle viewed from exactly this direction: back view facing away from the viewer; oriented toward screen-up. The gait implies travel along that screen compass direction while the character stays centered in the sprite cell. Show eight distinct consecutive gait phases with alternating left/right foot contacts, natural arm counter-swing, subtle torso bob and small hair/apron follow-through. Keep face, hair, clothes, proportions, direction and foot baseline consistent. No sliding, no turning, no camera movement. Seamless cyclic walk."
+    },
+    "ne_walk": {
+      "frames": 8,
+      "fps": 6,
+      "loop": true,
+      "action": "Full-body walk-in-place cycle viewed from exactly this direction: three-quarter back view, facing away from the viewer and toward screen-right. The gait implies travel along that screen compass direction while the character stays centered in the sprite cell. Show eight distinct consecutive gait phases with alternating left/right foot contacts, natural arm counter-swing, subtle torso bob and small hair/apron follow-through. Keep face, hair, clothes, proportions, direction and foot baseline consistent. No sliding, no turning, no camera movement. Seamless cyclic walk."
+    },
+    "e_walk": {
+      "frames": 8,
+      "fps": 6,
+      "loop": true,
+      "action": "Full-body walk-in-place cycle viewed from exactly this direction: pure right-facing side profile. The gait implies travel along that screen compass direction while the character stays centered in the sprite cell. Show eight distinct consecutive gait phases with alternating left/right foot contacts, natural arm counter-swing, subtle torso bob and small hair/apron follow-through. Keep face, hair, clothes, proportions, direction and foot baseline consistent. No sliding, no turning, no camera movement. Seamless cyclic walk."
+    },
+    "se_walk": {
+      "frames": 8,
+      "fps": 6,
+      "loop": true,
+      "action": "Full-body walk-in-place cycle viewed from exactly this direction: three-quarter front view, facing toward the viewer and toward screen-right. The gait implies travel along that screen compass direction while the character stays centered in the sprite cell. Show eight distinct consecutive gait phases with alternating left/right foot contacts, natural arm counter-swing, subtle torso bob and small hair/apron follow-through. Keep face, hair, clothes, proportions, direction and foot baseline consistent. No sliding, no turning, no camera movement. Seamless cyclic walk."
+    },
+    "s_walk": {
+      "frames": 8,
+      "fps": 6,
+      "loop": true,
+      "action": "Full-body walk-in-place cycle viewed from exactly this direction: front view facing the viewer; oriented toward screen-down. The gait implies travel along that screen compass direction while the character stays centered in the sprite cell. Show eight distinct consecutive gait phases with alternating left/right foot contacts, natural arm counter-swing, subtle torso bob and small hair/apron follow-through. Keep face, hair, clothes, proportions, direction and foot baseline consistent. No sliding, no turning, no camera movement. Seamless cyclic walk."
+    },
+    "sw_walk": {
+      "frames": 8,
+      "fps": 6,
+      "loop": true,
+      "action": "Full-body walk-in-place cycle viewed from exactly this direction: three-quarter front view, facing toward the viewer and toward screen-left. The gait implies travel along that screen compass direction while the character stays centered in the sprite cell. Show eight distinct consecutive gait phases with alternating left/right foot contacts, natural arm counter-swing, subtle torso bob and small hair/apron follow-through. Keep face, hair, clothes, proportions, direction and foot baseline consistent. No sliding, no turning, no camera movement. Seamless cyclic walk."
+    },
+    "w_walk": {
+      "frames": 8,
+      "fps": 6,
+      "loop": true,
+      "action": "Full-body walk-in-place cycle viewed from exactly this direction: pure left-facing side profile. The gait implies travel along that screen compass direction while the character stays centered in the sprite cell. Show eight distinct consecutive gait phases with alternating left/right foot contacts, natural arm counter-swing, subtle torso bob and small hair/apron follow-through. Keep face, hair, clothes, proportions, direction and foot baseline consistent. No sliding, no turning, no camera movement. Seamless cyclic walk."
+    },
+    "nw_walk": {
+      "frames": 8,
+      "fps": 6,
+      "loop": true,
+      "action": "Full-body walk-in-place cycle viewed from exactly this direction: three-quarter back view, facing away from the viewer and toward screen-left. The gait implies travel along that screen compass direction while the character stays centered in the sprite cell. Show eight distinct consecutive gait phases with alternating left/right foot contacts, natural arm counter-swing, subtle torso bob and small hair/apron follow-through. Keep face, hair, clothes, proportions, direction and foot baseline consistent. No sliding, no turning, no camera movement. Seamless cyclic walk."
+    }
+  },
+  "style": "Polished 2.5D chibi game character sprite, matching the existing Banh Mi Pho player-owner art: warm soft cel-shading, crisp clean outline, expressive face, rich but natural colors. Preserve the exact identity and clothing of the attached reference: tousled black hair, blue shirt, white undershirt, dark olive apron with straps, dark trousers, light sneakers and small earrings. Full-body character, same scale and proportions in every frame.",
+  "directions": {
+    "set": [
+      "n",
+      "ne",
+      "e",
+      "se",
+      "s",
+      "sw",
+      "w",
+      "nw"
+    ],
+    "mirror": {},
+    "anchor_suffix": "idle"
+  },
+  "layout": "taxonomy/v1",
+  "fit": {
+    "align_y": "bottom",
+    "ground_frames": true
+  },
+  "chroma": {
+    "mode": "rgb",
+    "unmix_reach": 4,
+    "spill_max_fraction": 0.005
+  }
+}

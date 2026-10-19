@@ -1,0 +1,1692 @@
+{
+  "schema": "player-owner-sprite-set/v1",
+  "characterId": "player-owner",
+  "version": "generated-8dir-v1",
+  "cell": {
+    "width": 247,
+    "height": 396,
+    "anchor": {
+      "x": 123.5,
+      "y": 396,
+      "origin": "bottom-center"
+    }
+  },
+  "background": "transparent RGBA",
+  "atlas": {
+    "path": "sprite-sheet-alpha.png",
+    "width": 1976,
+    "height": 12672,
+    "runtimeManifest": "manifest.json",
+    "rowsGroupedBy": [
+      "idle_base",
+      "idle_glance",
+      "idle_apron",
+      "walk"
+    ]
+  },
+  "directions": [
+    "n",
+    "ne",
+    "e",
+    "se",
+    "s",
+    "sw",
+    "w",
+    "nw"
+  ],
+  "animations": [
+    {
+      "id": "idle_base_n",
+      "direction": "n",
+      "state": "idle",
+      "runtimeState": "n_idle",
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "framePaths": [
+        "frames/n_idle-frame-0.png",
+        "frames/n_idle-frame-1.png",
+        "frames/n_idle-frame-2.png",
+        "frames/n_idle-frame-3.png"
+      ],
+      "previewGif": "previews/n_idle.gif",
+      "anchorImage": "references/anchors/n-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 0,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 0,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 0,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.0
+    },
+    {
+      "id": "idle_base_ne",
+      "direction": "ne",
+      "state": "idle",
+      "runtimeState": "ne_idle",
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "framePaths": [
+        "frames/ne_idle-frame-0.png",
+        "frames/ne_idle-frame-1.png",
+        "frames/ne_idle-frame-2.png",
+        "frames/ne_idle-frame-3.png"
+      ],
+      "previewGif": "previews/ne_idle.gif",
+      "anchorImage": "references/anchors/ne-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 396,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 396,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 396,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 396,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.0
+    },
+    {
+      "id": "idle_base_e",
+      "direction": "e",
+      "state": "idle",
+      "runtimeState": "e_idle",
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "framePaths": [
+        "frames/e_idle-frame-0.png",
+        "frames/e_idle-frame-1.png",
+        "frames/e_idle-frame-2.png",
+        "frames/e_idle-frame-3.png"
+      ],
+      "previewGif": "previews/e_idle.gif",
+      "anchorImage": "references/anchors/e-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 792,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 792,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 792,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 792,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.0
+    },
+    {
+      "id": "idle_base_se",
+      "direction": "se",
+      "state": "idle",
+      "runtimeState": "se_idle",
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "framePaths": [
+        "frames/se_idle-frame-0.png",
+        "frames/se_idle-frame-1.png",
+        "frames/se_idle-frame-2.png",
+        "frames/se_idle-frame-3.png"
+      ],
+      "previewGif": "previews/se_idle.gif",
+      "anchorImage": "references/anchors/se-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 1188,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 1188,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 1188,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 1188,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.0
+    },
+    {
+      "id": "idle_base_s",
+      "direction": "s",
+      "state": "idle",
+      "runtimeState": "s_idle",
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "framePaths": [
+        "frames/s_idle-frame-0.png",
+        "frames/s_idle-frame-1.png",
+        "frames/s_idle-frame-2.png",
+        "frames/s_idle-frame-3.png"
+      ],
+      "previewGif": "previews/s_idle.gif",
+      "anchorImage": "references/anchors/s-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 1584,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 1584,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 1584,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 1584,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.0
+    },
+    {
+      "id": "idle_base_sw",
+      "direction": "sw",
+      "state": "idle",
+      "runtimeState": "sw_idle",
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "framePaths": [
+        "frames/sw_idle-frame-0.png",
+        "frames/sw_idle-frame-1.png",
+        "frames/sw_idle-frame-2.png",
+        "frames/sw_idle-frame-3.png"
+      ],
+      "previewGif": "previews/sw_idle.gif",
+      "anchorImage": "references/anchors/sw-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 1980,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 1980,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 1980,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 1980,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.0
+    },
+    {
+      "id": "idle_base_w",
+      "direction": "w",
+      "state": "idle",
+      "runtimeState": "w_idle",
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "framePaths": [
+        "frames/w_idle-frame-0.png",
+        "frames/w_idle-frame-1.png",
+        "frames/w_idle-frame-2.png",
+        "frames/w_idle-frame-3.png"
+      ],
+      "previewGif": "previews/w_idle.gif",
+      "anchorImage": "references/anchors/w-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 2376,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 2376,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 2376,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 2376,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.0
+    },
+    {
+      "id": "idle_base_nw",
+      "direction": "nw",
+      "state": "idle",
+      "runtimeState": "nw_idle",
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "framePaths": [
+        "frames/nw_idle-frame-0.png",
+        "frames/nw_idle-frame-1.png",
+        "frames/nw_idle-frame-2.png",
+        "frames/nw_idle-frame-3.png"
+      ],
+      "previewGif": "previews/nw_idle.gif",
+      "anchorImage": "references/anchors/nw-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 2772,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 2772,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 2772,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 2772,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.0
+    },
+    {
+      "id": "idle_glance_n",
+      "direction": "n",
+      "state": "idle_glance",
+      "runtimeState": "n_idle_glance",
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "framePaths": [
+        "frames/n_idle_glance-frame-0.png",
+        "frames/n_idle_glance-frame-1.png",
+        "frames/n_idle_glance-frame-2.png",
+        "frames/n_idle_glance-frame-3.png"
+      ],
+      "previewGif": "previews/n_idle_glance.gif",
+      "anchorImage": "references/anchors/n-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 3168,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 3168,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 3168,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 3168,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.0
+    },
+    {
+      "id": "idle_glance_ne",
+      "direction": "ne",
+      "state": "idle_glance",
+      "runtimeState": "ne_idle_glance",
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "framePaths": [
+        "frames/ne_idle_glance-frame-0.png",
+        "frames/ne_idle_glance-frame-1.png",
+        "frames/ne_idle_glance-frame-2.png",
+        "frames/ne_idle_glance-frame-3.png"
+      ],
+      "previewGif": "previews/ne_idle_glance.gif",
+      "anchorImage": "references/anchors/ne-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 3564,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 3564,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 3564,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 3564,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.0
+    },
+    {
+      "id": "idle_glance_e",
+      "direction": "e",
+      "state": "idle_glance",
+      "runtimeState": "e_idle_glance",
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "framePaths": [
+        "frames/e_idle_glance-frame-0.png",
+        "frames/e_idle_glance-frame-1.png",
+        "frames/e_idle_glance-frame-2.png",
+        "frames/e_idle_glance-frame-3.png"
+      ],
+      "previewGif": "previews/e_idle_glance.gif",
+      "anchorImage": "references/anchors/e-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 3960,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 3960,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 3960,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 3960,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.0
+    },
+    {
+      "id": "idle_glance_se",
+      "direction": "se",
+      "state": "idle_glance",
+      "runtimeState": "se_idle_glance",
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "framePaths": [
+        "frames/se_idle_glance-frame-0.png",
+        "frames/se_idle_glance-frame-1.png",
+        "frames/se_idle_glance-frame-2.png",
+        "frames/se_idle_glance-frame-3.png"
+      ],
+      "previewGif": "previews/se_idle_glance.gif",
+      "anchorImage": "references/anchors/se-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 4356,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 4356,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 4356,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 4356,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.0
+    },
+    {
+      "id": "idle_glance_s",
+      "direction": "s",
+      "state": "idle_glance",
+      "runtimeState": "s_idle_glance",
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "framePaths": [
+        "frames/s_idle_glance-frame-0.png",
+        "frames/s_idle_glance-frame-1.png",
+        "frames/s_idle_glance-frame-2.png",
+        "frames/s_idle_glance-frame-3.png"
+      ],
+      "previewGif": "previews/s_idle_glance.gif",
+      "anchorImage": "references/anchors/s-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 4752,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 4752,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 4752,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 4752,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.0
+    },
+    {
+      "id": "idle_glance_sw",
+      "direction": "sw",
+      "state": "idle_glance",
+      "runtimeState": "sw_idle_glance",
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "framePaths": [
+        "frames/sw_idle_glance-frame-0.png",
+        "frames/sw_idle_glance-frame-1.png",
+        "frames/sw_idle_glance-frame-2.png",
+        "frames/sw_idle_glance-frame-3.png"
+      ],
+      "previewGif": "previews/sw_idle_glance.gif",
+      "anchorImage": "references/anchors/sw-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 5148,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 5148,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 5148,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 5148,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.0
+    },
+    {
+      "id": "idle_glance_w",
+      "direction": "w",
+      "state": "idle_glance",
+      "runtimeState": "w_idle_glance",
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "framePaths": [
+        "frames/w_idle_glance-frame-0.png",
+        "frames/w_idle_glance-frame-1.png",
+        "frames/w_idle_glance-frame-2.png",
+        "frames/w_idle_glance-frame-3.png"
+      ],
+      "previewGif": "previews/w_idle_glance.gif",
+      "anchorImage": "references/anchors/w-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 5544,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 5544,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 5544,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 5544,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.0
+    },
+    {
+      "id": "idle_glance_nw",
+      "direction": "nw",
+      "state": "idle_glance",
+      "runtimeState": "nw_idle_glance",
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "framePaths": [
+        "frames/nw_idle_glance-frame-0.png",
+        "frames/nw_idle_glance-frame-1.png",
+        "frames/nw_idle_glance-frame-2.png",
+        "frames/nw_idle_glance-frame-3.png"
+      ],
+      "previewGif": "previews/nw_idle_glance.gif",
+      "anchorImage": "references/anchors/nw-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 5940,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 5940,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 5940,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 5940,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.0
+    },
+    {
+      "id": "idle_apron_n",
+      "direction": "n",
+      "state": "idle_apron_shift",
+      "runtimeState": "n_idle_apron_shift",
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "framePaths": [
+        "frames/n_idle_apron_shift-frame-0.png",
+        "frames/n_idle_apron_shift-frame-1.png",
+        "frames/n_idle_apron_shift-frame-2.png",
+        "frames/n_idle_apron_shift-frame-3.png"
+      ],
+      "previewGif": "previews/n_idle_apron_shift.gif",
+      "anchorImage": "references/anchors/n-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 6336,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 6336,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 6336,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 6336,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.0
+    },
+    {
+      "id": "idle_apron_ne",
+      "direction": "ne",
+      "state": "idle_apron_shift",
+      "runtimeState": "ne_idle_apron_shift",
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "framePaths": [
+        "frames/ne_idle_apron_shift-frame-0.png",
+        "frames/ne_idle_apron_shift-frame-1.png",
+        "frames/ne_idle_apron_shift-frame-2.png",
+        "frames/ne_idle_apron_shift-frame-3.png"
+      ],
+      "previewGif": "previews/ne_idle_apron_shift.gif",
+      "anchorImage": "references/anchors/ne-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 6732,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 6732,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 6732,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 6732,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.0
+    },
+    {
+      "id": "idle_apron_e",
+      "direction": "e",
+      "state": "idle_apron_shift",
+      "runtimeState": "e_idle_apron_shift",
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "framePaths": [
+        "frames/e_idle_apron_shift-frame-0.png",
+        "frames/e_idle_apron_shift-frame-1.png",
+        "frames/e_idle_apron_shift-frame-2.png",
+        "frames/e_idle_apron_shift-frame-3.png"
+      ],
+      "previewGif": "previews/e_idle_apron_shift.gif",
+      "anchorImage": "references/anchors/e-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 7128,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 7128,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 7128,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 7128,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.0
+    },
+    {
+      "id": "idle_apron_se",
+      "direction": "se",
+      "state": "idle_apron_shift",
+      "runtimeState": "se_idle_apron_shift",
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "framePaths": [
+        "frames/se_idle_apron_shift-frame-0.png",
+        "frames/se_idle_apron_shift-frame-1.png",
+        "frames/se_idle_apron_shift-frame-2.png",
+        "frames/se_idle_apron_shift-frame-3.png"
+      ],
+      "previewGif": "previews/se_idle_apron_shift.gif",
+      "anchorImage": "references/anchors/se-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 7524,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 7524,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 7524,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 7524,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.0
+    },
+    {
+      "id": "idle_apron_s",
+      "direction": "s",
+      "state": "idle_apron_shift",
+      "runtimeState": "s_idle_apron_shift",
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "framePaths": [
+        "frames/s_idle_apron_shift-frame-0.png",
+        "frames/s_idle_apron_shift-frame-1.png",
+        "frames/s_idle_apron_shift-frame-2.png",
+        "frames/s_idle_apron_shift-frame-3.png"
+      ],
+      "previewGif": "previews/s_idle_apron_shift.gif",
+      "anchorImage": "references/anchors/s-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 7920,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 7920,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 7920,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 7920,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.0
+    },
+    {
+      "id": "idle_apron_sw",
+      "direction": "sw",
+      "state": "idle_apron_shift",
+      "runtimeState": "sw_idle_apron_shift",
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "framePaths": [
+        "frames/sw_idle_apron_shift-frame-0.png",
+        "frames/sw_idle_apron_shift-frame-1.png",
+        "frames/sw_idle_apron_shift-frame-2.png",
+        "frames/sw_idle_apron_shift-frame-3.png"
+      ],
+      "previewGif": "previews/sw_idle_apron_shift.gif",
+      "anchorImage": "references/anchors/sw-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 8316,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 8316,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 8316,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 8316,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.0
+    },
+    {
+      "id": "idle_apron_w",
+      "direction": "w",
+      "state": "idle_apron_shift",
+      "runtimeState": "w_idle_apron_shift",
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "framePaths": [
+        "frames/w_idle_apron_shift-frame-0.png",
+        "frames/w_idle_apron_shift-frame-1.png",
+        "frames/w_idle_apron_shift-frame-2.png",
+        "frames/w_idle_apron_shift-frame-3.png"
+      ],
+      "previewGif": "previews/w_idle_apron_shift.gif",
+      "anchorImage": "references/anchors/w-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 8712,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 8712,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 8712,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 8712,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.0
+    },
+    {
+      "id": "idle_apron_nw",
+      "direction": "nw",
+      "state": "idle_apron_shift",
+      "runtimeState": "nw_idle_apron_shift",
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "framePaths": [
+        "frames/nw_idle_apron_shift-frame-0.png",
+        "frames/nw_idle_apron_shift-frame-1.png",
+        "frames/nw_idle_apron_shift-frame-2.png",
+        "frames/nw_idle_apron_shift-frame-3.png"
+      ],
+      "previewGif": "previews/nw_idle_apron_shift.gif",
+      "anchorImage": "references/anchors/nw-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 9108,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 9108,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 9108,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 9108,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.0
+    },
+    {
+      "id": "walk_n",
+      "direction": "n",
+      "state": "walk",
+      "runtimeState": "n_walk",
+      "frames": 8,
+      "fps": 6,
+      "loop": true,
+      "framePaths": [
+        "frames/n_walk-frame-0.png",
+        "frames/n_walk-frame-1.png",
+        "frames/n_walk-frame-2.png",
+        "frames/n_walk-frame-3.png",
+        "frames/n_walk-frame-4.png",
+        "frames/n_walk-frame-5.png",
+        "frames/n_walk-frame-6.png",
+        "frames/n_walk-frame-7.png"
+      ],
+      "previewGif": "previews/n_walk.gif",
+      "anchorImage": "references/anchors/n-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 9504,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 9504,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 9504,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 9504,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 988,
+          "y": 9504,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1235,
+          "y": 9504,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1482,
+          "y": 9504,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1729,
+          "y": 9504,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.333
+    },
+    {
+      "id": "walk_ne",
+      "direction": "ne",
+      "state": "walk",
+      "runtimeState": "ne_walk",
+      "frames": 8,
+      "fps": 6,
+      "loop": true,
+      "framePaths": [
+        "frames/ne_walk-frame-0.png",
+        "frames/ne_walk-frame-1.png",
+        "frames/ne_walk-frame-2.png",
+        "frames/ne_walk-frame-3.png",
+        "frames/ne_walk-frame-4.png",
+        "frames/ne_walk-frame-5.png",
+        "frames/ne_walk-frame-6.png",
+        "frames/ne_walk-frame-7.png"
+      ],
+      "previewGif": "previews/ne_walk.gif",
+      "anchorImage": "references/anchors/ne-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 9900,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 9900,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 9900,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 9900,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 988,
+          "y": 9900,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1235,
+          "y": 9900,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1482,
+          "y": 9900,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1729,
+          "y": 9900,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.333
+    },
+    {
+      "id": "walk_e",
+      "direction": "e",
+      "state": "walk",
+      "runtimeState": "e_walk",
+      "frames": 8,
+      "fps": 6,
+      "loop": true,
+      "framePaths": [
+        "frames/e_walk-frame-0.png",
+        "frames/e_walk-frame-1.png",
+        "frames/e_walk-frame-2.png",
+        "frames/e_walk-frame-3.png",
+        "frames/e_walk-frame-4.png",
+        "frames/e_walk-frame-5.png",
+        "frames/e_walk-frame-6.png",
+        "frames/e_walk-frame-7.png"
+      ],
+      "previewGif": "previews/e_walk.gif",
+      "anchorImage": "references/anchors/e-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 10296,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 10296,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 10296,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 10296,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 988,
+          "y": 10296,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1235,
+          "y": 10296,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1482,
+          "y": 10296,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1729,
+          "y": 10296,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.333
+    },
+    {
+      "id": "walk_se",
+      "direction": "se",
+      "state": "walk",
+      "runtimeState": "se_walk",
+      "frames": 8,
+      "fps": 6,
+      "loop": true,
+      "framePaths": [
+        "frames/se_walk-frame-0.png",
+        "frames/se_walk-frame-1.png",
+        "frames/se_walk-frame-2.png",
+        "frames/se_walk-frame-3.png",
+        "frames/se_walk-frame-4.png",
+        "frames/se_walk-frame-5.png",
+        "frames/se_walk-frame-6.png",
+        "frames/se_walk-frame-7.png"
+      ],
+      "previewGif": "previews/se_walk.gif",
+      "anchorImage": "references/anchors/se-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 10692,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 10692,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 10692,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 10692,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 988,
+          "y": 10692,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1235,
+          "y": 10692,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1482,
+          "y": 10692,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1729,
+          "y": 10692,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.333
+    },
+    {
+      "id": "walk_s",
+      "direction": "s",
+      "state": "walk",
+      "runtimeState": "s_walk",
+      "frames": 8,
+      "fps": 6,
+      "loop": true,
+      "framePaths": [
+        "frames/s_walk-frame-0.png",
+        "frames/s_walk-frame-1.png",
+        "frames/s_walk-frame-2.png",
+        "frames/s_walk-frame-3.png",
+        "frames/s_walk-frame-4.png",
+        "frames/s_walk-frame-5.png",
+        "frames/s_walk-frame-6.png",
+        "frames/s_walk-frame-7.png"
+      ],
+      "previewGif": "previews/s_walk.gif",
+      "anchorImage": "references/anchors/s-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 11088,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 11088,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 11088,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 11088,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 988,
+          "y": 11088,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1235,
+          "y": 11088,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1482,
+          "y": 11088,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1729,
+          "y": 11088,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.333
+    },
+    {
+      "id": "walk_sw",
+      "direction": "sw",
+      "state": "walk",
+      "runtimeState": "sw_walk",
+      "frames": 8,
+      "fps": 6,
+      "loop": true,
+      "framePaths": [
+        "frames/sw_walk-frame-0.png",
+        "frames/sw_walk-frame-1.png",
+        "frames/sw_walk-frame-2.png",
+        "frames/sw_walk-frame-3.png",
+        "frames/sw_walk-frame-4.png",
+        "frames/sw_walk-frame-5.png",
+        "frames/sw_walk-frame-6.png",
+        "frames/sw_walk-frame-7.png"
+      ],
+      "previewGif": "previews/sw_walk.gif",
+      "anchorImage": "references/anchors/sw-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 11484,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 11484,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 11484,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 11484,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 988,
+          "y": 11484,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1235,
+          "y": 11484,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1482,
+          "y": 11484,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1729,
+          "y": 11484,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.333
+    },
+    {
+      "id": "walk_w",
+      "direction": "w",
+      "state": "walk",
+      "runtimeState": "w_walk",
+      "frames": 8,
+      "fps": 6,
+      "loop": true,
+      "framePaths": [
+        "frames/w_walk-frame-0.png",
+        "frames/w_walk-frame-1.png",
+        "frames/w_walk-frame-2.png",
+        "frames/w_walk-frame-3.png",
+        "frames/w_walk-frame-4.png",
+        "frames/w_walk-frame-5.png",
+        "frames/w_walk-frame-6.png",
+        "frames/w_walk-frame-7.png"
+      ],
+      "previewGif": "previews/w_walk.gif",
+      "anchorImage": "references/anchors/w-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 11880,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 11880,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 11880,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 11880,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 988,
+          "y": 11880,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1235,
+          "y": 11880,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1482,
+          "y": 11880,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1729,
+          "y": 11880,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.333
+    },
+    {
+      "id": "walk_nw",
+      "direction": "nw",
+      "state": "walk",
+      "runtimeState": "nw_walk",
+      "frames": 8,
+      "fps": 6,
+      "loop": true,
+      "framePaths": [
+        "frames/nw_walk-frame-0.png",
+        "frames/nw_walk-frame-1.png",
+        "frames/nw_walk-frame-2.png",
+        "frames/nw_walk-frame-3.png",
+        "frames/nw_walk-frame-4.png",
+        "frames/nw_walk-frame-5.png",
+        "frames/nw_walk-frame-6.png",
+        "frames/nw_walk-frame-7.png"
+      ],
+      "previewGif": "previews/nw_walk.gif",
+      "anchorImage": "references/anchors/nw-anchor-x8.png",
+      "atlasRects": [
+        {
+          "x": 0,
+          "y": 12276,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 12276,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 12276,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 12276,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 988,
+          "y": 12276,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1235,
+          "y": 12276,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1482,
+          "y": 12276,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 1729,
+          "y": 12276,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "durationSeconds": 1.333
+    }
+  ],
+  "curation": {
+    "applied": true,
+    "uniformScale": 1.16,
+    "verticalOffsetPx": 5,
+    "fit": "same bottom-center cell pivot for every frame"
+  },
+  "qa": {
+    "rows": 32,
+    "frames": 160,
+    "atlasCells": 160,
+    "inspectorErrors": 0,
+    "inspectorWarnings": [
+      "e_idle: motion presence is too low (0.0046 < 0.0100)",
+      "se_idle: motion presence is too low (0.0098 < 0.0100)",
+      "s_idle: motion presence is too low (0.0097 < 0.0100)",
+      "w_idle: motion presence is too low (0.0079 < 0.0100)"
+    ],
+    "atlasErrors": [],
+    "atlasOk": true,
+    "gifPreviews": 32
+  }
+}

@@ -26,10 +26,27 @@ export type ShopStage = {
   image: string | null;
   filename: string;
   name: string;
+  sign: { x: number; y: number; width: number };
   price?: number;
   income?: number;
   seats?: number;
 };
+
+// Normalized centers and widths of the blank signboards in each stage image.
+const stageSigns = [
+  { x: 0.5, y: 0.345, width: 0.29 },
+  { x: 0.5, y: 0.33, width: 0.36 },
+  { x: 0.5, y: 0.323, width: 0.4 },
+  { x: 0.5, y: 0.318, width: 0.44 },
+  { x: 0.5, y: 0.325, width: 0.47 },
+  { x: 0.5, y: 0.45, width: 0.44 },
+  { x: 0.5, y: 0.522, width: 0.43 },
+  { x: 0.5, y: 0.477, width: 0.44 },
+  { x: 0.5, y: 0.538, width: 0.265 },
+  { x: 0.5, y: 0.548, width: 0.355 },
+  { x: 0.5, y: 0.61, width: 0.35 },
+  { x: 0.5, y: 0.65, width: 0.42 },
+] as const;
 
 const stageNames = [
   "Quán nhậu mái tôn",
@@ -63,6 +80,7 @@ export const SHOP_STAGES: readonly ShopStage[] = stageNames.map((name, index) =>
     image: stageImages[index],
     filename,
     name,
+    sign: stageSigns[index],
     price: undefined,
     income: undefined,
     seats: undefined,

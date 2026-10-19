@@ -130,14 +130,15 @@
       "canvasWidth": 1120,
       "canvasHeight": 620,
       "visibleSize": {
-        "width": 389,
-        "height": 430
+        "width": 658,
+        "height": 580
       },
       "offsetOnBaseMap": {
         "x": 836,
         "y": 490
       },
-      "retainedConnectedComponentPixels": 83575
+      "retainedConnectedComponentPixels": 285252,
+      "revision": "redrawn as a compact renovation step after level 6; baseline aligned"
     },
     {
       "level": 8,
@@ -147,14 +148,15 @@
       "canvasWidth": 1120,
       "canvasHeight": 620,
       "visibleSize": {
-        "width": 490,
-        "height": 460
+        "width": 800,
+        "height": 477
       },
       "offsetOnBaseMap": {
         "x": 836,
         "y": 490
       },
-      "retainedConnectedComponentPixels": 97031
+      "retainedConnectedComponentPixels": 302500,
+      "revision": "redrawn wider facade with scooter; baseline aligned"
     },
     {
       "level": 9,
@@ -164,14 +166,15 @@
       "canvasWidth": 1120,
       "canvasHeight": 620,
       "visibleSize": {
-        "width": 477,
-        "height": 490
+        "width": 850,
+        "height": 478
       },
       "offsetOnBaseMap": {
         "x": 836,
         "y": 490
       },
-      "retainedConnectedComponentPixels": 92646
+      "retainedConnectedComponentPixels": 346123,
+      "revision": "redrawn broad renovated frontage; baseline aligned"
     },
     {
       "level": 10,
@@ -181,14 +184,15 @@
       "canvasWidth": 1120,
       "canvasHeight": 620,
       "visibleSize": {
-        "width": 451,
-        "height": 520
+        "width": 880,
+        "height": 494
       },
       "offsetOnBaseMap": {
         "x": 836,
         "y": 490
       },
-      "retainedConnectedComponentPixels": 83860
+      "retainedConnectedComponentPixels": 383559,
+      "revision": "redrawn as a restrained mid-range townhouse with carport; baseline aligned"
     },
     {
       "level": 11,
@@ -198,14 +202,15 @@
       "canvasWidth": 1120,
       "canvasHeight": 620,
       "visibleSize": {
-        "width": 577,
-        "height": 550
+        "width": 980,
+        "height": 522
       },
       "offsetOnBaseMap": {
         "x": 836,
         "y": 490
       },
-      "retainedConnectedComponentPixels": 100739
+      "retainedConnectedComponentPixels": 416750,
+      "revision": "redrawn as a clearly larger luxury villa than level 10; baseline aligned"
     },
     {
       "level": 12,

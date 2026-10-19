@@ -235,6 +235,23 @@ export class DiningRoomScene extends Phaser.Scene {
     this.tweens.add({ targets: this.cameras.main, scrollX: targetX, scrollY: targetY, duration: 260, ease: "Sine.Out" });
   }
 
+  getTableScreenPoint(tableId: number): { x: number; y: number } | null {
+    const point = this.tablePoints[Math.trunc(tableId) - 1];
+    const canvas = this.game.canvas;
+    const frame = canvas?.closest<HTMLElement>(".game-frame");
+    if (!point || !canvas || !frame || !this.sys.isActive()) return null;
+
+    const canvasBounds = canvas.getBoundingClientRect();
+    const frameBounds = frame.getBoundingClientRect();
+    const camera = this.cameras.main;
+    const scaleX = canvasBounds.width / this.scale.width;
+    const scaleY = canvasBounds.height / this.scale.height;
+    return {
+      x: canvasBounds.left - frameBounds.left + (camera.x + (point.x - camera.scrollX) * camera.zoom) * scaleX,
+      y: canvasBounds.top - frameBounds.top + (camera.y + (point.y - camera.scrollY) * camera.zoom) * scaleY,
+    };
+  }
+
   private createTableTargets(): void {
     this.tableZones.forEach((zone) => zone.destroy());
     this.tableZones = [];
@@ -604,29 +621,29 @@ export class DiningRoomScene extends Phaser.Scene {
   }
 
   private createSpeechBubble(text: string, roomScale: number): Phaser.GameObjects.Container {
-    const width = Math.min(240 * roomScale, this.roomMapWidth * 0.76);
+    const width = Math.min(208 * roomScale, this.roomMapWidth * 0.70);
     const label = this.add.text(0, 0, text, {
       fontFamily: "Arial, sans-serif",
-      fontSize: `${Math.max(10, 12 * roomScale)}px`,
+      fontSize: `${Math.max(9.5, 11 * roomScale)}px`,
       fontStyle: "bold",
       color: "#513423",
       align: "center",
       lineSpacing: -1,
-      wordWrap: { width: width - 18, useAdvancedWrap: true },
+      wordWrap: { width: width - 16 * roomScale, useAdvancedWrap: true },
     }).setOrigin(0.5, 0).setResolution(this.devicePixelRatio);
-    const height = Math.max(29 * roomScale, label.height + 10 * roomScale);
-    label.setPosition(0, -height - 3 * roomScale);
-    const tailBaseY = -6 * roomScale;
-    const tailTipY = 3 * roomScale;
+    const height = Math.max(26 * roomScale, label.height + 8 * roomScale);
+    label.setPosition(0, -height - 2.5 * roomScale);
+    const tailBaseY = -5.5 * roomScale;
+    const tailTipY = 2.5 * roomScale;
     const tail = this.add.graphics();
-    tail.fillStyle(0xffefc9, 0.98).fillTriangle(-7 * roomScale, tailBaseY, 7 * roomScale, tailBaseY, 0, tailTipY);
-    tail.lineStyle(1.2 * roomScale, 0x8c5735, 0.98)
-      .strokeTriangle(-7 * roomScale, tailBaseY, 7 * roomScale, tailBaseY, 0, tailTipY);
+    tail.fillStyle(0xffefc9, 0.98).fillTriangle(-6 * roomScale, tailBaseY, 6 * roomScale, tailBaseY, 0, tailTipY);
+    tail.lineStyle(1.1 * roomScale, 0x8c5735, 0.98)
+      .strokeTriangle(-6 * roomScale, tailBaseY, 6 * roomScale, tailBaseY, 0, tailTipY);
     const graphics = this.add.graphics();
-    graphics.fillStyle(0x36271b, 0.24).fillRoundedRect(-width / 2 + 1, -height - 5 * roomScale, width, height, 8 * roomScale);
-    graphics.fillStyle(0xffefc9, 0.98).fillRoundedRect(-width / 2, -height - 7 * roomScale, width, height, 8 * roomScale);
-    graphics.lineStyle(1.2 * roomScale, 0x8c5735, 0.98)
-      .strokeRoundedRect(-width / 2, -height - 7 * roomScale, width, height, 8 * roomScale);
+    graphics.fillStyle(0x36271b, 0.24).fillRoundedRect(-width / 2 + 1, -height - 4.5 * roomScale, width, height, 7 * roomScale);
+    graphics.fillStyle(0xffefc9, 0.98).fillRoundedRect(-width / 2, -height - 6.5 * roomScale, width, height, 7 * roomScale);
+    graphics.lineStyle(1.1 * roomScale, 0x8c5735, 0.98)
+      .strokeRoundedRect(-width / 2, -height - 6.5 * roomScale, width, height, 7 * roomScale);
     const bubble = this.add.container(0, 0, [tail, graphics, label]).setDepth(11).setVisible(false);
     bubble.setData("bubbleWidth", width);
     return bubble;

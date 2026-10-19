@@ -1,0 +1,1086 @@
+{
+  "ok": true,
+  "engine": "component-row",
+  "kind": "sprite-gen-inspect-report",
+  "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\player-owner-8dir-v1",
+  "states": [
+    "n_idle",
+    "ne_idle",
+    "e_idle",
+    "se_idle",
+    "s_idle",
+    "sw_idle",
+    "w_idle",
+    "nw_idle",
+    "n_idle_glance",
+    "ne_idle_glance",
+    "e_idle_glance",
+    "se_idle_glance",
+    "s_idle_glance",
+    "sw_idle_glance",
+    "w_idle_glance",
+    "nw_idle_glance",
+    "n_idle_apron_shift",
+    "ne_idle_apron_shift",
+    "e_idle_apron_shift",
+    "se_idle_apron_shift",
+    "s_idle_apron_shift",
+    "sw_idle_apron_shift",
+    "w_idle_apron_shift",
+    "nw_idle_apron_shift",
+    "n_walk",
+    "ne_walk",
+    "e_walk",
+    "se_walk",
+    "s_walk",
+    "sw_walk",
+    "w_walk",
+    "nw_walk"
+  ],
+  "thresholds": {
+    "histogram_min": 0.0,
+    "dhash_min": 0.55,
+    "motion_min": 0.01
+  },
+  "rows": [
+    {
+      "state": "n_idle",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/n/idle/frame-0.png",
+        "frames/n/idle/frame-1.png",
+        "frames/n/idle/frame-2.png",
+        "frames/n/idle/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9826016679144072,
+          "mean": 0.9858174170336913
+        },
+        "dhash_similarity": {
+          "min": 0.96875,
+          "mean": 0.984375
+        },
+        "motion_presence": 0.012059828814338236,
+        "centroid_sigma": {
+          "x": 0.2870065237521125,
+          "y": 0.33435768231394253
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "ne_idle",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/ne/idle/frame-0.png",
+        "frames/ne/idle/frame-1.png",
+        "frames/ne/idle/frame-2.png",
+        "frames/ne/idle/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9875388037996088,
+          "mean": 0.9897872136401232
+        },
+        "dhash_similarity": {
+          "min": 0.953125,
+          "mean": 0.9765625
+        },
+        "motion_presence": 0.014616922615400325,
+        "centroid_sigma": {
+          "x": 1.3624933918847273,
+          "y": 0.0518051104885203
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "e_idle",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/e/idle/frame-0.png",
+        "frames/e/idle/frame-1.png",
+        "frames/e/idle/frame-2.png",
+        "frames/e/idle/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9809301954003802,
+          "mean": 0.98692467123052
+        },
+        "dhash_similarity": {
+          "min": 1.0,
+          "mean": 1.0
+        },
+        "motion_presence": 0.004633884803921569,
+        "centroid_sigma": {
+          "x": 0.2483617643343597,
+          "y": 0.12056960778543087
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": [
+        "e_idle: motion presence is too low (0.0046 < 0.0100)"
+      ]
+    },
+    {
+      "state": "se_idle",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/se/idle/frame-0.png",
+        "frames/se/idle/frame-1.png",
+        "frames/se/idle/frame-2.png",
+        "frames/se/idle/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9530981172744495,
+          "mean": 0.9634240767896023
+        },
+        "dhash_similarity": {
+          "min": 0.953125,
+          "mean": 0.9765625
+        },
+        "motion_presence": 0.00984524994893791,
+        "centroid_sigma": {
+          "x": 0.539601381302054,
+          "y": 0.08980953016745528
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": [
+        "se_idle: motion presence is too low (0.0098 < 0.0100)"
+      ]
+    },
+    {
+      "state": "s_idle",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/s/idle/frame-0.png",
+        "frames/s/idle/frame-1.png",
+        "frames/s/idle/frame-2.png",
+        "frames/s/idle/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9630599645306235,
+          "mean": 0.976099408772644
+        },
+        "dhash_similarity": {
+          "min": 0.953125,
+          "mean": 0.9739583333333334
+        },
+        "motion_presence": 0.009709137561274511,
+        "centroid_sigma": {
+          "x": 0.27750580044469286,
+          "y": 0.1599867472012541
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": [
+        "s_idle: motion presence is too low (0.0097 < 0.0100)"
+      ]
+    },
+    {
+      "state": "sw_idle",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/sw/idle/frame-0.png",
+        "frames/sw/idle/frame-1.png",
+        "frames/sw/idle/frame-2.png",
+        "frames/sw/idle/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9727633909474768,
+          "mean": 0.9832386391925898
+        },
+        "dhash_similarity": {
+          "min": 0.921875,
+          "mean": 0.9557291666666666
+        },
+        "motion_presence": 0.01584225324244281,
+        "centroid_sigma": {
+          "x": 1.0654036825663185,
+          "y": 0.2390086777401308
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "w_idle",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/w/idle/frame-0.png",
+        "frames/w/idle/frame-1.png",
+        "frames/w/idle/frame-2.png",
+        "frames/w/idle/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9324445129396979,
+          "mean": 0.9492667730026956
+        },
+        "dhash_similarity": {
+          "min": 0.953125,
+          "mean": 0.9739583333333334
+        },
+        "motion_presence": 0.007853429457720587,
+        "centroid_sigma": {
+          "x": 0.3037403389249211,
+          "y": 0.25132350881826465
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": [
+        "w_idle: motion presence is too low (0.0079 < 0.0100)"
+      ]
+    },
+    {
+      "state": "nw_idle",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/nw/idle/frame-0.png",
+        "frames/nw/idle/frame-1.png",
+        "frames/nw/idle/frame-2.png",
+        "frames/nw/idle/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9846326830596752,
+          "mean": 0.9903624997070962
+        },
+        "dhash_similarity": {
+          "min": 0.953125,
+          "mean": 0.9765625
+        },
+        "motion_presence": 0.014801304636437909,
+        "centroid_sigma": {
+          "x": 1.174534432331598,
+          "y": 1.0703767741953492
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "n_idle_glance",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/n/idle_glance/frame-0.png",
+        "frames/n/idle_glance/frame-1.png",
+        "frames/n/idle_glance/frame-2.png",
+        "frames/n/idle_glance/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9294865244881468,
+          "mean": 0.9553565082238723
+        },
+        "dhash_similarity": {
+          "min": 0.96875,
+          "mean": 0.984375
+        },
+        "motion_presence": 0.02733154296875,
+        "centroid_sigma": {
+          "x": 1.351336264876585,
+          "y": 0.3462988208775206
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "ne_idle_glance",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/ne/idle_glance/frame-0.png",
+        "frames/ne/idle_glance/frame-1.png",
+        "frames/ne/idle_glance/frame-2.png",
+        "frames/ne/idle_glance/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9639820666490494,
+          "mean": 0.9766843295739911
+        },
+        "dhash_similarity": {
+          "min": 0.953125,
+          "mean": 0.9765625
+        },
+        "motion_presence": 0.029375622319240197,
+        "centroid_sigma": {
+          "x": 3.263076144491826,
+          "y": 0.9500607707052376
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "e_idle_glance",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/e/idle_glance/frame-0.png",
+        "frames/e/idle_glance/frame-1.png",
+        "frames/e/idle_glance/frame-2.png",
+        "frames/e/idle_glance/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9844696054148191,
+          "mean": 0.9882201594711916
+        },
+        "dhash_similarity": {
+          "min": 1.0,
+          "mean": 1.0
+        },
+        "motion_presence": 0.01711673113255719,
+        "centroid_sigma": {
+          "x": 1.679797483752387,
+          "y": 0.7410991504842154
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "se_idle_glance",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/se/idle_glance/frame-0.png",
+        "frames/se/idle_glance/frame-1.png",
+        "frames/se/idle_glance/frame-2.png",
+        "frames/se/idle_glance/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9680801529229016,
+          "mean": 0.9790567183843225
+        },
+        "dhash_similarity": {
+          "min": 0.9375,
+          "mean": 0.9557291666666666
+        },
+        "motion_presence": 0.012296469694648694,
+        "centroid_sigma": {
+          "x": 0.6350207418172191,
+          "y": 0.06334023831902745
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "s_idle_glance",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/s/idle_glance/frame-0.png",
+        "frames/s/idle_glance/frame-1.png",
+        "frames/s/idle_glance/frame-2.png",
+        "frames/s/idle_glance/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9305918239956139,
+          "mean": 0.959061771893913
+        },
+        "dhash_similarity": {
+          "min": 0.953125,
+          "mean": 0.9765625
+        },
+        "motion_presence": 0.021796651603349673,
+        "centroid_sigma": {
+          "x": 0.727053294292925,
+          "y": 0.5209234346308194
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "sw_idle_glance",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/sw/idle_glance/frame-0.png",
+        "frames/sw/idle_glance/frame-1.png",
+        "frames/sw/idle_glance/frame-2.png",
+        "frames/sw/idle_glance/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9748084407420816,
+          "mean": 0.9842305083286322
+        },
+        "dhash_similarity": {
+          "min": 0.984375,
+          "mean": 0.9921875
+        },
+        "motion_presence": 0.018287888071895426,
+        "centroid_sigma": {
+          "x": 0.39349676588917076,
+          "y": 0.43066278205518344
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "w_idle_glance",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/w/idle_glance/frame-0.png",
+        "frames/w/idle_glance/frame-1.png",
+        "frames/w/idle_glance/frame-2.png",
+        "frames/w/idle_glance/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9617693988119975,
+          "mean": 0.9782676181445618
+        },
+        "dhash_similarity": {
+          "min": 0.9375,
+          "mean": 0.953125
+        },
+        "motion_presence": 0.02910244012969771,
+        "centroid_sigma": {
+          "x": 3.2958593435640666,
+          "y": 0.49922913665273827
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "nw_idle_glance",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/nw/idle_glance/frame-0.png",
+        "frames/nw/idle_glance/frame-1.png",
+        "frames/nw/idle_glance/frame-2.png",
+        "frames/nw/idle_glance/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9534673477946701,
+          "mean": 0.9704413512336753
+        },
+        "dhash_similarity": {
+          "min": 0.9375,
+          "mean": 0.96875
+        },
+        "motion_presence": 0.019799325980392156,
+        "centroid_sigma": {
+          "x": 1.3985648419145558,
+          "y": 0.7365295068354535
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "n_idle_apron_shift",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/n/idle_apron_shift/frame-0.png",
+        "frames/n/idle_apron_shift/frame-1.png",
+        "frames/n/idle_apron_shift/frame-2.png",
+        "frames/n/idle_apron_shift/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9558616070699923,
+          "mean": 0.9716381424891597
+        },
+        "dhash_similarity": {
+          "min": 0.96875,
+          "mean": 0.9817708333333334
+        },
+        "motion_presence": 0.02567098779616013,
+        "centroid_sigma": {
+          "x": 1.1409212691382289,
+          "y": 0.49586162771887504
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "ne_idle_apron_shift",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/ne/idle_apron_shift/frame-0.png",
+        "frames/ne/idle_apron_shift/frame-1.png",
+        "frames/ne/idle_apron_shift/frame-2.png",
+        "frames/ne/idle_apron_shift/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9661538016768226,
+          "mean": 0.9782281608237698
+        },
+        "dhash_similarity": {
+          "min": 0.96875,
+          "mean": 0.9739583333333334
+        },
+        "motion_presence": 0.012812515956903595,
+        "centroid_sigma": {
+          "x": 0.3031645435074283,
+          "y": 0.5225461500353232
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "e_idle_apron_shift",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/e/idle_apron_shift/frame-0.png",
+        "frames/e/idle_apron_shift/frame-1.png",
+        "frames/e/idle_apron_shift/frame-2.png",
+        "frames/e/idle_apron_shift/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9646906375917293,
+          "mean": 0.977773315327434
+        },
+        "dhash_similarity": {
+          "min": 0.953125,
+          "mean": 0.9739583333333334
+        },
+        "motion_presence": 0.03105700125102124,
+        "centroid_sigma": {
+          "x": 1.6323093551255448,
+          "y": 0.8737460695340782
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "se_idle_apron_shift",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/se/idle_apron_shift/frame-0.png",
+        "frames/se/idle_apron_shift/frame-1.png",
+        "frames/se/idle_apron_shift/frame-2.png",
+        "frames/se/idle_apron_shift/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9353247225200294,
+          "mean": 0.952904924818578
+        },
+        "dhash_similarity": {
+          "min": 0.90625,
+          "mean": 0.9401041666666666
+        },
+        "motion_presence": 0.045961866191789214,
+        "centroid_sigma": {
+          "x": 1.738148149544894,
+          "y": 1.544513345452266
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "s_idle_apron_shift",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/s/idle_apron_shift/frame-0.png",
+        "frames/s/idle_apron_shift/frame-1.png",
+        "frames/s/idle_apron_shift/frame-2.png",
+        "frames/s/idle_apron_shift/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9647821922488579,
+          "mean": 0.9771184341183813
+        },
+        "dhash_similarity": {
+          "min": 0.90625,
+          "mean": 0.9505208333333334
+        },
+        "motion_presence": 0.025719097860498367,
+        "centroid_sigma": {
+          "x": 1.3761925739093532,
+          "y": 0.8125041268916672
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "sw_idle_apron_shift",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/sw/idle_apron_shift/frame-0.png",
+        "frames/sw/idle_apron_shift/frame-1.png",
+        "frames/sw/idle_apron_shift/frame-2.png",
+        "frames/sw/idle_apron_shift/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9562575263474254,
+          "mean": 0.9672235407817437
+        },
+        "dhash_similarity": {
+          "min": 0.890625,
+          "mean": 0.9192708333333334
+        },
+        "motion_presence": 0.0348809934129902,
+        "centroid_sigma": {
+          "x": 2.421155016335567,
+          "y": 1.6348319272497007
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "w_idle_apron_shift",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/w/idle_apron_shift/frame-0.png",
+        "frames/w/idle_apron_shift/frame-1.png",
+        "frames/w/idle_apron_shift/frame-2.png",
+        "frames/w/idle_apron_shift/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.8995755254538201,
+          "mean": 0.9320437848609114
+        },
+        "dhash_similarity": {
+          "min": 0.984375,
+          "mean": 0.9921875
+        },
+        "motion_presence": 0.023658582899305555,
+        "centroid_sigma": {
+          "x": 1.038813646985656,
+          "y": 0.17519379930402706
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "nw_idle_apron_shift",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/nw/idle_apron_shift/frame-0.png",
+        "frames/nw/idle_apron_shift/frame-1.png",
+        "frames/nw/idle_apron_shift/frame-2.png",
+        "frames/nw/idle_apron_shift/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9641097737520081,
+          "mean": 0.971395258340756
+        },
+        "dhash_similarity": {
+          "min": 0.921875,
+          "mean": 0.953125
+        },
+        "motion_presence": 0.012660047743055555,
+        "centroid_sigma": {
+          "x": 0.4821608835623512,
+          "y": 0.5273601290519166
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "n_walk",
+      "source": "frames",
+      "expected_frames": 8,
+      "found_frames": 8,
+      "natural_pose_count": 8,
+      "frame_files": [
+        "frames/n/walk/frame-0.png",
+        "frames/n/walk/frame-1.png",
+        "frames/n/walk/frame-2.png",
+        "frames/n/walk/frame-3.png",
+        "frames/n/walk/frame-4.png",
+        "frames/n/walk/frame-5.png",
+        "frames/n/walk/frame-6.png",
+        "frames/n/walk/frame-7.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9625886118789794,
+          "mean": 0.9799367606519193
+        },
+        "dhash_similarity": {
+          "min": 0.953125,
+          "mean": 0.9838169642857143
+        },
+        "motion_presence": 0.02002691701680672,
+        "centroid_sigma": {
+          "x": 1.105584854343588,
+          "y": 0.6651027133549055
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "ne_walk",
+      "source": "frames",
+      "expected_frames": 8,
+      "found_frames": 8,
+      "natural_pose_count": 8,
+      "frame_files": [
+        "frames/ne/walk/frame-0.png",
+        "frames/ne/walk/frame-1.png",
+        "frames/ne/walk/frame-2.png",
+        "frames/ne/walk/frame-3.png",
+        "frames/ne/walk/frame-4.png",
+        "frames/ne/walk/frame-5.png",
+        "frames/ne/walk/frame-6.png",
+        "frames/ne/walk/frame-7.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9757603682001619,
+          "mean": 0.9813972924546617
+        },
+        "dhash_similarity": {
+          "min": 0.921875,
+          "mean": 0.9609375
+        },
+        "motion_presence": 0.027036283263305323,
+        "centroid_sigma": {
+          "x": 1.4148564802054622,
+          "y": 2.001193010829393
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "e_walk",
+      "source": "frames",
+      "expected_frames": 8,
+      "found_frames": 8,
+      "natural_pose_count": 8,
+      "frame_files": [
+        "frames/e/walk/frame-0.png",
+        "frames/e/walk/frame-1.png",
+        "frames/e/walk/frame-2.png",
+        "frames/e/walk/frame-3.png",
+        "frames/e/walk/frame-4.png",
+        "frames/e/walk/frame-5.png",
+        "frames/e/walk/frame-6.png",
+        "frames/e/walk/frame-7.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9427754322894761,
+          "mean": 0.9652968785171171
+        },
+        "dhash_similarity": {
+          "min": 0.828125,
+          "mean": 0.90625
+        },
+        "motion_presence": 0.05521301782431723,
+        "centroid_sigma": {
+          "x": 4.983376627621871,
+          "y": 1.7892241713887544
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "se_walk",
+      "source": "frames",
+      "expected_frames": 8,
+      "found_frames": 8,
+      "natural_pose_count": 8,
+      "frame_files": [
+        "frames/se/walk/frame-0.png",
+        "frames/se/walk/frame-1.png",
+        "frames/se/walk/frame-2.png",
+        "frames/se/walk/frame-3.png",
+        "frames/se/walk/frame-4.png",
+        "frames/se/walk/frame-5.png",
+        "frames/se/walk/frame-6.png",
+        "frames/se/walk/frame-7.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9592378908735296,
+          "mean": 0.9759671732434965
+        },
+        "dhash_similarity": {
+          "min": 0.75,
+          "mean": 0.8577008928571429
+        },
+        "motion_presence": 0.05991795644038866,
+        "centroid_sigma": {
+          "x": 2.8811190819081367,
+          "y": 3.200995466267252
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "s_walk",
+      "source": "frames",
+      "expected_frames": 8,
+      "found_frames": 8,
+      "natural_pose_count": 8,
+      "frame_files": [
+        "frames/s/walk/frame-0.png",
+        "frames/s/walk/frame-1.png",
+        "frames/s/walk/frame-2.png",
+        "frames/s/walk/frame-3.png",
+        "frames/s/walk/frame-4.png",
+        "frames/s/walk/frame-5.png",
+        "frames/s/walk/frame-6.png",
+        "frames/s/walk/frame-7.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9544348845121476,
+          "mean": 0.9763949888386666
+        },
+        "dhash_similarity": {
+          "min": 0.90625,
+          "mean": 0.9419642857142857
+        },
+        "motion_presence": 0.031730485162815125,
+        "centroid_sigma": {
+          "x": 2.2227186608651115,
+          "y": 0.9456832336241291
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "sw_walk",
+      "source": "frames",
+      "expected_frames": 8,
+      "found_frames": 8,
+      "natural_pose_count": 8,
+      "frame_files": [
+        "frames/sw/walk/frame-0.png",
+        "frames/sw/walk/frame-1.png",
+        "frames/sw/walk/frame-2.png",
+        "frames/sw/walk/frame-3.png",
+        "frames/sw/walk/frame-4.png",
+        "frames/sw/walk/frame-5.png",
+        "frames/sw/walk/frame-6.png",
+        "frames/sw/walk/frame-7.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9569982357590469,
+          "mean": 0.9726268344191783
+        },
+        "dhash_similarity": {
+          "min": 0.828125,
+          "mean": 0.9056919642857143
+        },
+        "motion_presence": 0.06922142392113095,
+        "centroid_sigma": {
+          "x": 3.0254652849550157,
+          "y": 1.9177625134842398
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "w_walk",
+      "source": "frames",
+      "expected_frames": 8,
+      "found_frames": 8,
+      "natural_pose_count": 8,
+      "frame_files": [
+        "frames/w/walk/frame-0.png",
+        "frames/w/walk/frame-1.png",
+        "frames/w/walk/frame-2.png",
+        "frames/w/walk/frame-3.png",
+        "frames/w/walk/frame-4.png",
+        "frames/w/walk/frame-5.png",
+        "frames/w/walk/frame-6.png",
+        "frames/w/walk/frame-7.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9612815919220022,
+          "mean": 0.9789658212628358
+        },
+        "dhash_similarity": {
+          "min": 0.84375,
+          "mean": 0.9185267857142857
+        },
+        "motion_presence": 0.06088073901435574,
+        "centroid_sigma": {
+          "x": 4.0322616069252195,
+          "y": 4.36430294257346
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "nw_walk",
+      "source": "frames",
+      "expected_frames": 8,
+      "found_frames": 8,
+      "natural_pose_count": 8,
+      "frame_files": [
+        "frames/nw/walk/frame-0.png",
+        "frames/nw/walk/frame-1.png",
+        "frames/nw/walk/frame-2.png",
+        "frames/nw/walk/frame-3.png",
+        "frames/nw/walk/frame-4.png",
+        "frames/nw/walk/frame-5.png",
+        "frames/nw/walk/frame-6.png",
+        "frames/nw/walk/frame-7.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9490667353779643,
+          "mean": 0.9671447682281273
+        },
+        "dhash_similarity": {
+          "min": 0.875,
+          "mean": 0.9397321428571429
+        },
+        "motion_presence": 0.04632260619091386,
+        "centroid_sigma": {
+          "x": 2.5835901355090027,
+          "y": 3.7155821304941887
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    }
+  ],
+  "errors": [],
+  "warnings": [
+    "e_idle: motion presence is too low (0.0046 < 0.0100)",
+    "se_idle: motion presence is too low (0.0098 < 0.0100)",
+    "s_idle: motion presence is too low (0.0097 < 0.0100)",
+    "w_idle: motion presence is too low (0.0079 < 0.0100)"
+  ]
+}

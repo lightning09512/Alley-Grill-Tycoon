@@ -1,0 +1,35 @@
+{
+  "kind": "sprite-gen-image-report",
+  "provider": "codex",
+  "prompt": "Redraw the single woman in the reference as a finished full-body character sprite for a Vietnamese 2D mobile management game. Keep her recognizable outfit: short sturdy middle-aged seafood auntie, conical nón lá with pink chin ties, black hair gathered low, purple blouse with a small simple floral pattern, worn navy apron with a front pocket, white towel with two red stripes, loose dark cropped trousers and blue rubber sandals. Face the viewer directly, standing upright with both feet fully visible and level. Give her a funny animated market-vendor expression: raised brows and an amused-but-suspicious side-eye as if a crab just tried to escape, warm crooked grin. Match a hand-drawn Vietnamese comic game sprite: thick dark-brown ink outline, simplified clear shapes, slightly irregular hand-inked contours, flat warm color blocks with only two restrained cel-shadow tones, facial features readable at small game scale. Redraw the illustration in this style; do not copy the glossy finish of the reference. No 3D, no photorealism, no soft airbrush, no shiny highlights, no ornate fabric rendering, no text, no crab, no tongs, no stall, no scenery, no ground shadow. One isolated character only on transparency; clean silhouette, complete body inside the canvas.",
+  "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\market-vendors\\sprite-gen-runs\\v2\\bases\\crab-seller-auntie-base.png",
+  "raw": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\market-vendors\\sprite-gen-runs\\v2\\bases\\crab-seller-auntie-base.png.raw.png",
+  "raw_bytes": 1548020,
+  "elapsed_seconds": 62.187,
+  "model": null,
+  "session_id": "01a150ea-643e-7ba1-8b18-136b1ab57405",
+  "refs": [
+    "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\market-vendors\\sprite-gen-runs\\v2\\references\\crab-seller-auntie-reference.png"
+  ],
+  "transparent": true,
+  "alpha": {
+    "strategy": "native",
+    "strategy_source": "explicit",
+    "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\market-vendors\\sprite-gen-runs\\v2\\bases\\crab-seller-auntie-base.png",
+    "mode": "RGBA",
+    "method": "native",
+    "size": "990x1588",
+    "alpha_zero_pct": 44.38,
+    "partial_alpha_pct": 55.54,
+    "opaque_pct": 0.08,
+    "cleaned_transparent_rgb_pixels": 792,
+    "stale_transparent_rgb_pixels": 0
+  },
+  "chroma": null,
+  "extra": {
+    "inline_results": 1,
+    "rollout_cleaned": true,
+    "transparent_background_reported": true
+  },
+  "provider_resolved_from": "explicit"
+}

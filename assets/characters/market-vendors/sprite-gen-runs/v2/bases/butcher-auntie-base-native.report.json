@@ -1,0 +1,35 @@
+{
+  "kind": "sprite-gen-image-report",
+  "provider": "codex",
+  "prompt": "Redraw the single woman in the reference as a finished full-body character sprite for a Vietnamese 2D mobile management game. Keep her recognizable outfit: short sturdy middle-aged auntie, red patterned headscarf tied behind her black low bun, cream blouse with tiny yellow flowers, worn forest-green apron with a front pocket, white towel with two red stripes, loose dark cropped trousers, simple brown rubber sandals. Face the viewer directly, standing upright with both feet fully visible and level. Give her a funny warm market-vendor expression: one eyebrow raised, a knowing crooked smile, slightly squinting eyes and a rounded silhouette. Match a hand-drawn Vietnamese comic game sprite: thick dark-brown ink outline, simplified clear shapes, slightly irregular hand-inked contours, flat warm color blocks with only two restrained cel-shadow tones, facial features readable at small game scale. Redraw the illustration in this style; do not copy the glossy finish of the reference. No 3D, no photorealism, no soft airbrush, no shiny highlights, no ornate fabric rendering, no text, no meat, no cleaver, no stall, no scenery, no ground shadow. One isolated character only on transparency; clean silhouette, complete body inside the canvas.",
+  "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\market-vendors\\sprite-gen-runs\\v2\\bases\\butcher-auntie-base-native.png",
+  "raw": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\market-vendors\\sprite-gen-runs\\v2\\bases\\butcher-auntie-base-native.png.raw.png",
+  "raw_bytes": 1272501,
+  "elapsed_seconds": 51.593,
+  "model": null,
+  "session_id": "01a150e7-b0f3-7131-ae3a-ab2a40a889f3",
+  "refs": [
+    "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\market-vendors\\sprite-gen-runs\\v2\\references\\butcher-auntie-reference.png"
+  ],
+  "transparent": true,
+  "alpha": {
+    "strategy": "native",
+    "strategy_source": "explicit",
+    "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\market-vendors\\sprite-gen-runs\\v2\\bases\\butcher-auntie-base-native.png",
+    "mode": "RGBA",
+    "method": "native",
+    "size": "990x1588",
+    "alpha_zero_pct": 47.0,
+    "partial_alpha_pct": 52.89,
+    "opaque_pct": 0.11,
+    "cleaned_transparent_rgb_pixels": 707,
+    "stale_transparent_rgb_pixels": 0
+  },
+  "chroma": null,
+  "extra": {
+    "inline_results": 1,
+    "rollout_cleaned": true,
+    "transparent_background_reported": true
+  },
+  "provider_resolved_from": "explicit"
+}

@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "kind": "sprite-gen-request",
+  "engine": "component-row",
+  "character": {
+    "id": "butcher-auntie",
+    "description": "Short sturdy Vietnamese market butcher auntie with a red headscarf, floral blouse, green apron, red-striped towel and sandals; funny knowing raised eyebrow.",
+    "base_image": "base-source.png"
+  },
+  "cell": {
+    "shape": "rect",
+    "width": 350,
+    "height": 561,
+    "safe_margin_x": 12,
+    "safe_margin_y": 12
+  },
+  "chroma_key": {
+    "name": "cyan",
+    "hex": "#00FFFF",
+    "rgb": [
+      0,
+      255,
+      255
+    ],
+    "selection": "auto",
+    "score": 251.97,
+    "min_subject_distance": 234.28,
+    "background": {
+      "mode": "transparent",
+      "opaque_border_fraction": 0.0,
+      "subject_pixels": 17899
+    },
+    "candidates": [
+      {
+        "name": "magenta",
+        "hex": "#FF00FF",
+        "score": 212.38,
+        "min_subject_distance": 198.16,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "green",
+        "hex": "#00FF00",
+        "score": 189.15,
+        "min_subject_distance": 185.99,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "cyan",
+        "hex": "#00FFFF",
+        "score": 251.97,
+        "min_subject_distance": 234.28,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "blue",
+        "hex": "#004DFF",
+        "score": 203.58,
+        "min_subject_distance": 196.68,
+        "clears_erase_radius": true
+      }
+    ],
+    "selection_reason": "highest 1st-percentile subject distance among the 4 candidate(s) clearing the 96 erase radius"
+  },
+  "states": {
+    "idle": {
+      "frames": 4,
+      "fps": 2,
+      "loop": true,
+      "action": "Four small front-facing idle beats with feet planted: hands on hips, a blink and quick sideways glance, one brief friendly hand wave with a raised eyebrow, then return to the opening hands-on-hips pose. Subtle breathing only between gestures; keep the same scale and foot line."
+    },
+    "work": {
+      "frames": 4,
+      "fps": 3,
+      "loop": true,
+      "action": "A clear repeating butcher work loop, front-facing and planted at the stall: she holds one small cleaver in her right hand at all times, lifts it, makes one short downward chop toward an implied counter below frame, then raises it back to the opening pose. Left hand stays low and safely away from the blade. Keep the cleaver, body size, outfit and foot line consistent; no detached effects, no scenery."
+    }
+  },
+  "style": "Hand-inked Vietnamese 2D mobile game sprite, matching the supplied character base exactly. Bold dark-brown comic contour, slightly irregular hand-drawn line, clear simplified shapes, warm limited colors and restrained matte cel shading; no glossy 3D finish. Compact chibi proportions, funny readable facial acting at small scale, stable full-body front view, same height and outfit in every cell. Single character on transparent background, no scenery or text.",
+  "layout": "taxonomy/v1",
+  "fit": {
+    "resample": "lanczos",
+    "align_x": "bbox-center",
+    "align_y": "bottom",
+    "ground_frames": true,
+    "pixel_unfake": false
+  },
+  "chroma": {
+    "mode": "rgb",
+    "unmix_reach": 4,
+    "spill_max_fraction": 0.005
+  }
+}

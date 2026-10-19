@@ -21,6 +21,8 @@ type HomeStage = {
   canvasHeight: number;
   offsetX: number;
   offsetY: number;
+  entryX: number;
+  displayScale: number;
 };
 
 const earlyStageNames = [
@@ -42,6 +44,7 @@ const earlyStageImages = [
   homeStage05Url, homeStage06Url, homeStage07Url, homeStage08Url,
   homeStage09Url, homeStage10Url, homeStage11Url,
 ] as const;
+const earlyStageEntryX = [560, 535, 490, 520, 510, 510, 515, 585, 420, 350, 560] as const;
 
 // Placement values match assets/backgrounds/home-upgrades-v1/asset_manifest.json.
 export const HOME_STAGES: readonly HomeStage[] = [
@@ -53,6 +56,8 @@ export const HOME_STAGES: readonly HomeStage[] = [
     canvasHeight: 620,
     offsetX: 836,
     offsetY: 490,
+    entryX: earlyStageEntryX[index],
+    displayScale: index >= 6 ? 1.12 : 1.5,
   })),
   {
     id: 12,
@@ -62,6 +67,8 @@ export const HOME_STAGES: readonly HomeStage[] = [
     canvasHeight: 680,
     offsetX: 776,
     offsetY: 430,
+    entryX: 575,
+    displayScale: 1,
   },
 ];
 

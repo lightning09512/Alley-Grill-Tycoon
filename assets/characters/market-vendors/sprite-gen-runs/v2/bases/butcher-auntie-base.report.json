@@ -1,0 +1,117 @@
+{
+  "kind": "sprite-gen-image-report",
+  "provider": "codex",
+  "prompt": "Redraw the single woman in the reference as a finished full-body character sprite for a Vietnamese 2D mobile management game. Keep her recognizable outfit: short sturdy middle-aged auntie, red patterned headscarf tied behind her black low bun, cream blouse with tiny yellow flowers, worn forest-green apron with a front pocket, white towel with two red stripes, loose dark cropped trousers, simple brown rubber sandals. Face the viewer directly, standing upright with both feet fully visible and level. Give her a funny warm market-vendor expression: one eyebrow raised, a knowing crooked smile, slightly squinting eyes and a rounded silhouette. Match a hand-drawn Vietnamese comic game sprite: thick dark-brown ink outline, simplified clear shapes, slightly irregular hand-inked contours, flat warm color blocks with only two restrained cel-shadow tones, facial features readable at small game scale. Redraw the illustration in this style; do not copy the glossy finish of the reference. No 3D, no photorealism, no soft airbrush, no shiny highlights, no ornate fabric rendering, no text, no meat, no cleaver, no stall, no scenery, no ground shadow. One isolated character only on transparency; clean silhouette, complete body inside the canvas.",
+  "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\market-vendors\\sprite-gen-runs\\v2\\bases\\butcher-auntie-base.png",
+  "raw": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\market-vendors\\sprite-gen-runs\\v2\\bases\\butcher-auntie-base.png.raw.png",
+  "raw_bytes": 1353085,
+  "elapsed_seconds": 62.39,
+  "model": null,
+  "session_id": "01a150e4-2098-7e91-b876-e435d9ecf0ed",
+  "refs": [
+    "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\market-vendors\\sprite-gen-runs\\v2\\references\\butcher-auntie-reference.png"
+  ],
+  "transparent": true,
+  "alpha": {
+    "strategy": "chroma",
+    "strategy_source": "explicit",
+    "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\market-vendors\\sprite-gen-runs\\v2\\bases\\butcher-auntie-base.png",
+    "mode": "RGBA",
+    "method": "ycbcr",
+    "size": "990x1588",
+    "key": "magenta",
+    "keyed_pixels": 774084,
+    "fringe_pixels": 1370,
+    "cleaned_transparent_rgb_pixels": 0,
+    "alpha_zero_pct": 96.56,
+    "stale_transparent_rgb_pixels": 0,
+    "decontam": {
+      "mode": "auto",
+      "applied": true,
+      "fit": "still",
+      "band_px": 6,
+      "alpha_depth": 4,
+      "flank_px": 3,
+      "edge_band": 0,
+      "palette_size": 2,
+      "palette_source": "frame",
+      "palette": [
+        [
+          226,
+          72,
+          48
+        ],
+        [
+          227,
+          70,
+          51
+        ]
+      ],
+      "palette_keyfree": true,
+      "key_material_share": 0.0,
+      "noise_sigma_rgb": 0.0,
+      "material_spread": 0.0,
+      "opaque_margin": 10.0,
+      "changed_px": 336838,
+      "refit_px": 34278,
+      "tint_px": 0,
+      "recovered_px": 5,
+      "unexplained_px": 1889,
+      "restored_px": 49496,
+      "key_hue_capped_px": 1
+    }
+  },
+  "chroma": {
+    "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\market-vendors\\sprite-gen-runs\\v2\\bases\\butcher-auntie-base.png",
+    "mode": "RGBA",
+    "method": "ycbcr",
+    "size": "990x1588",
+    "key": "magenta",
+    "keyed_pixels": 774084,
+    "fringe_pixels": 1370,
+    "cleaned_transparent_rgb_pixels": 0,
+    "alpha_zero_pct": 96.56,
+    "stale_transparent_rgb_pixels": 0,
+    "decontam": {
+      "mode": "auto",
+      "applied": true,
+      "fit": "still",
+      "band_px": 6,
+      "alpha_depth": 4,
+      "flank_px": 3,
+      "edge_band": 0,
+      "palette_size": 2,
+      "palette_source": "frame",
+      "palette": [
+        [
+          226,
+          72,
+          48
+        ],
+        [
+          227,
+          70,
+          51
+        ]
+      ],
+      "palette_keyfree": true,
+      "key_material_share": 0.0,
+      "noise_sigma_rgb": 0.0,
+      "material_spread": 0.0,
+      "opaque_margin": 10.0,
+      "changed_px": 336838,
+      "refit_px": 34278,
+      "tint_px": 0,
+      "recovered_px": 5,
+      "unexplained_px": 1889,
+      "restored_px": 49496,
+      "key_hue_capped_px": 1
+    }
+  },
+  "extra": {
+    "inline_results": 1,
+    "rollout_cleaned": true,
+    "transparent_background_reported": true
+  },
+  "provider_resolved_from": "explicit"
+}

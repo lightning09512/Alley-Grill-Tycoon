@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "kind": "sprite-gen-request",
+  "engine": "component-row",
+  "character": {
+    "id": "fishmonger-uncle",
+    "description": "Compact Vietnamese fishmonger uncle with graying tousled hair, curled moustache, navy shirt, teal apron, striped towel and rubber boots; funny winking smile.",
+    "base_image": "base-source.png"
+  },
+  "cell": {
+    "shape": "rect",
+    "width": 350,
+    "height": 561,
+    "safe_margin_x": 12,
+    "safe_margin_y": 12
+  },
+  "chroma_key": {
+    "name": "magenta",
+    "hex": "#FF00FF",
+    "rgb": [
+      255,
+      0,
+      255
+    ],
+    "selection": "auto",
+    "score": 204.84,
+    "min_subject_distance": 201.57,
+    "background": {
+      "mode": "transparent",
+      "opaque_border_fraction": 0.0,
+      "subject_pixels": 17079
+    },
+    "candidates": [
+      {
+        "name": "magenta",
+        "hex": "#FF00FF",
+        "score": 204.84,
+        "min_subject_distance": 201.57,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "green",
+        "hex": "#00FF00",
+        "score": 177.22,
+        "min_subject_distance": 173.4,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "cyan",
+        "hex": "#00FFFF",
+        "score": 184.16,
+        "min_subject_distance": 170.1,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "blue",
+        "hex": "#004DFF",
+        "score": 149.68,
+        "min_subject_distance": 136.24,
+        "clears_erase_radius": true
+      }
+    ],
+    "selection_reason": "highest 1st-percentile subject distance among the 4 candidate(s) clearing the 96 erase radius"
+  },
+  "states": {
+    "idle": {
+      "frames": 4,
+      "fps": 2,
+      "loop": true,
+      "action": "Four small front-facing idle beats with boots planted: proud hands-on-hips stance, a quick moustache twitch and blink, a cheeky wink with a small nod, then return to the opening stance. Subtle breathing only between gestures; keep the same scale and foot line."
+    },
+    "work": {
+      "frames": 4,
+      "fps": 3,
+      "loop": true,
+      "action": "A clear repeating fishmonger sales loop, front-facing and planted at the stall: he holds one small silver fish in both hands at waist height, lifts and presents it toward the customer, gives a proud wink and nod, then lowers it back to the opening pose. Keep the same fish, hand placement, body size, outfit and boot line consistent; no scenery."
+    }
+  },
+  "style": "Hand-inked Vietnamese 2D mobile game sprite, matching the supplied character base exactly. Bold dark-brown comic contour, slightly irregular hand-drawn line, clear simplified shapes, warm limited colors and restrained matte cel shading; no glossy 3D finish. Compact chibi proportions, funny readable facial acting at small scale, stable full-body front view, same height and outfit in every cell. Single character on transparent background, no scenery or text.",
+  "layout": "taxonomy/v1",
+  "fit": {
+    "resample": "lanczos",
+    "align_x": "bbox-center",
+    "align_y": "bottom",
+    "ground_frames": true,
+    "pixel_unfake": false
+  }
+}

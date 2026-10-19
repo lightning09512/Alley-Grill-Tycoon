@@ -31,6 +31,17 @@
     <ellipse cx="34" cy="29" rx="7" ry="5" transform="rotate(-18 34 29)" fill="#d97743" stroke="#563d2c" stroke-width="2.6"/>
     <path d="m24 13 13-2" stroke="#fff0bd" stroke-width="1.5" stroke-linecap="round"/>
   </symbol>
+  <symbol id="camera" viewBox="0 0 48 48">
+    <path d="M8 15h7l3-5h12l3 5h7q3 0 3 3v20q0 3-3 3H8q-3 0-3-3V18q0-3 3-3Z" fill="#f0d79b" stroke="#563e2e" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M14 18h20v16H14Z" fill="#537f78" stroke="#80603e" stroke-width="2"/>
+    <circle cx="24" cy="26" r="8" fill="#c8e3df" stroke="#563e2e" stroke-width="3"/><circle cx="24" cy="26" r="4" fill="#477184"/>
+    <path d="M10 19h3m-3 4h3m23-8h3" stroke="#fff4d4" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="settings" viewBox="0 0 48 48">
+    <path d="m20 5 8 0 1.5 5.1a15 15 0 0 1 3.5 2l5-1.3 4 7-3.8 3.8a15 15 0 0 1 0 4.8l3.8 3.8-4 7-5-1.3a15 15 0 0 1-3.5 2L28 43h-8l-1.5-5.1a15 15 0 0 1-3.5-2l-5 1.3-4-7 3.8-3.8a15 15 0 0 1 0-4.8L6 19.8l4-7 5 1.3a15 15 0 0 1 3.5-2Z" fill="#e8c77f" stroke="#563e2e" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="24" cy="24" r="8" fill="#78958a" stroke="#563e2e" stroke-width="3"/><circle cx="24" cy="24" r="3" fill="#fff2c8"/>
+    <path d="m19 8 .8 3m8.4 26 .8 3M8 19l3 .8m26 8.4 3 .8m-31-1.6 3-.8m26-8.4 3-.8m-20.2-6.8.8 3m8.4 26 .8 3" stroke="#fff0bb" stroke-width="1.5" stroke-linecap="round"/>
+  </symbol>
   <symbol id="play" viewBox="0 0 48 48"><path d="M14 8q0-3 3-1l23 15q3 2 0 4L17 41q-3 2-3-2Z" fill="#f4cf78" stroke="#50392b" stroke-width="3" stroke-linejoin="round"/><path d="m19 14 14 10-14 10Z" fill="#fff2c8"/></symbol>
   <symbol id="pause" viewBox="0 0 48 48"><rect x="10" y="7" width="10" height="34" rx="3" fill="#f4cf78" stroke="#50392b" stroke-width="3"/><rect x="28" y="7" width="10" height="34" rx="3" fill="#f4cf78" stroke="#50392b" stroke-width="3"/><path d="M13 11v20m18-20v20" stroke="#fff2c8" stroke-width="2" stroke-linecap="round"/></symbol>
   <symbol id="fullscreen" viewBox="0 0 48 48"><g fill="none" stroke="#fff0c8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 19V8h11M29 8h11v11M40 29v11H29M19 40H8V29"/><path d="M8 8 20 20m20-12L28 20M40 40 28 28M8 40l12-12" stroke="#bd8650" stroke-width="1.5"/></g></symbol>

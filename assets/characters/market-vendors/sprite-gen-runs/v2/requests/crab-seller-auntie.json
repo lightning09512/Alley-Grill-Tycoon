@@ -1,0 +1,17 @@
+{
+  "style": "Hand-inked Vietnamese 2D mobile game sprite, matching the supplied character base exactly. Bold dark-brown comic contour, slightly irregular hand-drawn line, clear simplified shapes, warm limited colors and restrained matte cel shading; no glossy 3D finish. Compact chibi proportions, funny readable facial acting at small scale, stable full-body front view, same height and outfit in every cell. Single character on transparent background, no scenery or text.",
+  "states": {
+    "idle": {
+      "frames": 4,
+      "fps": 2,
+      "loop": true,
+      "action": "Four small front-facing idle beats with sandals planted: relaxed hands-on-hips stance, she glances sharply to one side, raises one eyebrow and gives a conspiratorial grin, then returns to the opening pose. A tiny shoulder bounce between gestures; keep the same scale and foot line."
+    },
+    "work": {
+      "frames": 4,
+      "fps": 3,
+      "loop": true,
+      "action": "A clear repeating crab-selling loop, front-facing and planted at the stall: she holds short metal tongs in one hand and one small blue crab in the other, lifts the crab toward the customer, recoils with a comically startled face as it raises one claw, then laughs and lowers it back to the opening pose. Keep the same crab and tongs, body size, outfit and sandal line consistent; no scenery."
+    }
+  }
+}

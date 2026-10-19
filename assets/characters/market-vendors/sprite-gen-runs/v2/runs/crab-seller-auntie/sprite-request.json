@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "kind": "sprite-gen-request",
+  "engine": "component-row",
+  "character": {
+    "id": "crab-seller-auntie",
+    "description": "Short sturdy Vietnamese seafood auntie in a conical hat with pink ties, purple floral blouse, navy apron, striped towel and blue sandals; mischievous comic side-eye.",
+    "base_image": "base-source.png"
+  },
+  "cell": {
+    "shape": "rect",
+    "width": 350,
+    "height": 561,
+    "safe_margin_x": 12,
+    "safe_margin_y": 12
+  },
+  "chroma_key": {
+    "name": "cyan",
+    "hex": "#00FFFF",
+    "rgb": [
+      0,
+      255,
+      255
+    ],
+    "selection": "auto",
+    "score": 232.66,
+    "min_subject_distance": 211.01,
+    "background": {
+      "mode": "transparent",
+      "opaque_border_fraction": 0.0,
+      "subject_pixels": 18540
+    },
+    "candidates": [
+      {
+        "name": "magenta",
+        "hex": "#FF00FF",
+        "score": 150.27,
+        "min_subject_distance": 141.49,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "green",
+        "hex": "#00FF00",
+        "score": 214.91,
+        "min_subject_distance": 213.06,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "cyan",
+        "hex": "#00FFFF",
+        "score": 232.66,
+        "min_subject_distance": 211.01,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "blue",
+        "hex": "#004DFF",
+        "score": 161.41,
+        "min_subject_distance": 138.74,
+        "clears_erase_radius": true
+      }
+    ],
+    "selection_reason": "highest 1st-percentile subject distance among the 4 candidate(s) clearing the 96 erase radius"
+  },
+  "states": {
+    "idle": {
+      "frames": 4,
+      "fps": 2,
+      "loop": true,
+      "action": "Four small front-facing idle beats with sandals planted: relaxed hands-on-hips stance, she glances sharply to one side, raises one eyebrow and gives a conspiratorial grin, then returns to the opening pose. A tiny shoulder bounce between gestures; keep the same scale and foot line."
+    },
+    "work": {
+      "frames": 4,
+      "fps": 3,
+      "loop": true,
+      "action": "A clear repeating crab-selling loop, front-facing and planted at the stall: she holds short metal tongs in one hand and one small blue crab in the other, lifts the crab toward the customer, recoils with a comically startled face as it raises one claw, then laughs and lowers it back to the opening pose. Keep the same crab and tongs, body size, outfit and sandal line consistent; no scenery."
+    }
+  },
+  "style": "Hand-inked Vietnamese 2D mobile game sprite, matching the supplied character base exactly. Bold dark-brown comic contour, slightly irregular hand-drawn line, clear simplified shapes, warm limited colors and restrained matte cel shading; no glossy 3D finish. Compact chibi proportions, funny readable facial acting at small scale, stable full-body front view, same height and outfit in every cell. Single character on transparent background, no scenery or text.",
+  "layout": "taxonomy/v1",
+  "fit": {
+    "resample": "lanczos",
+    "align_x": "bbox-center",
+    "align_y": "bottom",
+    "ground_frames": true,
+    "pixel_unfake": false
+  }
+}

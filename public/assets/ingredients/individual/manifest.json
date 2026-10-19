@@ -1,0 +1,1147 @@
+{
+  "source": "../ingredients-sprite-sheet.png",
+  "count": 60,
+  "padding": 4,
+  "assets": [
+    {
+      "file": "pork-belly.png",
+      "source_bounds": [
+        16,
+        41,
+        169,
+        180
+      ],
+      "crop_bounds": [
+        12,
+        37,
+        173,
+        184
+      ],
+      "size": [
+        161,
+        147
+      ]
+    },
+    {
+      "file": "beef-slices.png",
+      "source_bounds": [
+        165,
+        45,
+        328,
+        178
+      ],
+      "crop_bounds": [
+        161,
+        41,
+        332,
+        182
+      ],
+      "size": [
+        171,
+        141
+      ]
+    },
+    {
+      "file": "beef-shank.png",
+      "source_bounds": [
+        326,
+        46,
+        478,
+        178
+      ],
+      "crop_bounds": [
+        322,
+        42,
+        482,
+        182
+      ],
+      "size": [
+        160,
+        140
+      ]
+    },
+    {
+      "file": "chicken.png",
+      "source_bounds": [
+        476,
+        31,
+        659,
+        180
+      ],
+      "crop_bounds": [
+        472,
+        27,
+        663,
+        184
+      ],
+      "size": [
+        191,
+        157
+      ]
+    },
+    {
+      "file": "chicken-wings.png",
+      "source_bounds": [
+        651,
+        44,
+        815,
+        181
+      ],
+      "crop_bounds": [
+        647,
+        40,
+        819,
+        185
+      ],
+      "size": [
+        172,
+        145
+      ]
+    },
+    {
+      "file": "chicken-feet.png",
+      "source_bounds": [
+        809,
+        41,
+        986,
+        180
+      ],
+      "crop_bounds": [
+        805,
+        37,
+        990,
+        184
+      ],
+      "size": [
+        185,
+        147
+      ]
+    },
+    {
+      "file": "chicken-cartilage.png",
+      "source_bounds": [
+        975,
+        48,
+        1138,
+        182
+      ],
+      "crop_bounds": [
+        971,
+        44,
+        1142,
+        186
+      ],
+      "size": [
+        171,
+        142
+      ]
+    },
+    {
+      "file": "pork-ribs.png",
+      "source_bounds": [
+        1126,
+        45,
+        1307,
+        182
+      ],
+      "crop_bounds": [
+        1122,
+        41,
+        1311,
+        186
+      ],
+      "size": [
+        189,
+        145
+      ]
+    },
+    {
+      "file": "ground-pork.png",
+      "source_bounds": [
+        1293,
+        50,
+        1457,
+        168
+      ],
+      "crop_bounds": [
+        1289,
+        46,
+        1461,
+        172
+      ],
+      "size": [
+        172,
+        126
+      ]
+    },
+    {
+      "file": "dried-beef.png",
+      "source_bounds": [
+        1446,
+        40,
+        1605,
+        183
+      ],
+      "crop_bounds": [
+        1442,
+        36,
+        1609,
+        187
+      ],
+      "size": [
+        167,
+        151
+      ]
+    },
+    {
+      "file": "shrimp.png",
+      "source_bounds": [
+        14,
+        192,
+        176,
+        346
+      ],
+      "crop_bounds": [
+        10,
+        188,
+        180,
+        350
+      ],
+      "size": [
+        170,
+        162
+      ]
+    },
+    {
+      "file": "squid.png",
+      "source_bounds": [
+        163,
+        176,
+        326,
+        350
+      ],
+      "crop_bounds": [
+        159,
+        172,
+        330,
+        354
+      ],
+      "size": [
+        171,
+        182
+      ]
+    },
+    {
+      "file": "clams.png",
+      "source_bounds": [
+        318,
+        194,
+        485,
+        340
+      ],
+      "crop_bounds": [
+        314,
+        190,
+        489,
+        344
+      ],
+      "size": [
+        175,
+        154
+      ]
+    },
+    {
+      "file": "field-crab.png",
+      "source_bounds": [
+        480,
+        191,
+        647,
+        343
+      ],
+      "crop_bounds": [
+        476,
+        187,
+        651,
+        347
+      ],
+      "size": [
+        175,
+        160
+      ]
+    },
+    {
+      "file": "goby.png",
+      "source_bounds": [
+        638,
+        182,
+        823,
+        342
+      ],
+      "crop_bounds": [
+        634,
+        178,
+        827,
+        346
+      ],
+      "size": [
+        193,
+        168
+      ]
+    },
+    {
+      "file": "octopus.png",
+      "source_bounds": [
+        803,
+        186,
+        987,
+        344
+      ],
+      "crop_bounds": [
+        799,
+        182,
+        991,
+        348
+      ],
+      "size": [
+        192,
+        166
+      ]
+    },
+    {
+      "file": "sea-snail.png",
+      "source_bounds": [
+        975,
+        189,
+        1158,
+        350
+      ],
+      "crop_bounds": [
+        971,
+        185,
+        1162,
+        354
+      ],
+      "size": [
+        191,
+        169
+      ]
+    },
+    {
+      "file": "corn.png",
+      "source_bounds": [
+        1145,
+        183,
+        1303,
+        344
+      ],
+      "crop_bounds": [
+        1141,
+        179,
+        1307,
+        348
+      ],
+      "size": [
+        166,
+        169
+      ]
+    },
+    {
+      "file": "mixed-mushrooms.png",
+      "source_bounds": [
+        1292,
+        179,
+        1463,
+        344
+      ],
+      "crop_bounds": [
+        1288,
+        175,
+        1467,
+        348
+      ],
+      "size": [
+        179,
+        173
+      ]
+    },
+    {
+      "file": "hotpot-greens.png",
+      "source_bounds": [
+        1450,
+        179,
+        1608,
+        346
+      ],
+      "crop_bounds": [
+        1446,
+        175,
+        1612,
+        350
+      ],
+      "size": [
+        166,
+        175
+      ]
+    },
+    {
+      "file": "side-vegetables.png",
+      "source_bounds": [
+        11,
+        336,
+        186,
+        506
+      ],
+      "crop_bounds": [
+        7,
+        332,
+        190,
+        510
+      ],
+      "size": [
+        183,
+        178
+      ]
+    },
+    {
+      "file": "la-e.png",
+      "source_bounds": [
+        169,
+        342,
+        351,
+        509
+      ],
+      "crop_bounds": [
+        165,
+        338,
+        355,
+        513
+      ],
+      "size": [
+        190,
+        175
+      ]
+    },
+    {
+      "file": "bamboo-shoots.png",
+      "source_bounds": [
+        338,
+        335,
+        499,
+        508
+      ],
+      "crop_bounds": [
+        334,
+        331,
+        503,
+        512
+      ],
+      "size": [
+        169,
+        181
+      ]
+    },
+    {
+      "file": "onion.png",
+      "source_bounds": [
+        493,
+        342,
+        635,
+        507
+      ],
+      "crop_bounds": [
+        489,
+        338,
+        639,
+        511
+      ],
+      "size": [
+        150,
+        173
+      ]
+    },
+    {
+      "file": "pineapple.png",
+      "source_bounds": [
+        664,
+        331,
+        785,
+        516
+      ],
+      "crop_bounds": [
+        660,
+        327,
+        789,
+        520
+      ],
+      "size": [
+        129,
+        193
+      ]
+    },
+    {
+      "file": "tomato.png",
+      "source_bounds": [
+        787,
+        352,
+        960,
+        503
+      ],
+      "crop_bounds": [
+        783,
+        348,
+        964,
+        507
+      ],
+      "size": [
+        181,
+        159
+      ]
+    },
+    {
+      "file": "la-giang.png",
+      "source_bounds": [
+        955,
+        337,
+        1130,
+        516
+      ],
+      "crop_bounds": [
+        951,
+        333,
+        1134,
+        520
+      ],
+      "size": [
+        183,
+        187
+      ]
+    },
+    {
+      "file": "la-lot.png",
+      "source_bounds": [
+        1124,
+        343,
+        1304,
+        503
+      ],
+      "crop_bounds": [
+        1120,
+        339,
+        1308,
+        507
+      ],
+      "size": [
+        188,
+        168
+      ]
+    },
+    {
+      "file": "okra.png",
+      "source_bounds": [
+        1296,
+        355,
+        1471,
+        507
+      ],
+      "crop_bounds": [
+        1292,
+        351,
+        1475,
+        511
+      ],
+      "size": [
+        183,
+        160
+      ]
+    },
+    {
+      "file": "lemongrass.png",
+      "source_bounds": [
+        1457,
+        339,
+        1607,
+        506
+      ],
+      "crop_bounds": [
+        1453,
+        335,
+        1611,
+        510
+      ],
+      "size": [
+        158,
+        175
+      ]
+    },
+    {
+      "file": "garlic.png",
+      "source_bounds": [
+        13,
+        514,
+        177,
+        667
+      ],
+      "crop_bounds": [
+        9,
+        510,
+        181,
+        671
+      ],
+      "size": [
+        172,
+        161
+      ]
+    },
+    {
+      "file": "water-spinach.png",
+      "source_bounds": [
+        171,
+        497,
+        361,
+        676
+      ],
+      "crop_bounds": [
+        167,
+        493,
+        365,
+        680
+      ],
+      "size": [
+        198,
+        187
+      ]
+    },
+    {
+      "file": "green-mango.png",
+      "source_bounds": [
+        352,
+        503,
+        502,
+        666
+      ],
+      "crop_bounds": [
+        348,
+        499,
+        506,
+        670
+      ],
+      "size": [
+        158,
+        171
+      ]
+    },
+    {
+      "file": "aromatic-herbs.png",
+      "source_bounds": [
+        496,
+        496,
+        675,
+        676
+      ],
+      "crop_bounds": [
+        492,
+        492,
+        679,
+        680
+      ],
+      "size": [
+        187,
+        188
+      ]
+    },
+    {
+      "file": "scallions.png",
+      "source_bounds": [
+        657,
+        493,
+        836,
+        675
+      ],
+      "crop_bounds": [
+        653,
+        489,
+        840,
+        679
+      ],
+      "size": [
+        187,
+        190
+      ]
+    },
+    {
+      "file": "potatoes.png",
+      "source_bounds": [
+        803,
+        518,
+        979,
+        665
+      ],
+      "crop_bounds": [
+        799,
+        514,
+        983,
+        669
+      ],
+      "size": [
+        184,
+        155
+      ]
+    },
+    {
+      "file": "rau-ram.png",
+      "source_bounds": [
+        962,
+        499,
+        1147,
+        669
+      ],
+      "crop_bounds": [
+        958,
+        495,
+        1151,
+        673
+      ],
+      "size": [
+        193,
+        178
+      ]
+    },
+    {
+      "file": "mixed-roots.png",
+      "source_bounds": [
+        1135,
+        497,
+        1316,
+        674
+      ],
+      "crop_bounds": [
+        1131,
+        493,
+        1320,
+        678
+      ],
+      "size": [
+        189,
+        185
+      ]
+    },
+    {
+      "file": "leafy-greens.png",
+      "source_bounds": [
+        1300,
+        496,
+        1473,
+        664
+      ],
+      "crop_bounds": [
+        1296,
+        492,
+        1477,
+        668
+      ],
+      "size": [
+        181,
+        176
+      ]
+    },
+    {
+      "file": "chicken-eggs.png",
+      "source_bounds": [
+        1457,
+        515,
+        1608,
+        658
+      ],
+      "crop_bounds": [
+        1453,
+        511,
+        1612,
+        662
+      ],
+      "size": [
+        159,
+        151
+      ]
+    },
+    {
+      "file": "quail-eggs.png",
+      "source_bounds": [
+        17,
+        662,
+        178,
+        801
+      ],
+      "crop_bounds": [
+        13,
+        658,
+        182,
+        805
+      ],
+      "size": [
+        169,
+        147
+      ]
+    },
+    {
+      "file": "tofu.png",
+      "source_bounds": [
+        171,
+        661,
+        339,
+        801
+      ],
+      "crop_bounds": [
+        167,
+        657,
+        343,
+        805
+      ],
+      "size": [
+        176,
+        148
+      ]
+    },
+    {
+      "file": "rice.png",
+      "source_bounds": [
+        327,
+        661,
+        490,
+        799
+      ],
+      "crop_bounds": [
+        323,
+        657,
+        494,
+        803
+      ],
+      "size": [
+        171,
+        146
+      ]
+    },
+    {
+      "file": "bun.png",
+      "source_bounds": [
+        478,
+        666,
+        647,
+        799
+      ],
+      "crop_bounds": [
+        474,
+        662,
+        651,
+        803
+      ],
+      "size": [
+        177,
+        141
+      ]
+    },
+    {
+      "file": "noodles.png",
+      "source_bounds": [
+        640,
+        665,
+        807,
+        800
+      ],
+      "crop_bounds": [
+        636,
+        661,
+        811,
+        804
+      ],
+      "size": [
+        175,
+        143
+      ]
+    },
+    {
+      "file": "glass-noodles.png",
+      "source_bounds": [
+        804,
+        663,
+        975,
+        799
+      ],
+      "crop_bounds": [
+        800,
+        659,
+        979,
+        803
+      ],
+      "size": [
+        179,
+        144
+      ]
+    },
+    {
+      "file": "rice-paper.png",
+      "source_bounds": [
+        970,
+        660,
+        1143,
+        802
+      ],
+      "crop_bounds": [
+        966,
+        656,
+        1147,
+        806
+      ],
+      "size": [
+        181,
+        150
+      ]
+    },
+    {
+      "file": "peanuts.png",
+      "source_bounds": [
+        1139,
+        665,
+        1313,
+        803
+      ],
+      "crop_bounds": [
+        1135,
+        661,
+        1317,
+        807
+      ],
+      "size": [
+        182,
+        146
+      ]
+    },
+    {
+      "file": "avocado.png",
+      "source_bounds": [
+        1302,
+        663,
+        1475,
+        805
+      ],
+      "crop_bounds": [
+        1298,
+        659,
+        1479,
+        809
+      ],
+      "size": [
+        181,
+        150
+      ]
+    },
+    {
+      "file": "honey.png",
+      "source_bounds": [
+        1484,
+        657,
+        1590,
+        800
+      ],
+      "crop_bounds": [
+        1480,
+        653,
+        1594,
+        804
+      ],
+      "size": [
+        114,
+        151
+      ]
+    },
+    {
+      "file": "vinegar.png",
+      "source_bounds": [
+        44,
+        795,
+        120,
+        956
+      ],
+      "crop_bounds": [
+        40,
+        791,
+        124,
+        960
+      ],
+      "size": [
+        84,
+        169
+      ]
+    },
+    {
+      "file": "tamarind.png",
+      "source_bounds": [
+        140,
+        801,
+        338,
+        944
+      ],
+      "crop_bounds": [
+        136,
+        797,
+        342,
+        948
+      ],
+      "size": [
+        206,
+        151
+      ]
+    },
+    {
+      "file": "cooking-oil.png",
+      "source_bounds": [
+        364,
+        798,
+        435,
+        957
+      ],
+      "crop_bounds": [
+        360,
+        794,
+        439,
+        961
+      ],
+      "size": [
+        79,
+        167
+      ]
+    },
+    {
+      "file": "marinade.png",
+      "source_bounds": [
+        505,
+        797,
+        620,
+        955
+      ],
+      "crop_bounds": [
+        501,
+        793,
+        624,
+        959
+      ],
+      "size": [
+        123,
+        166
+      ]
+    },
+    {
+      "file": "thai-hotpot-spice.png",
+      "source_bounds": [
+        659,
+        797,
+        772,
+        954
+      ],
+      "crop_bounds": [
+        655,
+        793,
+        776,
+        958
+      ],
+      "size": [
+        121,
+        165
+      ]
+    },
+    {
+      "file": "satay.png",
+      "source_bounds": [
+        818,
+        798,
+        932,
+        957
+      ],
+      "crop_bounds": [
+        814,
+        794,
+        936,
+        961
+      ],
+      "size": [
+        122,
+        167
+      ]
+    },
+    {
+      "file": "chili-salt.png",
+      "source_bounds": [
+        987,
+        800,
+        1120,
+        943
+      ],
+      "crop_bounds": [
+        983,
+        796,
+        1124,
+        947
+      ],
+      "size": [
+        141,
+        151
+      ]
+    },
+    {
+      "file": "roasted-salt.png",
+      "source_bounds": [
+        1157,
+        798,
+        1287,
+        945
+      ],
+      "crop_bounds": [
+        1153,
+        794,
+        1291,
+        949
+      ],
+      "size": [
+        138,
+        155
+      ]
+    },
+    {
+      "file": "salad-dressing.png",
+      "source_bounds": [
+        1345,
+        797,
+        1431,
+        955
+      ],
+      "crop_bounds": [
+        1341,
+        793,
+        1435,
+        959
+      ],
+      "size": [
+        94,
+        166
+      ]
+    },
+    {
+      "file": "stir-fry-sauce.png",
+      "source_bounds": [
+        1490,
+        798,
+        1575,
+        955
+      ],
+      "crop_bounds": [
+        1486,
+        794,
+        1579,
+        959
+      ],
+      "size": [
+        93,
+        165
+      ]
+    }
+  ]
+}

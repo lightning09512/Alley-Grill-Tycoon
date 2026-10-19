@@ -1,14 +1,14 @@
 import Phaser from "phaser";
 import "./style.css";
 import { BUSINESS_STAGE_NAMES, CART_UPGRADE_COST, CUSTOMER_TYPES, INGREDIENTS, MAX_CART_LEVEL, RECIPES, RESTOCK_PACK_COST, STAFF_HIRE_COST } from "./game/data";
-import { GameStore, getDiningTableCapacity, type GameSnapshot } from "./game/GameStore";
+import { GameStore, getDiningTableCapacity, type CashCollectionEvent, type GameSnapshot } from "./game/GameStore";
 import { formatVndFromThousands } from "./game/currency";
-import { MENU_DISHES, MENU_CATEGORIES, type MenuCategory, type MenuDish } from "./game/menuCatalog";
+import { MENU_DISHES, MENU_CATEGORIES, MENU_INGREDIENTS, type MenuCategory, type MenuDish, type MenuIngredientId } from "./game/menuCatalog";
 import { MusicPlayer } from "./game/MusicPlayer";
 import { NeighborhoodScene } from "./game/NeighborhoodScene";
 import { DiningRoomScene } from "./game/DiningRoomScene";
 import { WholesaleMarketScene, type WholesaleMarketBackgroundMood } from "./game/WholesaleMarketScene";
-import { GAME_NAME_VI, GAME_TITLE } from "./config/game";
+import { formatStoreNameForDisplay, GAME_TITLE } from "./config/game";
 import { SHOP_STAGES } from "./config/shopStages";
 import { iconMarkup, setIcon, type UiIconName } from "./ui/icons";
 import kitchenRoomShellUrl from "../assets/interior-v2/kitchen-pack-v1/kitchen-room-shell-empty.png?url";
@@ -20,9 +20,13 @@ import mixedGrillPlatterUrl from "../assets/interior-v2/food/mixed_grill_platter
 document.title = GAME_TITLE;
 
 const store = new GameStore();
+let displayedCoinBalance = store.getSnapshot().coins;
+let latestCoinBalance = displayedCoinBalance;
+let lastCashCollectionId = 0;
+let cashFlightPlaying = false;
+const cashFlightQueue: CashCollectionEvent[] = [];
 const musicPlayer = new MusicPlayer((state) => {
-  const control = document.querySelector<HTMLDetailsElement>(".music-control");
-  const trigger = document.querySelector<HTMLElement>("#music-control-trigger");
+  const trigger = document.querySelector<HTMLElement>("#settings-trigger");
   const toggle = document.querySelector<HTMLButtonElement>("#music-toggle");
   const icon = document.querySelector<HTMLElement>("#music-toggle-icon");
   const label = document.querySelector<HTMLElement>("#music-toggle-label");
@@ -30,10 +34,10 @@ const musicPlayer = new MusicPlayer((state) => {
   const slider = document.querySelector<HTMLInputElement>("#music-volume");
   const volumeValue = document.querySelector<HTMLOutputElement>("#music-volume-value");
 
-  if (control) control.dataset.playing = String(state.isPlaying);
   if (trigger) {
-    trigger.setAttribute("aria-label", state.isPlaying ? "Nhạc nền đang phát" : "Mở điều khiển nhạc nền");
-    trigger.title = state.isPlaying ? `Đang phát: ${state.trackName}` : "Nhạc nền";
+    trigger.dataset.musicPlaying = String(state.isPlaying);
+    trigger.setAttribute("aria-label", state.isPlaying ? "Mở cài đặt · nhạc đang phát" : "Mở cài đặt");
+    trigger.title = state.isPlaying ? `Cài đặt · đang phát ${state.trackName}` : "Cài đặt";
   }
   if (toggle) toggle.setAttribute("aria-pressed", String(state.isPlaying));
   setIcon(icon, state.isPlaying ? "pause" : "play");
@@ -70,17 +74,32 @@ if (shopStageDebugControls && shopStageDebugEnabled) {
 }
 let activeTab = "outside";
 let diningView: "tables" | "kitchen" = "tables";
+let homeOpen = false;
 let wholesaleMarketOpen = false;
 let wholesaleMarketStarted = false;
 let wholesaleMarketSleeping = false;
 let selectedMenuCategory: MenuCategory | "all" = "all";
 const app = document.querySelector<HTMLDivElement>("#app");
 const phaserRoot = document.querySelector<HTMLDivElement>("#phaser-root");
+const gameLoadingScreen = document.querySelector<HTMLElement>("#game-loading-screen");
+const gameLoadingCopy = document.querySelector<HTMLElement>("#game-loading-copy");
+const gameLoadingProgress = document.querySelector<HTMLElement>("#game-loading-progress");
 const wholesaleMarketInterface = document.querySelector<HTMLDivElement>("#market-interface");
+const homeInterface = document.querySelector<HTMLDivElement>("#home-interface");
 const wholesaleMarketSectionCopy = document.querySelector<HTMLElement>("#market-section-copy");
 const wholesaleMarketSectionButton = document.querySelector<HTMLButtonElement>("#market-section-button");
 const wholesaleMarketPanCopy = document.querySelector<HTMLElement>("#market-pan-copy");
 if (!app || !phaserRoot || !wholesaleMarketInterface) throw new Error("Không tìm thấy khung game.");
+window.addEventListener("game-loading-progress", (event) => {
+  const progress = (event as CustomEvent<number>).detail;
+  if (gameLoadingProgress) gameLoadingProgress.style.transform = `scaleX(${Math.max(0, Math.min(1, progress))})`;
+  if (gameLoadingCopy) gameLoadingCopy.textContent = `Đang tải hình ảnh · ${Math.round(progress * 100)}%`;
+});
+window.addEventListener("game-map-ready", () => {
+  if (!gameLoadingScreen) return;
+  gameLoadingScreen.classList.add("is-hidden");
+  window.setTimeout(() => { gameLoadingScreen.hidden = true; }, 320);
+});
 const kitchenArt: [string, string][] = [
   ["kitchen-shell-art", kitchenRoomShellUrl],
   ["kitchen-layout-art", kitchenObjectsLayoutUrl],
@@ -99,31 +118,45 @@ const game = new Phaser.Game({
     mode: Phaser.Scale.NONE,
   },
   render: {
-    antialias: false,
-    roundPixels: true,
+    antialias: true,
+    roundPixels: false,
   },
   scene: [scene, diningScene],
 });
 game.scene.add("wholesale-market", wholesaleMarketScene, false);
 const updateStreetStatus = (): void => {
   const status = document.querySelector<HTMLElement>("#street-status");
-  const mapHint = document.querySelector<HTMLElement>("#map-hint-copy");
-  if (status) status.textContent = scene.isHomeZoneActive()
-    ? "Khu nhà dân"
-    : scene.isWholesaleMarketZoneActive()
-      ? "Chợ đầu mối"
-      : store.getSnapshot().inShift ? "Phố đang nhộn nhịp" : "Góc phố thân quen";
-  if (mapHint) mapHint.textContent = scene.isHomeZoneActive()
-    ? "Kéo cần tròn để đi sang phải về phố"
-    : scene.isWholesaleMarketZoneActive()
-      ? "Đi lên lối giữa chợ để vào · sang trái để về phố"
-      : "Đi lên cửa quán để vào · sang phải để tới chợ";
+  const indicator = document.querySelector<HTMLElement>("#street-crowd-indicator");
+  if (scene.isHomeZoneActive()) {
+    if (status) status.textContent = "Khu nhà dân";
+    indicator?.removeAttribute("data-crowd");
+  } else if (scene.isWholesaleMarketZoneActive()) {
+    if (status) status.textContent = "Chợ đầu mối";
+    indicator?.removeAttribute("data-crowd");
+  } else {
+    const crowd = scene.getStreetCrowdState();
+    if (status) status.textContent = crowd.label;
+    if (indicator) indicator.dataset.crowd = crowd.level;
+  }
+};
+const updateOutsideNavLabel = (): void => {
+  const outsideLabel = document.querySelector<HTMLElement>("#outside-nav-label");
+  if (outsideLabel) outsideLabel.textContent = store.getSnapshot().serviceMode === "dining"
+    ? "Ra phố"
+    : scene.isNearShopEntrance() ? "Vào quán" : "Ngoài phố";
 };
 game.events.once(Phaser.Core.Events.READY, () => {
   scene.events.on("street-zone-changed", updateStreetStatus);
-  scene.events.on("street-enter-dining", () => setLocation("dining"));
+  scene.events.on("street-crowd-changed", () => {
+    store.setStreetDemandMultiplier(scene.getStreetCrowdState().customerArrivalMultiplier);
+    updateStreetStatus();
+  });
+  scene.events.on("street-shop-entrance-nearby", updateOutsideNavLabel);
+  scene.events.on("street-enter-home", openHome);
   scene.events.on("street-enter-wholesale-market", openWholesaleMarket);
+  store.setStreetDemandMultiplier(scene.getStreetCrowdState().customerArrivalMultiplier);
   updateStreetStatus();
+  updateOutsideNavLabel();
 });
 
 const movementJoystick = document.querySelector<HTMLButtonElement>("#street-joystick");
@@ -220,6 +253,13 @@ function applyLocationScenes(): void {
     scene.scene.sleep("wholesale-market");
     wholesaleMarketSleeping = true;
   }
+  if (homeOpen) {
+    scene.setMapInteractionEnabled(false);
+    diningScene.setInteractionEnabled(false);
+    scene.scene.setVisible(false, "neighborhood");
+    scene.scene.setVisible(false, "dining-room");
+    return;
+  }
   if (store.getSnapshot().serviceMode === "dining") {
     scene.setMapInteractionEnabled(false);
     diningScene.setInteractionEnabled(diningView === "tables");
@@ -236,10 +276,26 @@ function applyLocationScenes(): void {
   }
 }
 
+function openHome(): void {
+  if (store.getSnapshot().serviceMode !== "street" || !scene.isHomeZoneActive()) return;
+  selectTab("outside");
+  homeOpen = true;
+  if (homeInterface) homeInterface.hidden = false;
+  if (app) app.dataset.location = "home";
+  applyLocationScenes();
+}
+
+function closeHome(): void {
+  homeOpen = false;
+  if (homeInterface) homeInterface.hidden = true;
+  if (app) app.dataset.location = "street";
+  applyLocationScenes();
+}
+
 function openWholesaleMarket(): void {
   if (store.getSnapshot().serviceMode !== "street") return;
   selectTab("outside");
-  wholesaleMarketScene.setSection("exterior");
+  wholesaleMarketScene.setSection("produce");
   updateWholesaleMarketSectionUI();
   wholesaleMarketOpen = true;
   if (wholesaleMarketInterface) wholesaleMarketInterface.hidden = false;
@@ -265,17 +321,12 @@ function updateWholesaleMarketSectionUI(): void {
   const buttonCopy = {
     exterior: "Vào khu rau củ ↑",
     produce: "Qua khu thịt cá →",
-    seafood: "Ra mặt tiền ↓",
+    seafood: "Về khu rau củ ←",
   } as const;
   const buttonLabels = {
     exterior: "Vào khu rau củ trong chợ",
     produce: "Đi sang khu thịt và hải sản",
-    seafood: "Quay ra mặt tiền chợ",
-  } as const;
-  const panCopy = {
-    exterior: "Kéo ngang để xem bãi xe và các dãy nhà",
-    produce: "Kéo ngang để xem các sạp rau củ",
-    seafood: "Kéo ngang để xem các sạp thịt cá",
+    seafood: "Quay lại khu rau củ",
   } as const;
   if (wholesaleMarketSectionCopy) {
     wholesaleMarketSectionCopy.textContent = sectionCopy[section];
@@ -285,7 +336,8 @@ function updateWholesaleMarketSectionUI(): void {
     wholesaleMarketSectionButton.setAttribute("aria-label", buttonLabels[section]);
   }
   if (wholesaleMarketPanCopy) {
-    wholesaleMarketPanCopy.textContent = panCopy[section];
+    wholesaleMarketPanCopy.textContent = "Kéo ngang để xem bãi xe và các dãy nhà";
+    wholesaleMarketPanCopy.closest(".market-pan-hint")?.toggleAttribute("hidden", section !== "exterior");
   }
 }
 
@@ -293,13 +345,15 @@ function toggleWholesaleMarketSection(): void {
   const next = {
     exterior: "produce",
     produce: "seafood",
-    seafood: "exterior",
+    seafood: "produce",
   } as const;
   wholesaleMarketScene.setSection(next[wholesaleMarketScene.getSection()]);
   updateWholesaleMarketSectionUI();
 }
 
 function setLocation(location: "street" | "dining"): void {
+  homeOpen = false;
+  if (homeInterface) homeInterface.hidden = true;
   wholesaleMarketOpen = false;
   if (wholesaleMarketInterface) wholesaleMarketInterface.hidden = true;
   selectTab("outside");
@@ -369,17 +423,13 @@ game.events.once(Phaser.Core.Events.READY, () => {
 
 let editingStoreName = false;
 
-function getDisplayStoreName(name: string): string {
-  return name.replace(/^(?:xe\s+)?bánh\s+mì(?=\s|$)/i, "Quán Nhậu");
-}
-
 function updateStoreNameDraft(): void {
   const input = document.querySelector<HTMLInputElement>("#store-name-input");
   const preview = document.querySelector<HTMLElement>("#store-name-preview");
   const count = document.querySelector<HTMLElement>("#store-name-count");
   if (!input) return;
   const draft = input.value.replace(/\s+/g, " ").trim().slice(0, input.maxLength);
-  if (preview) preview.textContent = getDisplayStoreName(draft) || "Tên quán của bạn";
+  if (preview) preview.textContent = formatStoreNameForDisplay(draft) || "Tên quán của bạn";
   if (count) count.textContent = `${input.value.length}/${input.maxLength}`;
 }
 
@@ -395,7 +445,7 @@ function openStoreNameModal(editing = false): void {
 
   editingStoreName = editing;
   const currentName = store.getSnapshot().storeName;
-  input.value = getDisplayStoreName(currentName);
+  input.value = formatStoreNameForDisplay(currentName);
   if (heading) heading.textContent = editing ? "Đổi tên biển hiệu" : "Đặt tên cho cửa tiệm";
   if (description) {
     description.textContent = editing
@@ -435,9 +485,10 @@ function selectTab(tab: string, toggle = false): void {
   if (panel) {
     panel.hidden = !selectedPanel;
     panel.dataset.menu = activeTab;
+    panel.setAttribute("aria-modal", String(selectedPanel));
   }
-  const catalogBackdrop = document.querySelector<HTMLButtonElement>("#menu-catalog-backdrop");
-  if (catalogBackdrop) catalogBackdrop.hidden = activeTab !== "recipes";
+  const panelBackdrop = document.querySelector<HTMLButtonElement>("#panel-backdrop");
+  if (panelBackdrop) panelBackdrop.hidden = !selectedPanel;
   for (const button of document.querySelectorAll<HTMLButtonElement>("[data-tab-target]")) {
     const selected = button.dataset.tabTarget === activeTab;
     button.classList.toggle("is-active", selected);
@@ -449,9 +500,9 @@ function selectTab(tab: string, toggle = false): void {
   const headings: Record<string, [string, string]> = {
     shop: ["GÓC QUẢN LÝ", "Cửa tiệm"],
     staff: ["ĐỘI NGŨ", "Nhân viên"],
-    menu: ["ĐANG PHỤC VỤ", "Đơn hàng"],
+    menu: ["QUẦY ĐANG PHỤC VỤ", "Phiếu món"],
     recipes: ["THỰC ĐƠN QUÁN NHẬU", "Món ngon nhà mình"],
-    stock: ["KHO NGUYÊN LIỆU", "Cửa hàng"],
+    stock: ["NGUYÊN LIỆU", "Kho bếp"],
   };
   const [eyebrow, title] = headings[activeTab] ?? ["GÓC PHỐ SÀI GÒN", "Bảng quản lý"];
   const eyebrowNode = document.querySelector<HTMLElement>("#sheet-eyebrow");
@@ -471,6 +522,17 @@ function menuDishArtMarkup(dish: MenuDish): string {
   }
   if (dish.visual.type === "image") return `<img class="menu-dish-art menu-dish-art--image" src="${mixedGrillPlatterUrl}" alt="${dish.name}">`;
   return `<span class="menu-dish-art menu-dish-art--icon">${iconMarkup(dish.visual.icon, "ui-icon")}</span>`;
+}
+
+function menuDishIngredientsMarkup(ingredientIds: readonly MenuIngredientId[]): string {
+  return ingredientIds.map((ingredientId) => {
+    const ingredient = MENU_INGREDIENTS[ingredientId];
+    const icon = `<img class="menu-dish-ingredient-icon" src="/assets/ingredients/individual/${ingredient.assetFile}" alt="">`;
+    return `<span class="menu-dish-ingredient" role="listitem" aria-label="${ingredient.name}" title="${ingredient.name}">
+      ${icon}
+      <span>${ingredient.name}</span>
+    </span>`;
+  }).join("");
 }
 
 function renderMenuCatalog(): void {
@@ -510,8 +572,10 @@ function renderMenuCatalog(): void {
           <span><small>${profitLabel}</small><b>${formatVndFromThousands(profit)}</b></span>
           <span><small>Khẩu phần</small><b>${dish.portion}</b></span>
         </div>
-        <div class="menu-dish-detail" hidden>Phù hợp bàn nhậu gia đình và nhóm bạn. ${dish.visual.type === "sheet" ? "Hình món đang dùng sprite mới trong thư viện món ăn." : "Món này dùng hình minh họa có sẵn trong game."}</div>
-        <button class="menu-dish-more" type="button" data-menu-dish-details aria-expanded="false">Xem thêm <span aria-hidden="true">⌄</span></button>
+        <div class="menu-dish-ingredients">
+          <span class="menu-dish-ingredients-heading">Nguyên liệu</span>
+          <div class="menu-dish-ingredient-list" role="list" aria-label="Nguyên liệu món ${dish.name}">${menuDishIngredientsMarkup(dish.ingredients)}</div>
+        </div>
       </div>
     </article>`;
   }).join("");
@@ -528,11 +592,10 @@ function renderDining(snapshot: GameSnapshot): void {
   const kitchenStatus = document.querySelector<HTMLElement>("#dining-kitchen-status");
   const ingredientGrid = document.querySelector<HTMLElement>("#dining-ingredient-grid");
   const feedback = document.querySelector<HTMLElement>("#dining-feedback");
-  const outsideLabel = document.querySelector<HTMLElement>("#outside-nav-label");
   const inside = snapshot.serviceMode === "dining";
   if (root) root.hidden = !inside;
-  if (app) app.dataset.location = wholesaleMarketOpen ? "market" : inside ? "dining" : "street";
-  if (outsideLabel) outsideLabel.textContent = inside ? "Ra phố" : "Ngoài phố";
+  if (app) app.dataset.location = homeOpen ? "home" : wholesaleMarketOpen ? "market" : inside ? "dining" : "street";
+  updateOutsideNavLabel();
   if (!inside) return;
 
   const guestStatusNames: Record<string, string> = {
@@ -652,6 +715,150 @@ function renderDining(snapshot: GameSnapshot): void {
   if (feedback) feedback.textContent = snapshot.dining.feedback;
 }
 
+function framePointForCashCollection(event: CashCollectionEvent, frame: HTMLElement): { x: number; y: number } {
+  if (event.source === "dining" && event.tableId) {
+    const tablePoint = diningScene.getTableScreenPoint(event.tableId);
+    if (tablePoint) return tablePoint;
+  }
+  const canvasBounds = phaserRoot?.getBoundingClientRect();
+  const frameBounds = frame.getBoundingClientRect();
+  if (!canvasBounds) return { x: frameBounds.width * 0.52, y: frameBounds.height * 0.62 };
+  return {
+    x: canvasBounds.left - frameBounds.left + canvasBounds.width * 0.52,
+    y: canvasBounds.top - frameBounds.top + canvasBounds.height * 0.62,
+  };
+}
+
+function animateCoinCounter(from: number, to: number, coins: HTMLElement): Promise<void> {
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const duration = reducedMotion ? 1 : 360;
+  return new Promise((resolve) => {
+    const startedAt = performance.now();
+    const step = (now: number): void => {
+      const progress = Math.min(1, (now - startedAt) / duration);
+      const eased = 1 - (1 - progress) ** 3;
+      coins.textContent = Math.round(from + (to - from) * eased).toLocaleString("vi-VN");
+      if (progress < 1) window.requestAnimationFrame(step);
+      else resolve();
+    };
+    window.requestAnimationFrame(step);
+  });
+}
+
+function queueCashCollection(event: CashCollectionEvent): void {
+  if (event.id <= lastCashCollectionId) return;
+  lastCashCollectionId = event.id;
+  cashFlightQueue.push(event);
+  if (!cashFlightPlaying) void playNextCashCollection();
+}
+
+async function playNextCashCollection(): Promise<void> {
+  const event = cashFlightQueue.shift();
+  if (!event) {
+    cashFlightPlaying = false;
+    displayedCoinBalance = latestCoinBalance;
+    const coins = document.querySelector<HTMLElement>("#coins");
+    const walletPill = coins?.closest<HTMLElement>(".wallet-pill");
+    if (coins) coins.textContent = displayedCoinBalance.toLocaleString("vi-VN");
+    if (walletPill) walletPill.setAttribute("aria-label", `Số dư ${formatVndFromThousands(displayedCoinBalance)}`);
+    return;
+  }
+
+  cashFlightPlaying = true;
+  const frame = document.querySelector<HTMLElement>(".game-frame");
+  const layer = document.querySelector<HTMLElement>("#money-animation-layer");
+  const coins = document.querySelector<HTMLElement>("#coins");
+  const walletPill = coins?.closest<HTMLElement>(".wallet-pill");
+  const fallbackWallet = document.querySelector<HTMLElement>("#money-reward-wallet");
+  const fallbackBalance = document.querySelector<HTMLElement>("#money-reward-balance");
+  if (!frame || !layer || !coins) {
+    displayedCoinBalance += event.amount;
+    await playNextCashCollection();
+    return;
+  }
+
+  const frameBounds = frame.getBoundingClientRect();
+  const walletBounds = walletPill?.getBoundingClientRect();
+  const walletVisible = Boolean(walletBounds && walletBounds.width > 0 && walletBounds.height > 0);
+  const targetWallet = walletVisible ? walletPill : fallbackWallet;
+  if (!walletVisible && fallbackWallet) {
+    fallbackWallet.hidden = false;
+    if (fallbackBalance) fallbackBalance.textContent = displayedCoinBalance.toLocaleString("vi-VN");
+  }
+  const targetBounds = targetWallet?.getBoundingClientRect();
+  if (!targetBounds || targetBounds.width <= 0) {
+    displayedCoinBalance += event.amount;
+    await playNextCashCollection();
+    return;
+  }
+
+  const origin = framePointForCashCollection(event, frame);
+  const target = {
+    x: targetBounds.left - frameBounds.left + targetBounds.width * 0.5,
+    y: targetBounds.top - frameBounds.top + targetBounds.height * 0.5,
+  };
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const flights = Array.from({ length: 3 }, (_, index) => {
+    const bill = document.createElement("img");
+    bill.className = "money-cash-flight";
+    bill.src = "/assets/money-stack.png";
+    bill.alt = "";
+    bill.draggable = false;
+    const startX = origin.x + (index - 1) * 12;
+    const startY = origin.y + (index % 2 ? -8 : 6);
+    const deltaX = target.x - startX;
+    const deltaY = target.y - startY;
+    bill.style.left = `${startX}px`;
+    bill.style.top = `${startY}px`;
+    layer.append(bill);
+    const animation = bill.animate([
+      { opacity: 0, transform: "translate(-50%, -50%) scale(.62) rotate(-16deg)" },
+      { opacity: 1, offset: 0.18, transform: `translate(calc(-50% + ${deltaX * 0.15}px), calc(-50% + ${deltaY * 0.15 - 28}px)) scale(.95) rotate(9deg)` },
+      { opacity: 0.18, transform: `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px)) scale(.28) rotate(24deg)` },
+    ], {
+      duration: prefersReducedMotion ? 1 : 760,
+      delay: prefersReducedMotion ? 0 : index * 95,
+      easing: "cubic-bezier(.2,.72,.21,1)",
+      fill: "forwards",
+    });
+    return animation.finished.catch(() => undefined).finally(() => bill.remove());
+  });
+  await Promise.all(flights);
+
+  const balanceAfterPayment = displayedCoinBalance + event.amount;
+  const walletForBounce = walletVisible ? walletPill : fallbackWallet;
+  walletForBounce?.classList.remove("is-cashing");
+  if (walletForBounce) {
+    void walletForBounce.offsetWidth;
+    walletForBounce.classList.add("is-cashing");
+    window.setTimeout(() => walletForBounce.classList.remove("is-cashing"), 560);
+  }
+  const gain = document.createElement("span");
+  gain.className = "money-gain-pop";
+  gain.textContent = `+${formatVndFromThousands(event.amount)}`;
+  gain.style.left = `${target.x}px`;
+  gain.style.top = `${target.y - 16}px`;
+  layer.append(gain);
+  window.setTimeout(() => gain.remove(), 900);
+
+  await animateCoinCounter(displayedCoinBalance, balanceAfterPayment, coins);
+  displayedCoinBalance = balanceAfterPayment;
+  if (fallbackBalance && fallbackWallet && !fallbackWallet.hidden) {
+    fallbackBalance.textContent = displayedCoinBalance.toLocaleString("vi-VN");
+  }
+  if (walletPill) walletPill.setAttribute("aria-label", `Số dư ${formatVndFromThousands(displayedCoinBalance)}`);
+
+  if (cashFlightQueue.length > 0) {
+    await playNextCashCollection();
+    return;
+  }
+  if (fallbackWallet) window.setTimeout(() => { fallbackWallet.hidden = true; }, 700);
+  displayedCoinBalance = latestCoinBalance;
+  coins.textContent = displayedCoinBalance.toLocaleString("vi-VN");
+  if (walletPill) walletPill.setAttribute("aria-label", `Số dư ${formatVndFromThousands(displayedCoinBalance)}`);
+  cashFlightPlaying = false;
+}
+
 function render(snapshot: GameSnapshot): void {
   const $ = <T extends HTMLElement>(selector: string) => document.querySelector<T>(selector);
   const coins = $("#coins");
@@ -661,25 +868,21 @@ function render(snapshot: GameSnapshot): void {
   const orderHint = $("#order-hint");
   const callout = $("#customer-callout");
   const feedback = $("#feedback");
-  const queueCount = $("#queue-count");
   const status = $("#street-status");
   const level = $("#cart-level");
   const businessStage = $("#business-stage");
   const upgradeButton = $("[data-action='upgrade']") as HTMLButtonElement | null;
   const hireButton = $("#hire-button") as HTMLButtonElement | null;
-  const storeNameDisplay = $("#store-name-display");
   const storeNameShort = $("#store-name-short");
 
-  if (storeNameDisplay) storeNameDisplay.textContent = getDisplayStoreName(snapshot.storeName) || GAME_NAME_VI;
-  if (storeNameShort) storeNameShort.textContent = getDisplayStoreName(snapshot.storeName) || "Chưa đặt tên";
-  if (coins) coins.textContent = snapshot.coins.toLocaleString("vi-VN");
-  if (walletPill) walletPill.setAttribute("aria-label", `Số dư ${formatVndFromThousands(snapshot.coins)}`);
+  if (storeNameShort) storeNameShort.textContent = formatStoreNameForDisplay(snapshot.storeName) || "Chưa đặt tên";
+  latestCoinBalance = snapshot.coins;
+  if (snapshot.cashCollection) queueCashCollection(snapshot.cashCollection);
+  if (coins && !cashFlightPlaying) coins.textContent = snapshot.coins.toLocaleString("vi-VN");
+  if (walletPill && !cashFlightPlaying) walletPill.setAttribute("aria-label", `Số dư ${formatVndFromThousands(snapshot.coins)}`);
   if (reputation) reputation.textContent = snapshot.reputation.toLocaleString("vi-VN");
   if (feedback) feedback.textContent = snapshot.offlineNotice || snapshot.feedback;
-  if (queueCount) queueCount.textContent = snapshot.customers.length.toString();
-  if (status) status.textContent = scene.isHomeZoneActive()
-    ? "Khu nhà dân"
-    : snapshot.inShift ? "Phố đang nhộn nhịp" : "Góc phố thân quen";
+  if (status) updateStreetStatus();
   if (level) level.textContent = `CẤP ${snapshot.cartLevel} / ${MAX_CART_LEVEL}`;
   if (level) level.title = BUSINESS_STAGE_NAMES[snapshot.cartLevel - 1];
   if (businessStage) businessStage.textContent = BUSINESS_STAGE_NAMES[snapshot.cartLevel - 1];
@@ -699,18 +902,29 @@ function render(snapshot: GameSnapshot): void {
   }
 
   const activeCustomer = snapshot.customers[0];
+  const waitingForStreetOrder = snapshot.serviceMode === "street" && activeCustomer?.status === "waiting";
+  const hasDiningOrder = snapshot.serviceMode === "dining"
+    && snapshot.dining.orders.some((order) => order.status === "called" || order.status === "queued" || order.status === "ready");
+  document.querySelector<HTMLElement>('[data-tab-target="menu"]')?.classList.toggle("has-task", waitingForStreetOrder || hasDiningOrder);
   if (orderTitle) orderTitle.textContent = activeCustomer?.status === "walking"
-    ? "Khách đang tới quầy…"
+    ? "Khách đang tới"
     : activeCustomer ? RECIPES[activeCustomer.recipe].name : "Chưa có khách";
   if (orderHint) {
-    if (!snapshot.inShift) orderHint.textContent = "Khách sẽ tự ghé quán. Chọn đúng thứ tự nguyên liệu để nhận tiền boa và danh tiếng.";
-    else if (activeCustomer?.status === "walking") orderHint.textContent = `${CUSTOMER_TYPES[activeCustomer.type].shortName} đang đi bộ tới quầy trên vỉa hè.`;
-    else if (activeCustomer) orderHint.textContent = `${CUSTOMER_TYPES[activeCustomer.type].shortName} đang chờ. Chạm nguyên liệu theo thứ tự bên dưới.`;
-    else orderHint.textContent = "Quán đang chờ khách mới. Trong lúc chờ, chuẩn bị nguyên liệu nhé.";
+    if (!snapshot.inShift) orderHint.textContent = "Mở quán để đón khách.";
+    else if (activeCustomer?.status === "walking") orderHint.textContent = `${CUSTOMER_TYPES[activeCustomer.type].shortName} đang tới quầy.`;
+    else if (activeCustomer) orderHint.textContent = "Chạm nguyên liệu theo thứ tự để làm món.";
+    else orderHint.textContent = "Đang chờ khách mới. Hãy chuẩn bị nguyên liệu.";
+  }
+
+  const orderTimer = $("#order-timer");
+  if (orderTimer) {
+    orderTimer.hidden = !waitingForStreetOrder;
+    if (waitingForStreetOrder) orderTimer.textContent = `${activeCustomer.patience}s`;
   }
 
   const steps = $("#order-steps");
   if (steps) {
+    steps.hidden = !waitingForStreetOrder;
     if (!activeCustomer) {
       steps.innerHTML = "<span class='empty-step'>Đang chờ đơn đầu tiên</span>";
     } else {
@@ -722,6 +936,18 @@ function render(snapshot: GameSnapshot): void {
         return `<span class="step-chip ${done ? "done" : ""} ${current ? "current" : ""}"><i>${iconMarkup(done ? "check" : item.icon as UiIconName, "step-icon ui-icon")}</i>${item.name}</span>`;
       }).join("");
     }
+  }
+  const streetIngredientGrid = $(".sheet-content[data-menu-content='menu'] .ingredient-grid");
+  if (streetIngredientGrid) streetIngredientGrid.hidden = !waitingForStreetOrder;
+  if (feedback) feedback.hidden = !waitingForStreetOrder;
+
+  const lowStock = INGREDIENTS.filter((ingredient) => snapshot.inventory[ingredient.id] <= 2);
+  document.querySelector<HTMLElement>('[data-tab-target="stock"]')?.classList.toggle("has-alert", lowStock.length > 0);
+  const stockStatus = $("#stock-status");
+  if (stockStatus) {
+    stockStatus.textContent = lowStock.length
+      ? `Sắp hết: ${lowStock.map((ingredient) => ingredient.name).join(", ")}`
+      : "Nguyên liệu đã sẵn sàng cho ca bán.";
   }
 
   for (const ingredient of INGREDIENTS) {
@@ -738,10 +964,10 @@ function render(snapshot: GameSnapshot): void {
   const restockLabel = $("#restock-label");
   const restockCost = $("#restock-cost");
   if (restockButton) restockButton.disabled = snapshot.coins < RESTOCK_PACK_COST && !snapshot.emergencyRestockAvailable;
-  if (restockLabel) restockLabel.textContent = snapshot.emergencyRestockAvailable ? "Nhận nguyên liệu dự phòng" : "Nhập một chuyến hàng";
+  if (restockLabel) restockLabel.textContent = snapshot.emergencyRestockAvailable ? "Nhận nguyên liệu dự phòng" : "Nhập nguyên liệu";
   if (restockCost) restockCost.textContent = snapshot.emergencyRestockAvailable
-    ? "Miễn phí · thêm 4 phần mỗi món"
-    : `${formatVndFromThousands(RESTOCK_PACK_COST)} · thêm 5 phần mỗi món`;
+    ? "Miễn phí · +4 mỗi loại"
+    : `${formatVndFromThousands(RESTOCK_PACK_COST)} · +5 mỗi loại`;
 
   const nextUpgradeCost = CART_UPGRADE_COST[snapshot.cartLevel] ?? 0;
   const upgradeLabel = $("#upgrade-label");
@@ -798,18 +1024,7 @@ document.addEventListener("click", (event) => {
     renderMenuCatalog();
     return;
   }
-  const detailsButton = target.closest<HTMLButtonElement>("button[data-menu-dish-details]");
-  if (detailsButton) {
-    const card = detailsButton.closest<HTMLElement>(".menu-dish-card");
-    const detail = card?.querySelector<HTMLElement>(".menu-dish-detail");
-    if (detail) {
-      detail.hidden = !detail.hidden;
-      detailsButton.setAttribute("aria-expanded", String(!detail.hidden));
-      detailsButton.innerHTML = detail.hidden ? 'Xem thêm <span aria-hidden="true">⌄</span>' : 'Thu gọn <span aria-hidden="true">⌃</span>';
-    }
-    return;
-  }
-  if (target.closest("#menu-catalog-backdrop")) {
+  if (target.closest("#panel-backdrop")) {
     selectTab("outside");
     return;
   }
@@ -827,6 +1042,9 @@ document.addEventListener("click", (event) => {
   if (!button || button.disabled) return;
 
   switch (button.dataset.action) {
+    case "leave-home":
+      closeHome();
+      break;
     case "leave-wholesale-market":
       closeWholesaleMarket();
       break;
@@ -881,6 +1099,15 @@ document.addEventListener("click", (event) => {
       if (document.fullscreenElement) void document.exitFullscreen();
       else void document.documentElement.requestFullscreen?.();
       break;
+    case "open-settings":
+      document.querySelector<HTMLDialogElement>("#settings-dialog")?.showModal();
+      break;
+    case "close-settings":
+      document.querySelector<HTMLDialogElement>("#settings-dialog")?.close();
+      break;
+    case "screenshot":
+      captureGameScreenshot();
+      break;
     case "toggle-music":
       stopAutoStartMusic();
       void musicPlayer.toggle();
@@ -894,13 +1121,58 @@ function stopAutoStartMusic(): void {
 }
 
 function startMusicAfterGesture(event: Event): void {
-  if (event.target instanceof Element && event.target.closest(".music-control")) return;
+  if (event.target instanceof Element && event.target.closest(".settings-button, .settings-dialog, .screenshot-button, .fullscreen-button")) return;
   stopAutoStartMusic();
   if (musicPlayer.shouldAutoStart) void musicPlayer.play();
 }
 
 document.addEventListener("pointerdown", startMusicAfterGesture);
 document.addEventListener("keydown", startMusicAfterGesture);
+
+document.querySelector<HTMLDialogElement>("#settings-dialog")?.addEventListener("click", (event) => {
+  if (event.target === event.currentTarget) (event.currentTarget as HTMLDialogElement).close();
+});
+
+let hudToastTimer = 0;
+function showHudToast(message: string): void {
+  const toast = document.querySelector<HTMLElement>("#hud-toast");
+  if (!toast) return;
+  toast.textContent = message;
+  toast.hidden = false;
+  window.clearTimeout(hudToastTimer);
+  hudToastTimer = window.setTimeout(() => { toast.hidden = true; }, 2_200);
+}
+
+function captureGameScreenshot(): void {
+  const canvas = game.canvas;
+  if (!canvas) {
+    showHudToast("Màn chơi chưa sẵn sàng để chụp.");
+    return;
+  }
+  try {
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        showHudToast("Chưa thể lưu ảnh lúc này.");
+        return;
+      }
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const now = new Date();
+      const stamp = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, "0"), String(now.getDate()).padStart(2, "0")].join("")
+        + "-" + [String(now.getHours()).padStart(2, "0"), String(now.getMinutes()).padStart(2, "0"), String(now.getSeconds()).padStart(2, "0")].join("");
+      link.href = url;
+      link.download = `quan-nhau-${stamp}.png`;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1_000);
+      showHudToast("Đã lưu ảnh màn chơi.");
+    }, "image/png");
+  } catch {
+    showHudToast("Chưa thể lưu ảnh lúc này.");
+  }
+}
+
 document.querySelector<HTMLInputElement>("#music-volume")?.addEventListener("input", (event) => {
   const slider = event.currentTarget;
   if (slider instanceof HTMLInputElement) musicPlayer.setVolume(Number(slider.value));
@@ -935,6 +1207,10 @@ document.addEventListener("click", (event) => {
   if (!(target instanceof Element)) return;
   const tabButton = target.closest<HTMLButtonElement>("button[data-tab-target]");
   if (tabButton?.dataset.tabTarget) {
+    if (homeOpen) {
+      closeHome();
+      if (tabButton.dataset.tabTarget === "outside") return;
+    }
     if (wholesaleMarketOpen) {
       closeWholesaleMarket();
       if (tabButton.dataset.tabTarget === "outside") {
@@ -946,9 +1222,17 @@ document.addEventListener("click", (event) => {
       if (wasDining) {
         setLocation("street");
         scene.centerOnShop();
+      } else if (scene.isNearShopEntrance()) {
+        setLocation("dining");
       } else {
         selectTab("outside");
       }
+      return;
+    }
+    if (tabButton.dataset.tabTarget === "menu" && store.getSnapshot().serviceMode === "dining") {
+      selectTab("outside");
+      setDiningView("kitchen");
+      setDiningPanelMode("kitchen");
       return;
     }
     selectTab(tabButton.dataset.tabTarget, true);
@@ -968,8 +1252,3 @@ store.subscribe(render);
 selectTab("outside");
 if (!store.getSnapshot().storeName) openStoreNameModal();
 else store.startShift();
-
-const mapHint = document.querySelector<HTMLElement>("#map-hint");
-if (shopStageDebugEnabled && mapHint) mapHint.hidden = true;
-phaserRoot.addEventListener("pointerdown", () => mapHint?.classList.add("is-dismissed"), { once: true });
-window.setTimeout(() => mapHint?.classList.add("is-dismissed"), 6_000);

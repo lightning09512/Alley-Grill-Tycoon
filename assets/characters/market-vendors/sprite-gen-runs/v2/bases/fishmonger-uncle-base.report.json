@@ -1,0 +1,35 @@
+{
+  "kind": "sprite-gen-image-report",
+  "provider": "codex",
+  "prompt": "Redraw the single man in the reference as a finished full-body character sprite for a Vietnamese 2D mobile management game. Keep his recognizable outfit: compact sturdy middle-aged fishmonger, short tousled black hair graying at the temples, thick curled moustache, navy rolled-sleeve shirt, faded teal apron, white towel with blue stripes over his shoulders, dark cropped trousers and black rubber boots. Face the viewer directly, standing upright with both boots fully visible and level. Give him a funny friendly market-vendor expression: proud curled moustache, one eye in a cheeky squint, a lopsided grin and slightly puffed cheeks. Match a hand-drawn Vietnamese comic game sprite: thick dark-brown ink outline, simplified clear shapes, slightly irregular hand-inked contours, flat warm color blocks with only two restrained cel-shadow tones, facial features readable at small game scale. Redraw the illustration in this style; do not copy the glossy finish of the reference. No 3D, no photorealism, no soft airbrush, no shiny highlights, no ornate fabric rendering, no text, no fish, no knife, no stall, no scenery, no ground shadow. One isolated character only on transparency; clean silhouette, complete body inside the canvas.",
+  "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\market-vendors\\sprite-gen-runs\\v2\\bases\\fishmonger-uncle-base.png",
+  "raw": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\market-vendors\\sprite-gen-runs\\v2\\bases\\fishmonger-uncle-base.png.raw.png",
+  "raw_bytes": 1344768,
+  "elapsed_seconds": 51.203,
+  "model": null,
+  "session_id": "01a150e9-529d-7860-897b-5e4e57070fd6",
+  "refs": [
+    "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\market-vendors\\sprite-gen-runs\\v2\\references\\fishmonger-uncle-reference.png"
+  ],
+  "transparent": true,
+  "alpha": {
+    "strategy": "native",
+    "strategy_source": "explicit",
+    "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\market-vendors\\sprite-gen-runs\\v2\\bases\\fishmonger-uncle-base.png",
+    "mode": "RGBA",
+    "method": "native",
+    "size": "990x1588",
+    "alpha_zero_pct": 49.23,
+    "partial_alpha_pct": 50.67,
+    "opaque_pct": 0.1,
+    "cleaned_transparent_rgb_pixels": 638,
+    "stale_transparent_rgb_pixels": 0
+  },
+  "chroma": null,
+  "extra": {
+    "inline_results": 1,
+    "rollout_cleaned": true,
+    "transparent_background_reported": true
+  },
+  "provider_resolved_from": "explicit"
+}
