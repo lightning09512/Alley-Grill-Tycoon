@@ -50,7 +50,8 @@ export interface DiningSeat {
   status: DiningTableStatus;
   guestId: string | null;
 }
-export type DiningGuestStatus = "entering" | "waiting-order" | "waiting-food" | "eating" | "awaiting-payment" | "leaving";
+export type DiningGuestStatus = "approaching" | "entering" | "waiting-order" | "waiting-food" | "eating" | "awaiting-payment" | "leaving" | "departing";
+export const DINING_OUTDOOR_WALK_SECONDS = 9;
 export type DiningOrderStatus = "called" | "queued" | "cooking" | "ready" | "delivered" | "paid";
 
 export interface DiningTable {
@@ -67,6 +68,7 @@ export interface DiningGuest {
   partySize: number;
   partyMemberIndex: number;
   arrivalDelaySeconds: number;
+  outsideDirection: -1 | 1;
   tableId: number;
   seatIndex: number;
   characterId: string;
@@ -225,6 +227,7 @@ export class GameStore {
   private shiftReputation = 0;
   private arrivalClock = 0;
   private staffClock = 0;
+  private diningStaffClock = 0;
   private customerId = 0;
   private diningPartyNumber = 0;
   private diningPartySelection = createDiningPartySelectionState();
@@ -546,7 +549,7 @@ export class GameStore {
     this.diningConversationClock = 0;
     this.diningDialogueAvailableAt = 0;
     this.pendingDiningDialogues = [];
-    if (this.serviceMode === "dining") this.arriveDiningParty();
+    this.arriveDiningParty();
     this.assembly = [];
     this.shiftRevenue = 0;
     this.shiftTips = 0;
@@ -556,9 +559,10 @@ export class GameStore {
     this.shiftReputation = 0;
     this.arrivalClock = 0;
     this.staffClock = 0;
+    this.diningStaffClock = 0;
     this.report = null;
     this.feedback = this.serviceMode === "street"
-      ? "Khách đầu tiên đang đi bộ tới quán. Chờ bạn ấy tới rồi bắt đầu chế biến món nhé!"
+      ? "Khách đầu tiên đang đi bộ tới quán từ ngoài phố."
       : "Ca bán trong phòng ăn bắt đầu. Khách đầu tiên đang chọn bàn.";
     this.persist();
     this.publish();
@@ -707,8 +711,8 @@ export class GameStore {
 
     this.elapsedSeconds += 1;
     this.secondsRemaining = SHIFT_SECONDS - (this.elapsedSeconds % SHIFT_SECONDS);
-    if (this.serviceMode === "dining") this.tickDiningRoom();
-    else this.tickStreetShift();
+    this.tickDiningRoom();
+    if (this.serviceMode === "street") this.tickStreetShift();
 
     if (this.elapsedSeconds % SHIFT_SECONDS === 0) this.settleServicePeriod();
 
@@ -766,7 +770,14 @@ export class GameStore {
     this.dining.arrivalClock += 1;
     const impatientParties = new Set<string>();
     for (const guest of [...this.dining.guests]) {
-      if (guest.status === "entering") {
+      if (guest.status === "approaching") {
+        if (guest.transitionSeconds <= 0) {
+          guest.status = "entering";
+          guest.transitionSeconds = diningArrivalSeconds(guest.tableId) + guest.arrivalDelaySeconds;
+        } else {
+          guest.transitionSeconds -= 1;
+        }
+      } else if (guest.status === "entering") {
         guest.transitionSeconds -= 1;
         if (guest.transitionSeconds <= 0) {
           guest.status = "waiting-order";
@@ -780,6 +791,8 @@ export class GameStore {
         }
       } else if (guest.status === "leaving") {
         guest.transitionSeconds -= 1;
+      } else if (guest.status === "departing" && this.serviceMode === "street") {
+        guest.transitionSeconds = Math.max(-1, guest.transitionSeconds - 1);
       } else if (guest.status === "waiting-order" || guest.status === "waiting-food") {
         guest.patience -= 1;
         if (guest.patience <= 0) impatientParties.add(guest.partyId);
@@ -787,7 +800,7 @@ export class GameStore {
     }
     for (const partyId of impatientParties) {
       const party = this.dining.guests.filter((guest) => guest.partyId === partyId);
-      if (party.length === 0 || party.every((guest) => guest.status === "leaving")) continue;
+      if (party.length === 0 || party.every((guest) => guest.status === "leaving" || guest.status === "departing")) continue;
       const waitingForFood = party.some((guest) => guest.status === "waiting-food");
       for (const guest of party) {
         guest.status = "leaving";
@@ -822,11 +835,24 @@ export class GameStore {
         }
         this.syncDiningTable(table);
       }
+      for (const guest of party) {
+        guest.status = "departing";
+        guest.transitionSeconds = DINING_OUTDOOR_WALK_SECONDS;
+      }
+      this.dining.feedback = `Cả nhóm đã ra tới cửa quán; ${arrivedMembers.length} chỗ bàn ${party[0].tableId} đang cần dọn.`;
+    }
+    const departedParties = new Set(this.dining.guests
+      .filter((guest) => guest.status === "departing" && guest.transitionSeconds < 0)
+      .map((guest) => guest.partyId));
+    for (const partyId of departedParties) {
+      const party = this.dining.guests.filter((guest) => guest.partyId === partyId);
+      if (party.length === 0 || !party.every((guest) => guest.status === "departing" && guest.transitionSeconds < 0)) continue;
+      const selectedOrderGuest = this.dining.orders.find((order) => order.id === this.dining.selectedOrderId)?.guestId;
       this.dining.guests = this.dining.guests.filter((guest) => guest.partyId !== partyId);
       this.dining.orders = this.dining.orders.filter((order) => order.partyId !== partyId);
       if (party.some((guest) => guest.id === this.dining.selectedGuestId)) this.dining.selectedGuestId = null;
       if (party.some((guest) => guest.id === selectedOrderGuest)) this.dining.selectedOrderId = null;
-      this.dining.feedback = `Cả nhóm đã rời bàn ${party[0].tableId}; ${arrivedMembers.length} chỗ đang cần dọn.`;
+      this.dining.feedback = `Cả nhóm đã đi khỏi quán; chỗ bàn ${party[0].tableId} đã sẵn sàng sau khi dọn.`;
     }
     const activeOrder = this.dining.orders.find((order) => order.id === this.dining.activeOrderId);
     const firstQueuedOrder = this.dining.orders.find((order) => order.status === "queued");
@@ -865,19 +891,21 @@ export class GameStore {
       this.dining.arrivalClock = 0;
       this.arriveDiningParty();
     }
-    this.tickDiningConversation();
-    this.advanceDiningDialogue();
+    if (this.serviceMode === "dining") {
+      this.tickDiningConversation();
+      this.advanceDiningDialogue();
+    }
     if (this.hasStaff) {
-      this.staffClock += 1;
-      if (this.staffClock >= 3) {
-        this.staffClock = 0;
+      this.diningStaffClock += 1;
+      if (this.diningStaffClock >= 3) {
+        this.diningStaffClock = 0;
         this.helpDiningRoom();
       }
     }
   }
 
   private arriveDiningParty(): void {
-    if (!this.inShift || this.serviceMode !== "dining") return;
+    if (!this.inShift) return;
     const unlockedTableCount = getDiningTableCapacity();
     const nextPartyNumber = this.diningPartyNumber + 1;
     const previousSelectionState = cloneDiningPartySelectionState(this.diningPartySelection);
@@ -911,6 +939,8 @@ export class GameStore {
     const memberCharacterIds = party.characterIds.slice(0, partySize);
     const familyContext = diningFamilyContext(memberCharacterIds);
     const arrivalDialogue = diningArrivalDialogue(party.type, this.diningDialogueNumber, partySize, familyContext, memberCharacterIds);
+    const outsideDirection: -1 | 1 = Math.random() < 0.5 ? -1 : 1;
+    const initialStatus: DiningGuestStatus = this.serviceMode === "street" ? "approaching" : "entering";
     const seatIndices = preferredSeatOrder(partySize).filter((index) => table!.seats[index].status === "empty").slice(0, partySize);
     memberCharacterIds.forEach((characterId, memberIndex) => {
       const customer = this.makeCustomer();
@@ -934,6 +964,7 @@ export class GameStore {
         partySize,
         partyMemberIndex: memberIndex,
         arrivalDelaySeconds: memberIndex * 0.8,
+        outsideDirection,
         tableId: table!.id,
         seatIndex: seat.index,
         characterId,
@@ -942,9 +973,11 @@ export class GameStore {
         dialogueNumber: this.diningDialogueNumber,
         type: customer.type,
         recipe: customer.recipe,
-        status: "entering",
+        status: initialStatus,
         patience: CUSTOMER_PATIENCE_SECONDS,
-        transitionSeconds: diningArrivalSeconds(table!.id) + memberIndex * 0.8,
+        transitionSeconds: initialStatus === "approaching"
+          ? DINING_OUTDOOR_WALK_SECONDS
+          : diningArrivalSeconds(table!.id) + memberIndex * 0.8,
       });
       this.dining.orders.push({
         id: `dining-order-${customer.id}`,
@@ -987,7 +1020,7 @@ export class GameStore {
       if (next.startsAt > this.elapsedSeconds) return;
       this.pendingDiningDialogues.shift();
       const guest = this.dining.guests.find((entry) => entry.id === next.event.guestId);
-      if (!guest || guest.status === "entering" || guest.status === "leaving") continue;
+      if (!guest || guest.status === "approaching" || guest.status === "entering" || guest.status === "leaving" || guest.status === "departing") continue;
       this.dining.dialogueEvent = next.event;
       return;
     }

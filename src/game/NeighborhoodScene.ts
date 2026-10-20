@@ -97,7 +97,7 @@ import {
 import { SHOP_COOKING_STEAM_POINTS, STREET_COOKING_STEAM_POINTS } from "../config/cookingSteam";
 import { setIcon, type UiIconName } from "../ui/icons";
 import { RECIPES, type CustomerType } from "./data";
-import { GameStore, type GameSnapshot, type WaitingCustomer } from "./GameStore";
+import { DINING_OUTDOOR_WALK_SECONDS, GameStore, type DiningGuest, type GameSnapshot, type WaitingCustomer } from "./GameStore";
 import {
   streetWalkerDialogues,
   TRAFFIC_DRIVER_DIALOGUES,
@@ -624,6 +624,34 @@ type Walker = {
   petAnimationComplete?: () => void;
 };
 
+type DiningGuestAtlas = {
+  frame_layout: {
+    cellWidth: number;
+    cellHeight: number;
+    rows: Record<string, { x: number; y: number; w: number; h: number }[]>;
+  };
+  animation: { rows: Record<string, { fps: number; loop: boolean }> };
+  anchors: { standingFeet: { x: number; y: number } };
+};
+
+type OutdoorDiningGuestActor = {
+  sprite: Phaser.GameObjects.Sprite;
+  shadow: Phaser.GameObjects.Ellipse;
+  status: DiningGuest["status"];
+  transitionSeconds: number;
+  syncedAt: number;
+};
+
+const DINING_GUEST_ATLAS_URLS = import.meta.glob("../../assets/characters/sprite-gen-dining/*/game-atlas.png", {
+  eager: true,
+  query: "?url",
+  import: "default",
+}) as Record<string, string>;
+const DINING_GUEST_ATLAS_MANIFESTS = import.meta.glob("../../assets/characters/sprite-gen-dining/*/game-manifest.json", {
+  eager: true,
+  import: "default",
+}) as Record<string, DiningGuestAtlas>;
+
 type TrafficBike = {
   profile: (typeof TRAFFIC_BIKE_PROFILES)[number];
   sprite: Phaser.GameObjects.Image;
@@ -922,6 +950,8 @@ export class NeighborhoodScene extends Phaser.Scene {
   private grocerySpawnCooldownMs = 3_000;
   private pendingDepartures = new Map<number, { type: CustomerType; direction: -1 | 1 }>();
   private walkers: Walker[] = [];
+  private outdoorDiningGuests = new Map<string, OutdoorDiningGuestActor>();
+  private diningGuestAtlasRequests = new Set<string>();
   private walkerSpawnQueue: number[] = [];
   private ambientWalkerSpawnCooldownMs = 0;
   private trafficBikes: TrafficBike[] = [];
@@ -2356,6 +2386,132 @@ export class NeighborhoodScene extends Phaser.Scene {
     }
   }
 
+  private diningGuestAtlasManifest(characterId: string): DiningGuestAtlas | undefined {
+    const path = Object.keys(DINING_GUEST_ATLAS_MANIFESTS).find((entry) => entry.includes(`/${characterId}/`));
+    return path ? DINING_GUEST_ATLAS_MANIFESTS[path] : undefined;
+  }
+
+  private registerDiningGuestWalkAnimation(characterId: string): void {
+    const textureKey = `dining-npc-${characterId}`;
+    const manifest = this.diningGuestAtlasManifest(characterId);
+    const rectangles = manifest?.frame_layout.rows.side_walk;
+    if (!manifest || !rectangles?.length || !this.textures.exists(textureKey)) return;
+
+    const texture = this.textures.get(textureKey);
+    rectangles.forEach((rect, index) => {
+      const frame = `side_walk-${index}`;
+      if (!texture.has(frame)) texture.add(frame, 0, rect.x, rect.y, rect.w, rect.h);
+    });
+    const animationKey = `${textureKey}-side_walk`;
+    if (this.anims.exists(animationKey)) return;
+    const animation = manifest.animation.rows.side_walk;
+    this.anims.create({
+      key: animationKey,
+      frames: rectangles.map((_, index) => ({ key: textureKey, frame: `side_walk-${index}` })),
+      frameRate: Math.min(animation?.fps ?? 5, 4),
+      repeat: -1,
+    });
+  }
+
+  private requestDiningGuestAtlas(characterId: string): void {
+    const textureKey = `dining-npc-${characterId}`;
+    if (this.textures.exists(textureKey)) {
+      this.registerDiningGuestWalkAnimation(characterId);
+      return;
+    }
+    if (this.diningGuestAtlasRequests.has(characterId)) return;
+    const path = Object.keys(DINING_GUEST_ATLAS_URLS).find((entry) => entry.includes(`/${characterId}/`));
+    if (!path) return;
+    this.diningGuestAtlasRequests.add(characterId);
+    this.load.once(`filecomplete-image-${textureKey}`, () => {
+      this.diningGuestAtlasRequests.delete(characterId);
+      this.registerDiningGuestWalkAnimation(characterId);
+      this.syncOutdoorDiningGuests(this.lastSnapshot);
+    });
+    this.load.image(textureKey, DINING_GUEST_ATLAS_URLS[path]);
+    if (!this.load.isLoading()) this.load.start();
+  }
+
+  private syncOutdoorDiningGuests(snapshot: GameSnapshot): void {
+    const outdoorGuests = snapshot.dining.guests.filter((guest) => guest.status === "approaching" || guest.status === "departing");
+    const activeIds = new Set(outdoorGuests.map((guest) => guest.id));
+    for (const [guestId, actor] of this.outdoorDiningGuests) {
+      if (activeIds.has(guestId)) continue;
+      actor.sprite.destroy();
+      actor.shadow.destroy();
+      this.outdoorDiningGuests.delete(guestId);
+    }
+
+    const canShowOutside = snapshot.inShift && snapshot.serviceMode === "street" && this.activeZone === "shop";
+    if (!canShowOutside || this.mapWidth <= 0 || this.characterUnit <= 0) {
+      for (const actor of this.outdoorDiningGuests.values()) {
+        actor.sprite.setVisible(false);
+        actor.shadow.setVisible(false);
+      }
+      return;
+    }
+
+    for (const guest of outdoorGuests) {
+      const textureKey = `dining-npc-${guest.characterId}`;
+      const manifest = this.diningGuestAtlasManifest(guest.characterId);
+      if (!manifest) continue;
+      if (!this.textures.exists(textureKey)) {
+        this.requestDiningGuestAtlas(guest.characterId);
+        continue;
+      }
+      this.registerDiningGuestWalkAnimation(guest.characterId);
+      const firstFrame = "side_walk-0";
+      if (!this.textures.get(textureKey).has(firstFrame)) continue;
+
+      let actor = this.outdoorDiningGuests.get(guest.id);
+      if (!actor) {
+        const shadow = this.add.ellipse(0, 0, 37, 9, 0x241b15, 0.28);
+        const sprite = this.add.sprite(0, 0, textureKey, firstFrame);
+        actor = { sprite, shadow, status: guest.status, transitionSeconds: guest.transitionSeconds, syncedAt: this.time.now };
+        this.outdoorDiningGuests.set(guest.id, actor);
+      } else if (actor.status !== guest.status || actor.transitionSeconds !== guest.transitionSeconds) {
+        actor.status = guest.status;
+        actor.transitionSeconds = guest.transitionSeconds;
+        actor.syncedAt = this.time.now;
+      }
+
+      const animationKey = `${textureKey}-side_walk`;
+      if (actor.sprite.texture.key !== textureKey || actor.sprite.anims.currentAnim?.key !== animationKey) {
+        actor.sprite.setTexture(textureKey, firstFrame);
+        actor.sprite.play(animationKey, true);
+      }
+      const progress = Phaser.Math.Clamp(
+        1 - Math.max(0, actor.transitionSeconds - (this.time.now - actor.syncedAt) / 1_000) / DINING_OUTDOOR_WALK_SECONDS,
+        0,
+        1,
+      );
+      const movementDirection: -1 | 1 = guest.status === "approaching"
+        ? guest.outsideDirection === 1 ? -1 : 1
+        : guest.outsideDirection;
+      const distance = Math.min(this.mapWidth * 0.28, 360 * this.unit);
+      const doorX = this.cartX;
+      const baseX = guest.status === "approaching"
+        ? doorX - movementDirection * distance + movementDirection * distance * progress
+        : doorX + movementDirection * distance * progress;
+      const memberOffset = (guest.partyMemberIndex - (guest.partySize - 1) / 2) * 20 * this.unit;
+      const x = Phaser.Math.Clamp(baseX - movementDirection * memberOffset, 0, this.mapWidth);
+      const y = this.groundY;
+      const anchor = manifest.anchors.standingFeet;
+      actor.sprite
+        .setOrigin(anchor.x / manifest.frame_layout.cellWidth, anchor.y / manifest.frame_layout.cellHeight)
+        .setFlipX(movementDirection < 0)
+        .setPosition(x, y)
+        .setDisplaySize(50 * this.characterUnit, 80 * this.characterUnit)
+        .setDepth(getStreetCharacterDepth(y) + 0.015)
+        .setVisible(true);
+      actor.shadow
+        .setPosition(x, y + 1.5 * this.unit)
+        .setDisplaySize(34 * this.characterUnit, 8 * this.characterUnit)
+        .setDepth(getStreetCharacterDepth(y) - 0.02)
+        .setVisible(true);
+    }
+  }
+
   private loadBackgroundWalkerAssets(): void {
     const ambientAssets = AMBIENT_WALKER_ASSETS.slice(CORE_WALKER_COUNT);
     if (ambientAssets.length === 0) return;
@@ -3247,6 +3403,7 @@ export class NeighborhoodScene extends Phaser.Scene {
     this.updateShopEntranceAvailability();
     this.updateLivingEnvironment(_time, elapsed, width);
     this.updateTrafficBikes(delta);
+    this.syncOutdoorDiningGuests(this.lastSnapshot);
 
     for (const [index, walker] of this.walkers.entries()) {
       if (!walker.active) continue;

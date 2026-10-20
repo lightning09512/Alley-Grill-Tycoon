@@ -30,6 +30,8 @@ type RoomPart = {
 
 const ROOM_WIDTH = 576;
 const ROOM_HEIGHT = 1280;
+// Threshold of the open doorway at the top of tavern_room_shell_base.png.
+const ROOM_ENTRY_DOOR = { x: ROOM_WIDTH / 2, y: 232 } as const;
 const DINING_WALK_FPS = 3;
 const TABLE_ART_SCALE = 0.17;
 const TABLE_CENTER = { x: 109.1, y: 93.5 } as const;
@@ -343,12 +345,20 @@ export class DiningRoomScene extends Phaser.Scene {
     const snapshot = this.snapshot;
     if (!snapshot) return;
     const roomScale = this.roomMapWidth / ROOM_WIDTH;
-    const door = { x: this.roomMapLeft + 288 * roomScale, y: 1210 * roomScale };
+    const door = {
+      x: this.roomMapLeft + ROOM_ENTRY_DOOR.x * roomScale,
+      y: ROOM_ENTRY_DOOR.y * roomScale,
+    };
     for (const guest of snapshot.dining.guests) {
       const sprite = this.guestSprites.get(guest.id);
       const target = this.tablePoints[guest.tableId - 1]?.seats[guest.seatIndex];
       const motion = this.guestMotion.get(guest.id);
       if (!sprite || !target || !motion) continue;
+      if (guest.status === "approaching" || guest.status === "departing") {
+        sprite.setVisible(false);
+        this.removeGuestEntryBubble(guest.id);
+        continue;
+      }
       const direction = SEAT_DIRECTIONS[guest.seatIndex];
       if (guest.status === "entering" || guest.status === "leaving") {
         sprite.setCrop(0, 0, 96, 154);
@@ -496,6 +506,11 @@ export class DiningRoomScene extends Phaser.Scene {
         const guest = seat.guestId ? snapshot.dining.guests.find((entry) => entry.id === seat.guestId) : undefined;
         if (!guest) return;
         livingGuestIds.add(guest.id);
+        if (guest.status === "approaching" || guest.status === "departing") {
+          this.guestSprites.get(guest.id)?.setVisible(false);
+          this.removeGuestEntryBubble(guest.id);
+          return;
+        }
         if (guest.status === "entering" && guest.arrivalDialogue) this.ensureGuestEntryBubble(guest);
         else this.removeGuestEntryBubble(guest.id);
         this.requestGuestAtlas(guest.characterId);

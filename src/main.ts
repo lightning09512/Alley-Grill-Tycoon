@@ -599,12 +599,14 @@ function renderDining(snapshot: GameSnapshot): void {
   if (!inside) return;
 
   const guestStatusNames: Record<string, string> = {
+    approaching: "đang đi bộ tới quán",
     entering: "đang vào bàn",
     "waiting-order": "đã ngồi · chờ gọi món",
     "waiting-food": "đang chờ món",
     eating: "đang ăn",
     "awaiting-payment": "chờ thanh toán",
     leaving: "đang rời quán",
+    departing: "đang đi ra phố",
   };
   const orderStatusNames: Record<string, string> = {
     called: "Khách vừa gọi",
@@ -665,8 +667,9 @@ function renderDining(snapshot: GameSnapshot): void {
       && selectedPartyOrders.every((order) => order.status === "called");
     if (canAcceptParty) {
       actions.push(`<button class="dining-action-button" data-action="dining-accept" type="button">Nhận order nhóm · ${selectedPartyOrders.length} món</button>`);
-    } else if (selectedGuest && selectedPartyGuests.some((guest) => guest.status === "entering")) {
-      actions.push(`<span class="dining-empty-action">Đang chờ cả nhóm ngồi đủ chỗ (${selectedPartyGuests.filter((guest) => guest.status !== "entering").length}/${selectedPartyGuests.length}).</span>`);
+    } else if (selectedGuest && selectedPartyGuests.some((guest) => guest.status === "approaching" || guest.status === "entering")) {
+      const arrivedMembers = selectedPartyGuests.filter((guest) => guest.status !== "approaching" && guest.status !== "entering").length;
+      actions.push(`<span class="dining-empty-action">Đang chờ cả nhóm tới và ngồi đủ chỗ (${arrivedMembers}/${selectedPartyGuests.length}).</span>`);
     }
     if (selectedOrder?.status === "ready") {
       actions.push(`<button class="dining-action-button" data-action="dining-serve" type="button">Bưng món</button>`);
