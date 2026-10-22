@@ -161,23 +161,29 @@ function dialogueLinesForParty(lines: readonly string[], partyType: DiningPartyT
 
 function familySpeakerHint(line: string, family: DiningFamilyContext): number | null {
   if (CHILD_ADDRESS_REFERENCE.test(line)) return family.childIndices[0] ?? null;
+  if (/\b(?:ba ơi|mẹ ơi|bà ơi|ông ơi)\b|^\s*(?:cho con|cho cháu|con (?:kể|muốn|đói|ngồi|nhớ|giữ|vừa|chưa|còn|thích|được|ăn|rửa|hôm|tới)|cháu (?:kể|muốn|đói|ngồi|nhớ|thích|được|ăn))\b/i.test(line) && family.childIndices.length > 0) {
+    return family.childIndices[0] ?? null;
+  }
+  // Resolve self-references before the broad question rule below. Otherwise a
+  // line such as “Ba gọi món con thích nhé?” is incorrectly attached to the
+  // child just because it begins with “Ba” and ends with a question mark.
+  if (/^\s*mẹ\s+(?:cũng|gọi|đồng ý|thử|thấy|để|nhớ|sẽ|thích|cảm ơn|chọn|gắp|muốn|tính)/i.test(line) && family.motherIndex !== null) {
+    return family.motherIndex;
+  }
+  if (/^\s*ba\s+(?:cũng|gọi|đồng ý|thử|thấy|để|nhớ|sẽ|thích|cảm ơn|duyệt|bao|gắp|nghe theo|đang|chọn|muốn|tính)/i.test(line) && family.fatherIndex !== null) {
+    return family.fatherIndex;
+  }
+  if (/^\s*bà\s+(?:cũng|gọi|đồng ý|thử|thấy|để|nhớ|sẽ|thích|cảm ơn|chọn|gắp|muốn|tính)/i.test(line) && family.grandmotherIndex !== null) {
+    return family.grandmotherIndex;
+  }
+  if (/^\s*ông\s+(?:cũng|gọi|đồng ý|thử|thấy|để|nhớ|sẽ|thích|cảm ơn|chọn|gắp|muốn|tính)/i.test(line) && family.grandfatherIndex !== null) {
+    return family.grandfatherIndex;
+  }
   if (/^\s*(?:mẹ|ba|bà|ông) .*\?/i.test(line) && family.childIndices.length > 0) return family.childIndices[0] ?? null;
   if (/^\s*mẹ\b/i.test(line) && family.motherIndex !== null) return family.motherIndex;
   if (/^\s*ba\b/i.test(line) && family.fatherIndex !== null) return family.fatherIndex;
   if (/^\s*bà\b/i.test(line) && family.grandmotherIndex !== null) return family.grandmotherIndex;
   if (/^\s*ông\b/i.test(line) && family.grandfatherIndex !== null) return family.grandfatherIndex;
-  if (/\b(?:ba ơi|mẹ ơi|bà ơi|ông ơi)\b|^\s*(?:cho con|cho cháu|con (?:kể|muốn|đói|ngồi|nhớ|giữ|vừa|chưa|còn|thích|được|ăn|rửa|hôm|tới)|cháu (?:kể|muốn|đói|ngồi|nhớ|thích|được|ăn))\b/i.test(line) && family.childIndices.length > 0) {
-    return family.childIndices[0] ?? null;
-  }
-  if (/^\s*mẹ\s+(?:cũng|gọi|đồng ý|thử|thấy|để|nhớ|sẽ|thích|cảm ơn)/i.test(line) && family.motherIndex !== null) {
-    return family.motherIndex;
-  }
-  if (/^\s*ba\s+(?:cũng|duyệt|nhớ|gắp|nghe theo|bao|đang|cảm ơn)/i.test(line) && family.fatherIndex !== null) {
-    return family.fatherIndex;
-  }
-  if (/^\s*bà\s+(?:cũng|gọi|đồng ý|thử|thấy|để|nhớ|sẽ|thích|cảm ơn)/i.test(line) && family.grandmotherIndex !== null) {
-    return family.grandmotherIndex;
-  }
   return null;
 }
 

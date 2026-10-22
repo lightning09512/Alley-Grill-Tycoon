@@ -150,6 +150,10 @@ let recipeLearningFeedback = "";
 let selectedStaffRole: StaffRoleId = "server";
 let staffManagementSignature = "";
 let diningDeliveryReturnTimer: number | null = null;
+let staffEntranceActive = false;
+let staffEntranceRunId = 0;
+const staffEntranceArrivedIds = new Set<string>();
+const staffEntranceTimers = new Set<number>();
 type StockCategoryId = "all" | "fresh" | "produce" | "dry" | "seasoning";
 const STOCK_CATEGORY_FILTERS: { id: StockCategoryId; label: string }[] = [
   { id: "all", label: "Tất cả" },
@@ -270,10 +274,11 @@ function setMaiLinhSpriteMotion(element: HTMLElement, motion: MaiLinhSpriteMotio
   const oldMotion = element.dataset.spriteMotion as MaiLinhSpriteMotion | undefined;
   const direction = ((directionRow % 8) + 8) % 8;
   const directionalWalk = motion === "walk-empty" || motion === "walk-tray";
-  const directionPath = `../assets/characters/staff-roster-v1/server-mai-linh/redrawn-v1/gif/${motion}/dir-${direction}.gif`;
-  const spriteUrl = directionalWalk
-    ? maiLinhWalkDirectionUrls[motion][directionPath] ?? maiLinhSpriteUrls[motion]
-    : maiLinhSpriteUrls[motion];
+  const walkDirectionPath = `../assets/characters/staff-roster-v1/server-mai-linh/redrawn-v1/gif/${motion}/dir-${direction}.gif`;
+  const directionalSpriteUrl = directionalWalk
+    ? maiLinhWalkDirectionUrls[motion][walkDirectionPath]
+    : undefined;
+  const spriteUrl = directionalSpriteUrl ?? maiLinhSpriteUrls[motion];
   if (oldMotion !== motion || element.dataset.spriteDirection !== String(direction)) {
     if (oldMotion) element.classList.remove(`mai-linh-motion-${oldMotion}`);
     element.classList.add(`mai-linh-motion-${motion}`);
@@ -281,9 +286,9 @@ function setMaiLinhSpriteMotion(element: HTMLElement, motion: MaiLinhSpriteMotio
     element.dataset.spriteDirection = String(direction);
     element.style.setProperty("--mai-linh-animation", `url(${JSON.stringify(spriteUrl)})`);
   }
-  // Walk animations have a dedicated image for all eight directions. Stationary
-  // poses still use the existing left/right mirror for a natural facing.
-  element.classList.toggle("is-mirrored", !directionalWalk && [1, 2, 3].includes(direction));
+  // The redrawn action GIFs have one facing pose, so mirror only when she is
+  // facing left. Walking uses the complete eight-direction redrawn set.
+  element.classList.toggle("is-mirrored", !directionalSpriteUrl && [1, 2, 3].includes(direction));
 }
 
 const MAI_LINH_WORK_HOLD_SECONDS = 32;
@@ -317,6 +322,7 @@ function renderRestaurantStaffActors(snapshot: GameSnapshot): void {
   const serverDelivering = snapshot.dining.orders.some((order) => ["taking", "carrying"].includes(order.status) && order.carriedByStaff)
     || Boolean(deliveryStage?.dataset.returnOrderId);
   const visibleStaff = snapshot.inShift ? snapshot.staff.filter((member) => member.isWorking && !["prep", "chef"].includes(member.role)
+    && (!staffEntranceActive || staffEntranceArrivedIds.has(member.id))
     && !(member.role === "server" && serverDelivering)) : [];
   const roleIndexes = new Map<string, number>();
   const actors = visibleStaff.map((member) => {
@@ -343,18 +349,28 @@ function renderRestaurantStaffActors(snapshot: GameSnapshot): void {
   const counterStaffPoint = diningScene.getServiceCounterStaffScreenPoint();
   if (maiLinh && counterStaffPoint && !serverDelivering) {
     const activity = maiLinh.dataset.staffActivity;
-    // Face diagonally toward the dining room so her expression reads in the game view.
-    setMaiLinhSpriteMotion(maiLinh, activity === "rest" ? "rest" : activity === "lazy" ? "phone" : "take-order", 1);
+    // Work poses now match the actual task: writing is reserved for a table,
+    // while waiting at the service counter uses the directional idle pose.
+    setMaiLinhSpriteMotion(maiLinh, activity === "rest" ? "rest" : activity === "lazy" ? "phone" : "idle", 1);
     maiLinh.style.left = `${counterStaffPoint.x}px`;
     maiLinh.style.top = `${counterStaffPoint.y}px`;
     maiLinh.style.bottom = "auto";
+  }
+  for (const actor of stage.querySelectorAll<HTMLElement>(".restaurant-staff-sprite:not([data-staff-id='mai-linh'])")) {
+    const member = visibleStaff.find((entry) => entry.id === actor.dataset.staffId);
+    if (!member) continue;
+    const point = diningScene.getStaffWorkstationScreenPoint(member.role, Number(actor.dataset.staffIndex ?? 0));
+    if (!point) continue;
+    actor.style.left = `${point.x}px`;
+    actor.style.top = `${point.y}px`;
+    actor.style.bottom = "auto";
   }
 }
 
 function renderKitchenStaffSprite(selector: string, member: GameSnapshot["staff"][number] | undefined, snapshot: GameSnapshot): void {
   const sprite = document.querySelector<HTMLImageElement>(selector);
   if (!sprite) return;
-  if (!member || !snapshot.inShift || !member.isWorking) {
+  if (!member || !snapshot.inShift || !member.isWorking || (staffEntranceActive && !staffEntranceArrivedIds.has(member.id))) {
     sprite.hidden = true;
     delete sprite.dataset.activity;
     return;
@@ -375,6 +391,163 @@ function renderKitchenStaffSprite(selector: string, member: GameSnapshot["staff"
     sprite.dataset.activity = sourceKey;
   }
   sprite.hidden = false;
+}
+
+const STAFF_ENTRANCE_DIALOGUES: Record<string, readonly string[]> = {
+  "mai-linh": [
+    "Mới mở mắt ra đã thấy bàn với ghế... thôi, làm!",
+    "Cầu cho ca nay khách gọi món từ từ giùm em.",
+    "Chân còn chưa tỉnh mà quán mở cửa rồi đó hả trời.",
+  ],
+  "quang-tin": [
+    "Hôm nay ai trả tiền lẻ là tui khóc tại quầy luôn á.",
+    "Cầu cho máy tính tiền đừng dở chứng giữa giờ đông.",
+    "Chưa đếm tiền đã thấy mỏi ngón tay rồi nha.",
+  ],
+  "huy-phu-bep": [
+    "Ai ăn rau nhớ thương giùm người đứng nhặt rau nghen.",
+    "Nay mà hành thêm ba bao nữa là tui xin nằm cạnh thớt.",
+    "Bếp chưa nóng mà cái lưng tui nóng trước rồi.",
+  ],
+  "co-hanh": [
+    "Đứa nào để cháy bếp là tự ở lại chùi nghen!",
+    "Cô mới tới mà nghe mùi phiếu món dí sau lưng rồi đó.",
+    "Hôm nay gọi món vừa thôi, cái vai cô còn muốn sống.",
+  ],
+  "line-cook": [
+    "Xin đừng gọi mười món cùng lúc, bếp cũng biết buồn đó.",
+    "Vừa bước vô đã nghe cái chảo réo tên mình rồi.",
+    "Ca nay mà đông nữa chắc tui xào luôn cả giấc ngủ.",
+  ],
+  "an-nhien": [
+    "Đứng mời khách cả ca, tối về khỏi cần tập chân.",
+    "Hôm nay mà khách lơ nữa là tui mời luôn cây cột điện.",
+    "Miệng cười tươi, trong lòng chỉ muốn kiếm cái ghế.",
+  ],
+};
+
+function queueStaffEntranceTimer(callback: () => void, delay: number): void {
+  const timer = window.setTimeout(() => {
+    staffEntranceTimers.delete(timer);
+    callback();
+  }, delay);
+  staffEntranceTimers.add(timer);
+}
+
+function clearStaffEntranceSequence(): void {
+  staffEntranceRunId += 1;
+  for (const timer of staffEntranceTimers) window.clearTimeout(timer);
+  staffEntranceTimers.clear();
+  document.querySelector<HTMLElement>("#staff-entrance-stage")?.replaceChildren();
+  staffEntranceActive = false;
+  staffEntranceArrivedIds.clear();
+  if (app) delete app.dataset.staffEntering;
+}
+
+function finishStaffEntranceActor(memberId: string, runId: number, total: number): void {
+  if (runId !== staffEntranceRunId) return;
+  staffEntranceArrivedIds.add(memberId);
+  document.querySelector<HTMLElement>(`#staff-entrance-stage [data-staff-id="${memberId}"]`)?.remove();
+  const snapshot = store.getSnapshot();
+  renderRestaurantStaffActors(snapshot);
+  renderKitchenStaff(snapshot);
+  if (staffEntranceArrivedIds.size < total) return;
+  staffEntranceActive = false;
+  staffEntranceArrivedIds.clear();
+  if (app) delete app.dataset.staffEntering;
+  renderRestaurantStaffActors(snapshot);
+  renderKitchenStaff(snapshot);
+}
+
+function startStaffEntranceSequence(snapshot: GameSnapshot): void {
+  const stage = document.querySelector<HTMLElement>("#staff-entrance-stage");
+  if (!stage) {
+    staffEntranceActive = false;
+    return;
+  }
+  const members = snapshot.staff.filter((member) => member.isWorking);
+  if (members.length === 0) {
+    staffEntranceActive = false;
+    return;
+  }
+  const runId = ++staffEntranceRunId;
+  staffEntranceActive = true;
+  staffEntranceArrivedIds.clear();
+  stage.replaceChildren();
+  if (app) app.dataset.staffEntering = "true";
+  const roleIndexes = new Map<string, number>();
+  members.forEach((member, memberIndex) => {
+    const candidate = getStaffCandidate(member.id);
+    if (!candidate) {
+      finishStaffEntranceActor(member.id, runId, members.length);
+      return;
+    }
+    const roleIndex = roleIndexes.get(member.role) ?? 0;
+    roleIndexes.set(member.role, roleIndex + 1);
+    const route = diningScene.getStaffEntranceRouteScreenPoints(member.role, roleIndex);
+    if (!route || route.length < 2) {
+      finishStaffEntranceActor(member.id, runId, members.length);
+      return;
+    }
+    const dialoguePool = STAFF_ENTRANCE_DIALOGUES[member.id] ?? ["Lại thêm một ca nữa, ráng thôi bà con ơi."];
+    const dialogue = dialoguePool[Math.floor(Math.random() * dialoguePool.length)]!;
+    const actor = document.createElement("div");
+    actor.className = `staff-entrance-actor role-${member.role}${member.id === "mai-linh" ? " is-mai-linh" : ""}`;
+    actor.dataset.staffId = member.id;
+    actor.hidden = true;
+    actor.style.left = `${route[0]!.x}px`;
+    actor.style.top = `${route[0]!.y}px`;
+    const bubble = document.createElement("div");
+    bubble.className = "staff-entrance-bubble";
+    bubble.textContent = dialogue;
+    bubble.hidden = true;
+    let sprite: HTMLElement;
+    if (member.id === "mai-linh") {
+      sprite = document.createElement("div");
+      sprite.className = "staff-entrance-sprite mai-linh-gif";
+      setMaiLinhSpriteMotion(sprite, "walk-empty", getMaiLinhDirectionRow(route[0]!, route[1]!));
+    } else {
+      const image = document.createElement("img");
+      image.className = "staff-entrance-sprite";
+      image.src = staffAnimationUrls[member.id]?.lazy ?? staffPortraitById[member.id] ?? "";
+      image.alt = "";
+      sprite = image;
+    }
+    actor.append(sprite, bubble);
+    stage.append(actor);
+    const startDelay = memberIndex * 720;
+    queueStaffEntranceTimer(() => {
+      if (runId !== staffEntranceRunId || !store.getSnapshot().inShift) return;
+      actor.hidden = false;
+      const tail = route.slice(2);
+      const keyframes: Keyframe[] = [
+        { left: `${route[0]!.x}px`, top: `${route[0]!.y}px`, offset: 0, opacity: 0.72 },
+        { left: `${route[1]!.x}px`, top: `${route[1]!.y}px`, offset: 0.18, opacity: 1 },
+        { left: `${route[1]!.x}px`, top: `${route[1]!.y}px`, offset: 0.48, opacity: 1 },
+        ...tail.map((point, index) => ({
+          left: `${point.x}px`,
+          top: `${point.y}px`,
+          offset: 0.48 + ((index + 1) / tail.length) * 0.52,
+          opacity: index === tail.length - 1 && ["prep", "chef"].includes(member.role) ? 0 : 1,
+        })),
+      ];
+      const animation = actor.animate(keyframes, { duration: 4_800, easing: "linear", fill: "forwards" });
+      queueStaffEntranceTimer(() => {
+        if (runId !== staffEntranceRunId) return;
+        bubble.hidden = false;
+        if (member.id === "mai-linh") setMaiLinhSpriteMotion(sprite, "idle", 0);
+      }, 820);
+      queueStaffEntranceTimer(() => {
+        if (runId !== staffEntranceRunId) return;
+        bubble.hidden = true;
+        if (member.id === "mai-linh") {
+          const nextPoint = route[2] ?? route[route.length - 1]!;
+          setMaiLinhSpriteMotion(sprite, "walk-empty", getMaiLinhDirectionRow(route[1]!, nextPoint));
+        }
+      }, 2_320);
+      animation.addEventListener("finish", () => finishStaffEntranceActor(member.id, runId, members.length), { once: true });
+    }, startDelay);
+  });
 }
 
 function renderKitchenStaff(snapshot: GameSnapshot): void {
@@ -471,6 +644,24 @@ function pointAlongScreenRoute(points: { x: number; y: number }[], progress: num
   return points[points.length - 1]!;
 }
 
+function directionAlongScreenRoute(points: { x: number; y: number }[], progress: number): number {
+  if (points.length < 2) return 4;
+  const distances = points.slice(1).map((point, index) => Math.hypot(point.x - points[index]!.x, point.y - points[index]!.y));
+  const total = distances.reduce((sum, distance) => sum + distance, 0);
+  let remaining = Math.max(0, Math.min(1, progress)) * total;
+  for (let index = 0; index < distances.length; index += 1) {
+    const distance = distances[index]!;
+    if (remaining > distance && index < distances.length - 1) {
+      remaining -= distance;
+      continue;
+    }
+    const from = points[index]!;
+    const to = points[index + 1]!;
+    return getMaiLinhDirectionRow(from, to);
+  }
+  return getMaiLinhDirectionRow(points[points.length - 2]!, points[points.length - 1]!);
+}
+
 function renderDiningDelivery(snapshot: GameSnapshot): void {
   const stage = document.querySelector<HTMLElement>("#dining-delivery-stage");
   if (!stage) return;
@@ -554,10 +745,9 @@ function renderDiningDelivery(snapshot: GameSnapshot): void {
   const movementProgress = order.status === "carrying" ? Math.min(1, progress / interactionProgress) : travelProgress;
   const route = serviceRoute ?? [homePoint, destination];
   const nextPoint = pointAlongScreenRoute(route, movementProgress);
-  const lookAheadPoint = pointAlongScreenRoute(route, Math.min(1, movementProgress + 0.025));
   const directionRow = progress >= interactionProgress
     ? getMaiLinhDirectionRow(destination, tableCenter)
-    : getMaiLinhDirectionRow(nextPoint, lookAheadPoint);
+    : directionAlongScreenRoute(route, movementProgress);
   const staffMotion: MaiLinhSpriteMotion = order.status === "taking"
     ? progress < approachProgress ? "walk-empty" : progress < serverReplyEndProgress ? "idle" : "take-order"
     : progress >= 0.82 ? "serve-table" : "walk-tray";
@@ -1787,6 +1977,7 @@ function render(snapshot: GameSnapshot): void {
   const storeNameShort = $("#store-name-short");
   const walletRow = document.querySelector<HTMLElement>(".wallet-row");
   const walletTarget = snapshot.serviceMode === "dining" ? $("#dining-wallet-slot") : $(".topbar");
+  if (!snapshot.inShift && staffEntranceActive) clearStaffEntranceSequence();
   if (walletRow && walletTarget && walletRow.parentElement !== walletTarget) {
     const hudActions = walletTarget.matches(".topbar") ? walletTarget.querySelector<HTMLElement>(".hud-actions") : null;
     if (hudActions) walletTarget.insertBefore(walletRow, hudActions);
@@ -2083,8 +2274,19 @@ document.addEventListener("click", (event) => {
       shiftMenuDialog?.close();
       break;
     case "confirm-shift-menu": {
+      const openingShift = !store.getSnapshot().inShift;
+      if (openingShift) {
+        staffEntranceActive = true;
+        staffEntranceArrivedIds.clear();
+      }
       const started = store.toggleShift([...shiftMenuDraft]);
-      if (started) shiftMenuDialog?.close();
+      if (started) {
+        shiftMenuDialog?.close();
+        if (openingShift && store.getSnapshot().inShift) startStaffEntranceSequence(store.getSnapshot());
+      } else if (openingShift) {
+        staffEntranceActive = false;
+        render(store.getSnapshot());
+      }
       break;
     }
     case "open-recipe-learning":

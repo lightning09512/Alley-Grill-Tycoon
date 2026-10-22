@@ -34,6 +34,7 @@ const ROOM_ENTRY_DOOR = { x: ROOM_WIDTH / 2, y: 232 } as const;
 const DINING_WALK_FPS = 3;
 const DINING_EAT_ANIMATION_TIME_SCALE = 0.55;
 const TABLE_ART_SCALE = 0.17;
+const TABLE_ART_HEIGHT = 1226 * TABLE_ART_SCALE;
 // Keep guests close to the atlas's intended proportions relative to the table art.
 const GUEST_VISUAL_SCALE = 1.15;
 const TABLE_CENTER = { x: 109.1, y: 93.5 } as const;
@@ -41,9 +42,10 @@ const TABLE_CENTER = { x: 109.1, y: 93.5 } as const;
 const TABLE_ORIGINS = [{ x: 24, y: 313 }, { x: 260, y: 313 }, { x: 24, y: 550 }, { x: 260, y: 550 }, { x: 24, y: 787 }, { x: 260, y: 787 }] as const;
 // Seating anchors measured from the full four-stool table art.
 const SEAT_OFFSETS = [{ x: 109.3, y: 28.9 }, { x: 181.1, y: 99.5 }, { x: 109.1, y: 157.3 }, { x: 37.4, y: 99.5 }] as const;
-const SERVICE_TABLE_STOP_Y = 205;
-const SERVICE_TABLE_STOP_X_OFFSET = 34;
-const SERVICE_COUNTER_CLEARANCE = 32;
+// Keep Mai Linh's feet inside the narrow aisle between the two table columns.
+// A small final step makes her approach the correct side without entering the
+// table or stool footprint.
+const SERVICE_TABLE_SIDE_STEP = 14;
 const ROOM_TEXTURES: Record<RoomTexture, string> = {
   shell: roomShellUrl,
   shelf: shelfUrl,
@@ -273,6 +275,44 @@ export class DiningRoomScene extends Phaser.Scene {
     });
   }
 
+  getStaffWorkstationScreenPoint(role: string, roleIndex = 0): { x: number; y: number } | null {
+    const roomScale = this.roomMapWidth / ROOM_WIDTH;
+    const logicalPoint = role === "server"
+      ? { x: 240 + roleIndex * 38, y: 960 }
+      : role === "cashier"
+        ? { x: 426 + roleIndex * 34, y: 960 }
+        : role === "promoter"
+          ? { x: 414 + roleIndex * 34, y: 330 }
+          : { x: 506 + roleIndex * 22, y: 292 };
+    return this.worldToFramePoint({
+      x: this.roomMapLeft + logicalPoint.x * roomScale,
+      y: logicalPoint.y * roomScale,
+    });
+  }
+
+  getStaffEntranceRouteScreenPoints(role: string, roleIndex = 0): { x: number; y: number }[] | null {
+    const roomScale = this.roomMapWidth / ROOM_WIDTH;
+    const door = { x: ROOM_ENTRY_DOOR.x, y: ROOM_ENTRY_DOOR.y };
+    const greetingPoint = { x: ROOM_ENTRY_DOOR.x, y: 318 };
+    const workstation = role === "server"
+      ? { x: 240 + roleIndex * 38, y: 960 }
+      : role === "cashier"
+        ? { x: 426 + roleIndex * 34, y: 960 }
+        : role === "promoter"
+          ? { x: 414 + roleIndex * 34, y: 330 }
+          : { x: 506 + roleIndex * 22, y: 292 };
+    const logicalRoute = role === "server" || role === "cashier"
+      ? [door, greetingPoint, { x: ROOM_ENTRY_DOOR.x, y: 910 }, workstation]
+      : role === "promoter"
+        ? [door, greetingPoint, workstation]
+        : [door, greetingPoint, { x: 450, y: 318 }, workstation];
+    const route = logicalRoute.map((point) => this.worldToFramePoint({
+      x: this.roomMapLeft + point.x * roomScale,
+      y: point.y * roomScale,
+    }));
+    return route.every((point): point is { x: number; y: number } => Boolean(point)) ? route : null;
+  }
+
   getServiceTableApproachScreenPoint(tableId: number): { x: number; y: number } | null {
     const route = this.getServiceTableRouteScreenPoints(tableId);
     return route?.[route.length - 1] ?? null;
@@ -283,20 +323,27 @@ export class DiningRoomScene extends Phaser.Scene {
     if (!origin) return null;
     const roomScale = this.roomMapWidth / ROOM_WIDTH;
     const home = { x: 240, y: 960 };
-    // Use the open center aisle for the long part of the trip, then branch below
-    // the table. Stopping below and slightly toward the aisle keeps Mai Linh's
-    // feet off the tabletop and clear of every occupied stool.
+    // Follow a simple service grid: leave the counter, walk along the clear
+    // center aisle, then take one short step toward the requested table.
     const leftTableRightSeatX = TABLE_ORIGINS[0].x + SEAT_OFFSETS[1].x;
     const rightTableLeftSeatX = TABLE_ORIGINS[1].x + SEAT_OFFSETS[3].x;
     const aisleX = (leftTableRightSeatX + rightTableLeftSeatX) / 2;
-    const isLeftColumn = Math.trunc(tableId) % 2 === 1;
-    const stopX = aisleX + (isLeftColumn ? -SERVICE_TABLE_STOP_X_OFFSET : SERVICE_TABLE_STOP_X_OFFSET);
-    const stopY = Math.min(origin.y + SERVICE_TABLE_STOP_Y, SERVICE_COUNTER_TOP_Y - SERVICE_COUNTER_CLEARANCE);
+    const tableIsLeft = Math.trunc(tableId) % 2 === 1;
+    const rowIndex = Math.floor((Math.trunc(tableId) - 1) / 2);
+    const adjacentRowOrigin = rowIndex < 2
+      ? TABLE_ORIGINS[(rowIndex + 1) * 2]!
+      : TABLE_ORIGINS[(rowIndex - 1) * 2]!;
+    // Stand in the horizontal gap between rows. For the last row, reuse the
+    // gap above it so Mai Linh never walks into the reception counter.
+    const stopY = rowIndex < 2
+      ? (origin.y + TABLE_ART_HEIGHT + adjacentRowOrigin.y) / 2
+      : (adjacentRowOrigin.y + TABLE_ART_HEIGHT + origin.y) / 2;
+    const serviceX = aisleX + (tableIsLeft ? -SERVICE_TABLE_SIDE_STEP : SERVICE_TABLE_SIDE_STEP);
     const logicalRoute = [
       home,
       { x: aisleX, y: home.y },
       { x: aisleX, y: stopY },
-      { x: stopX, y: stopY },
+      { x: serviceX, y: stopY },
     ];
     const route = logicalRoute.map((point) => this.worldToFramePoint({
       x: this.roomMapLeft + point.x * roomScale,
@@ -306,18 +353,25 @@ export class DiningRoomScene extends Phaser.Scene {
   }
 
   private worldToFramePoint(point: { x: number; y: number }): { x: number; y: number } | null {
-    const canvas = this.game.canvas;
-    const frame = canvas?.closest<HTMLElement>(".game-frame");
-    if (!canvas || !frame || !this.sys.isActive()) return null;
+    const canvas = this.game?.canvas;
+    if (!canvas || !this.sys?.isActive()) return null;
+    const frame = canvas.closest<HTMLElement>(".game-frame");
+    if (!frame) return null;
 
     const canvasBounds = canvas.getBoundingClientRect();
     const frameBounds = frame.getBoundingClientRect();
-    const camera = this.cameras.main;
-    const scaleX = canvasBounds.width / this.scale.width;
-    const scaleY = canvasBounds.height / this.scale.height;
+    const roomScale = this.roomMapWidth / ROOM_WIDTH;
+    if (roomScale <= 0) return null;
+    const roomX = (point.x - this.roomMapLeft) / roomScale;
+    const roomY = point.y / roomScale;
+    const cssRoomWidth = Math.min(canvasBounds.width, canvasBounds.height * ROOM_WIDTH / ROOM_HEIGHT);
+    const cssRoomLeft = (canvasBounds.width - cssRoomWidth) / 2;
+    // DOM actors sit over a high-DPI Phaser canvas. Convert through the fixed
+    // 576x1280 room coordinates instead of camera/backing-store pixels so the
+    // route stays locked to the rendered aisles at every browser zoom level.
     return {
-      x: canvasBounds.left - frameBounds.left + (camera.x + (point.x - camera.scrollX) * camera.zoom) * scaleX,
-      y: canvasBounds.top - frameBounds.top + (camera.y + (point.y - camera.scrollY) * camera.zoom) * scaleY,
+      x: canvasBounds.left - frameBounds.left + cssRoomLeft + roomX / ROOM_WIDTH * cssRoomWidth,
+      y: canvasBounds.top - frameBounds.top + roomY / ROOM_HEIGHT * canvasBounds.height,
     };
   }
 
@@ -521,7 +575,13 @@ export class DiningRoomScene extends Phaser.Scene {
       bubble.setVisible(false);
       return;
     }
-    this.positionSpeechBubble(bubble, sprite.x, sprite.y - sprite.displayHeight - 3 * roomScale, roomScale);
+    const speakerBounds = sprite.getBounds();
+    this.positionSpeechBubble(
+      bubble,
+      speakerBounds.centerX,
+      speakerBounds.top - 3 * roomScale,
+      roomScale,
+    );
   }
 
   private guestPath(guest: DiningGuest, seat: { x: number; y: number }, door: { x: number; y: number }, scale: number): { x: number; y: number }[] {
@@ -863,8 +923,9 @@ export class DiningRoomScene extends Phaser.Scene {
     const sprite = this.guestSprites.get(guest.id);
     const seatPoint = this.tablePoints[guest.tableId - 1]?.seats[guest.seatIndex];
     if (!bubble || !seatPoint) return;
-    const anchorX = sprite?.x ?? seatPoint.x;
-    const anchorY = sprite ? sprite.y - sprite.displayHeight : seatPoint.y - 35 * roomScale;
+    const speakerBounds = sprite?.visible ? sprite.getBounds() : null;
+    const anchorX = speakerBounds?.centerX ?? seatPoint.x;
+    const anchorY = speakerBounds?.top ?? seatPoint.y - 35 * roomScale;
     this.positionSpeechBubble(bubble, anchorX, anchorY - 3 * roomScale, roomScale);
   }
 
