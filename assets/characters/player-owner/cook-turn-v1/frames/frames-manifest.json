@@ -1,0 +1,255 @@
+{
+  "ok": true,
+  "engine": "component-row",
+  "engine_revision": "f334728e53f8",
+  "extract_args": {},
+  "run_dir": "C:\\Users\\light\\AppData\\Local\\Temp\\chef-cook-turn-v1-pipeline",
+  "cell": {
+    "shape": "rect",
+    "width": 247,
+    "height": 396,
+    "safe_margin_x": 23,
+    "safe_margin_y": 37
+  },
+  "chroma_key": {
+    "name": "cyan",
+    "hex": "#00FFFF",
+    "rgb": [
+      0,
+      255,
+      255
+    ],
+    "selection": "auto",
+    "score": 236.71,
+    "min_subject_distance": 214.9,
+    "background": {
+      "mode": "transparent",
+      "opaque_border_fraction": 0.0,
+      "subject_pixels": 16543
+    },
+    "candidates": [
+      {
+        "name": "magenta",
+        "hex": "#FF00FF",
+        "score": 218.06,
+        "min_subject_distance": 201.69,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "green",
+        "hex": "#00FF00",
+        "score": 201.94,
+        "min_subject_distance": 199.77,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "cyan",
+        "hex": "#00FFFF",
+        "score": 236.71,
+        "min_subject_distance": 214.9,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "blue",
+        "hex": "#004DFF",
+        "score": 171.97,
+        "min_subject_distance": 162.46,
+        "clears_erase_radius": true
+      }
+    ],
+    "selection_reason": "highest 1st-percentile subject distance among the 4 candidate(s) clearing the 96 erase radius"
+  },
+  "rows": [
+    {
+      "state": "cook_idle",
+      "frames": 4,
+      "method": "components",
+      "files": [
+        "frames/cook_idle/frame-0.png",
+        "frames/cook_idle/frame-1.png",
+        "frames/cook_idle/frame-2.png",
+        "frames/cook_idle/frame-3.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 39973,
+          "bbox": [
+            18,
+            37,
+            213,
+            359
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 40633,
+          "bbox": [
+            22,
+            37,
+            213,
+            359
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 40158,
+          "bbox": [
+            21,
+            37,
+            212,
+            359
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 39655,
+          "bbox": [
+            21,
+            37,
+            212,
+            359
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "engine_revision": "f334728e53f8"
+    },
+    {
+      "state": "turn_to_player",
+      "frames": 4,
+      "method": "components",
+      "files": [
+        "frames/turn_to_player/frame-0.png",
+        "frames/turn_to_player/frame-1.png",
+        "frames/turn_to_player/frame-2.png",
+        "frames/turn_to_player/frame-3.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 35113,
+          "bbox": [
+            28,
+            37,
+            195,
+            359
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 35386,
+          "bbox": [
+            28,
+            37,
+            198,
+            359
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 35302,
+          "bbox": [
+            24,
+            37,
+            197,
+            359
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 34240,
+          "bbox": [
+            36,
+            37,
+            193,
+            359
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "engine_revision": "f334728e53f8"
+    },
+    {
+      "state": "turn_back_to_stove",
+      "frames": 4,
+      "method": "components",
+      "files": [
+        "frames/turn_back_to_stove/frame-0.png",
+        "frames/turn_back_to_stove/frame-1.png",
+        "frames/turn_back_to_stove/frame-2.png",
+        "frames/turn_back_to_stove/frame-3.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 38506,
+          "bbox": [
+            49,
+            37,
+            220,
+            359
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 39060,
+          "bbox": [
+            43,
+            37,
+            214,
+            359
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 37233,
+          "bbox": [
+            37,
+            37,
+            202,
+            359
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 35486,
+          "bbox": [
+            35,
+            37,
+            197,
+            359
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "engine_revision": "f334728e53f8"
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}

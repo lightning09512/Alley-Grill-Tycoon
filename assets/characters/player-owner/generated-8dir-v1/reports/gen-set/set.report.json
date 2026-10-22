@@ -1,0 +1,347 @@
+{
+  "kind": "sprite-gen-gen-set-report",
+  "run_dir": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1",
+  "states": [
+    "n_idle_glance",
+    "n_idle_apron_shift",
+    "n_walk",
+    "ne_idle_glance",
+    "ne_idle_apron_shift",
+    "ne_walk",
+    "e_idle_glance",
+    "e_idle_apron_shift",
+    "e_walk",
+    "se_idle_glance",
+    "se_idle_apron_shift",
+    "se_walk",
+    "s_idle_glance",
+    "s_idle_apron_shift",
+    "s_walk",
+    "sw_idle_glance",
+    "sw_idle_apron_shift",
+    "sw_walk",
+    "w_idle_glance",
+    "w_idle_apron_shift",
+    "w_walk",
+    "nw_idle_glance",
+    "nw_idle_apron_shift",
+    "nw_walk"
+  ],
+  "ok": 24,
+  "failed": [],
+  "not_started": [],
+  "items": [
+    {
+      "state": "n_idle_glance",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\raw\\n\\idle_glance.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\reports\\gen-set\\n_idle_glance.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\anchors\\n-anchor-x8.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\layout-guides\\n\\idle_glance.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 56.6,
+      "ok": true
+    },
+    {
+      "state": "n_idle_apron_shift",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\raw\\n\\idle_apron_shift.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\reports\\gen-set\\n_idle_apron_shift.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\anchors\\n-anchor-x8.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\layout-guides\\n\\idle_apron_shift.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 73.4,
+      "ok": true
+    },
+    {
+      "state": "n_walk",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\raw\\n\\walk.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\reports\\gen-set\\n_walk.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\anchors\\n-anchor-x8.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\layout-guides\\n\\walk.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 69.9,
+      "ok": true
+    },
+    {
+      "state": "ne_idle_glance",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\raw\\ne\\idle_glance.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\reports\\gen-set\\ne_idle_glance.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\anchors\\ne-anchor-x8.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\layout-guides\\ne\\idle_glance.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 61.1,
+      "ok": true
+    },
+    {
+      "state": "ne_idle_apron_shift",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\raw\\ne\\idle_apron_shift.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\reports\\gen-set\\ne_idle_apron_shift.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\anchors\\ne-anchor-x8.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\layout-guides\\ne\\idle_apron_shift.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 59.1,
+      "ok": true
+    },
+    {
+      "state": "ne_walk",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\raw\\ne\\walk.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\reports\\gen-set\\ne_walk.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\anchors\\ne-anchor-x8.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\layout-guides\\ne\\walk.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 71.4,
+      "ok": true
+    },
+    {
+      "state": "e_idle_glance",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\raw\\e\\idle_glance.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\reports\\gen-set\\e_idle_glance.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\anchors\\e-anchor-x8.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\layout-guides\\e\\idle_glance.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 70.6,
+      "ok": true
+    },
+    {
+      "state": "e_idle_apron_shift",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\raw\\e\\idle_apron_shift.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\reports\\gen-set\\e_idle_apron_shift.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\anchors\\e-anchor-x8.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\layout-guides\\e\\idle_apron_shift.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 72.9,
+      "ok": true
+    },
+    {
+      "state": "e_walk",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\raw\\e\\walk.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\reports\\gen-set\\e_walk.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\anchors\\e-anchor-x8.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\layout-guides\\e\\walk.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 70.8,
+      "ok": true
+    },
+    {
+      "state": "se_idle_glance",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\raw\\se\\idle_glance.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\reports\\gen-set\\se_idle_glance.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\anchors\\se-anchor-x8.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\layout-guides\\se\\idle_glance.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 72.8,
+      "ok": true
+    },
+    {
+      "state": "se_idle_apron_shift",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\raw\\se\\idle_apron_shift.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\reports\\gen-set\\se_idle_apron_shift.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\anchors\\se-anchor-x8.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\layout-guides\\se\\idle_apron_shift.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 55.6,
+      "ok": true
+    },
+    {
+      "state": "se_walk",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\raw\\se\\walk.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\reports\\gen-set\\se_walk.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\anchors\\se-anchor-x8.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\layout-guides\\se\\walk.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 72.5,
+      "ok": true
+    },
+    {
+      "state": "s_idle_glance",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\raw\\s\\idle_glance.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\reports\\gen-set\\s_idle_glance.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\anchors\\s-anchor-x8.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\layout-guides\\s\\idle_glance.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 51.2,
+      "ok": true
+    },
+    {
+      "state": "s_idle_apron_shift",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\raw\\s\\idle_apron_shift.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\reports\\gen-set\\s_idle_apron_shift.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\anchors\\s-anchor-x8.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\layout-guides\\s\\idle_apron_shift.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 68.2,
+      "ok": true
+    },
+    {
+      "state": "s_walk",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\raw\\s\\walk.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\reports\\gen-set\\s_walk.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\anchors\\s-anchor-x8.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\layout-guides\\s\\walk.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 84.8,
+      "ok": true
+    },
+    {
+      "state": "sw_idle_glance",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\raw\\sw\\idle_glance.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\reports\\gen-set\\sw_idle_glance.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\anchors\\sw-anchor-x8.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\layout-guides\\sw\\idle_glance.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 72.2,
+      "ok": true
+    },
+    {
+      "state": "sw_idle_apron_shift",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\raw\\sw\\idle_apron_shift.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\reports\\gen-set\\sw_idle_apron_shift.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\anchors\\sw-anchor-x8.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\layout-guides\\sw\\idle_apron_shift.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 62.0,
+      "ok": true
+    },
+    {
+      "state": "sw_walk",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\raw\\sw\\walk.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\reports\\gen-set\\sw_walk.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\anchors\\sw-anchor-x8.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\layout-guides\\sw\\walk.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 75.0,
+      "ok": true
+    },
+    {
+      "state": "w_idle_glance",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\raw\\w\\idle_glance.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\reports\\gen-set\\w_idle_glance.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\anchors\\w-anchor-x8.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\layout-guides\\w\\idle_glance.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 53.9,
+      "ok": true
+    },
+    {
+      "state": "w_idle_apron_shift",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\raw\\w\\idle_apron_shift.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\reports\\gen-set\\w_idle_apron_shift.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\anchors\\w-anchor-x8.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\layout-guides\\w\\idle_apron_shift.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 58.6,
+      "ok": true
+    },
+    {
+      "state": "w_walk",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\raw\\w\\walk.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\reports\\gen-set\\w_walk.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\anchors\\w-anchor-x8.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\layout-guides\\w\\walk.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 80.5,
+      "ok": true
+    },
+    {
+      "state": "nw_idle_glance",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\raw\\nw\\idle_glance.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\reports\\gen-set\\nw_idle_glance.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\anchors\\nw-anchor-x8.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\layout-guides\\nw\\idle_glance.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 62.1,
+      "ok": true
+    },
+    {
+      "state": "nw_idle_apron_shift",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\raw\\nw\\idle_apron_shift.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\reports\\gen-set\\nw_idle_apron_shift.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\anchors\\nw-anchor-x8.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\layout-guides\\nw\\idle_apron_shift.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 59.6,
+      "ok": true
+    },
+    {
+      "state": "nw_walk",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\raw\\nw\\walk.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\reports\\gen-set\\nw_walk.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\anchors\\nw-anchor-x8.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\generated-8dir-v1\\references\\layout-guides\\nw\\walk.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 64.3,
+      "ok": true
+    }
+  ]
+}

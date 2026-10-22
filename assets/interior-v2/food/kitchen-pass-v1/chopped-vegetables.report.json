@@ -1,0 +1,33 @@
+{
+  "kind": "sprite-gen-image-report",
+  "provider": "codex",
+  "prompt": "Use case: stylized-concept\nAsset type: static transparent food overlay placed on the existing kitchen cutting board\nPrimary request: A small realistic pile of freshly chopped vegetables for a Vietnamese kitchen prep station: fine green scallion rings, small orange carrot cubes and pale onion pieces, mixed naturally with a few larger just-cut pieces at the edge. It must read clearly as chopped produce at game scale.\nStyle/medium: polished painted 2D game food art matching the existing Banh Mi Pho sprites; warm natural colors, clean outline, restrained highlights, slightly elevated tabletop view.\nComposition/framing: one compact loose pile, centered in a square transparent image, low profile and wide enough to sit on the existing wooden chopping board without hiding it. No board or other surface is included.\nConstraints: transparent background; vegetables only; no knife, hands, character, room, counter, bowl, text, label, border, logo, shadow, or watermark.",
+  "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\interior-v2\\food\\kitchen-pass-v1\\chopped-vegetables.png",
+  "raw": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\interior-v2\\food\\kitchen-pass-v1\\chopped-vegetables.png.raw.png",
+  "raw_bytes": 1910573,
+  "elapsed_seconds": 72.843,
+  "model": null,
+  "session_id": "01a15d04-70ad-73a3-985a-d30afea8ab07",
+  "refs": [],
+  "transparent": true,
+  "alpha": {
+    "strategy": "native",
+    "strategy_source": "provider-default",
+    "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\interior-v2\\food\\kitchen-pass-v1\\chopped-vegetables.png",
+    "mode": "RGBA",
+    "method": "native",
+    "size": "1536x1024",
+    "alpha_zero_pct": 63.63,
+    "partial_alpha_pct": 36.37,
+    "opaque_pct": 0.0,
+    "cleaned_transparent_rgb_pixels": 879770,
+    "stale_transparent_rgb_pixels": 0
+  },
+  "chroma": null,
+  "extra": {
+    "inline_results": 1,
+    "rollout_cleaned": true,
+    "transparent_background_reported": true
+  },
+  "provider_resolved_from": "explicit"
+}

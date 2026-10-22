@@ -1,0 +1,129 @@
+{
+  "ok": true,
+  "engine": "component-row",
+  "engine_revision": "f334728e53f8",
+  "extract_args": {},
+  "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v4\\fishmonger-uncle",
+  "cell": {
+    "shape": "rect",
+    "width": 350,
+    "height": 561,
+    "safe_margin_x": 12,
+    "safe_margin_y": 12
+  },
+  "chroma_key": {
+    "name": "magenta",
+    "hex": "#FF00FF",
+    "rgb": [
+      255,
+      0,
+      255
+    ],
+    "selection": "auto",
+    "score": 204.84,
+    "min_subject_distance": 201.57,
+    "background": {
+      "mode": "transparent",
+      "opaque_border_fraction": 0.0,
+      "subject_pixels": 17079
+    },
+    "candidates": [
+      {
+        "name": "magenta",
+        "hex": "#FF00FF",
+        "score": 204.84,
+        "min_subject_distance": 201.57,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "green",
+        "hex": "#00FF00",
+        "score": 177.22,
+        "min_subject_distance": 173.4,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "cyan",
+        "hex": "#00FFFF",
+        "score": 184.16,
+        "min_subject_distance": 170.1,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "blue",
+        "hex": "#004DFF",
+        "score": 149.68,
+        "min_subject_distance": 136.24,
+        "clears_erase_radius": true
+      }
+    ],
+    "selection_reason": "highest 1st-percentile subject distance among the 4 candidate(s) clearing the 96 erase radius"
+  },
+  "rows": [
+    {
+      "state": "idle",
+      "frames": 4,
+      "method": "components",
+      "files": [
+        "frames/idle/frame-0.png",
+        "frames/idle/frame-1.png",
+        "frames/idle/frame-2.png",
+        "frames/idle/frame-3.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 106225,
+          "bbox": [
+            21,
+            12,
+            328,
+            549
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 110130,
+          "bbox": [
+            16,
+            12,
+            334,
+            549
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 108819,
+          "bbox": [
+            16,
+            12,
+            333,
+            549
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 106567,
+          "bbox": [
+            20,
+            12,
+            329,
+            549
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "engine_revision": "f334728e53f8"
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}

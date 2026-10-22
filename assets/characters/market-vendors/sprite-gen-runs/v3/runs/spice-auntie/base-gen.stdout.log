@@ -1,0 +1,418 @@
+{
+  "kind": "sprite-gen-image-report",
+  "provider": "codex",
+  "prompt": "Create one full-body Vietnamese 2D mobile game vendor, front-facing and standing straight, feet visible and aligned, centered with clear space around her silhouette. A petite elderly spice auntie with silver hair in a low bun, tiny round reading glasses perched low on her nose, a plum floral blouse, a faded ochre apron, dark cropped trousers and simple sandals. Give her a comically skeptical side-eye, one raised eyebrow and a tiny turmeric-yellow smudge on one cheek; she looks sharp and lovable, never mean. A small chili-shaped pin decorates her blouse. Both hands rest on her hips, empty. Use the attached Vietnamese market seller only as a style and scale reference; create a different face, age and outfit. Hand-inked 2D Vietnamese cartoon game art, bold dark-brown outlines, simplified readable shapes, warm limited palette, matte cel shading, slightly irregular hand-drawn contours and compact chibi proportions matching a mobile game sprite. No realistic rendering, no 3D, no glossy or painterly texture, no scenery, no extra objects, no text or logo. Flat solid pure magenta background (#FF00FF), evenly lit, no cast shadow, subject fully separated from every edge.",
+  "out": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\spice-auntie\\base-source.png",
+  "raw": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\spice-auntie\\base-source.png.raw.png",
+  "raw_bytes": 1957184,
+  "elapsed_seconds": 71.343,
+  "model": null,
+  "session_id": "01a1554c-8381-7ca0-850f-88099e34452c",
+  "refs": [
+    "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v2\\crab-seller-auntie\\base-source.png"
+  ],
+  "transparent": true,
+  "alpha": {
+    "strategy": "chroma",
+    "strategy_source": "explicit",
+    "out": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\spice-auntie\\base-source.png",
+    "mode": "RGBA",
+    "method": "ycbcr",
+    "size": "991x1588",
+    "key": "magenta",
+    "keyed_pixels": 775339,
+    "fringe_pixels": 7874,
+    "cleaned_transparent_rgb_pixels": 0,
+    "alpha_zero_pct": 49.27,
+    "stale_transparent_rgb_pixels": 0,
+    "decontam": {
+      "mode": "auto",
+      "applied": true,
+      "fit": "still",
+      "band_px": 6,
+      "alpha_depth": 4,
+      "flank_px": 3,
+      "edge_band": 0,
+      "palette_size": 32,
+      "palette_source": "frame",
+      "palette": [
+        [
+          176,
+          107,
+          72
+        ],
+        [
+          251,
+          180,
+          93
+        ],
+        [
+          18,
+          4,
+          1
+        ],
+        [
+          74,
+          53,
+          50
+        ],
+        [
+          237,
+          156,
+          34
+        ],
+        [
+          253,
+          217,
+          154
+        ],
+        [
+          160,
+          48,
+          78
+        ],
+        [
+          203,
+          117,
+          25
+        ],
+        [
+          116,
+          102,
+          99
+        ],
+        [
+          56,
+          34,
+          29
+        ],
+        [
+          233,
+          143,
+          155
+        ],
+        [
+          248,
+          236,
+          217
+        ],
+        [
+          218,
+          201,
+          186
+        ],
+        [
+          165,
+          148,
+          139
+        ],
+        [
+          129,
+          73,
+          33
+        ],
+        [
+          115,
+          29,
+          51
+        ],
+        [
+          231,
+          129,
+          54
+        ],
+        [
+          174,
+          97,
+          21
+        ],
+        [
+          221,
+          138,
+          27
+        ],
+        [
+          99,
+          52,
+          23
+        ],
+        [
+          155,
+          94,
+          49
+        ],
+        [
+          247,
+          153,
+          72
+        ],
+        [
+          242,
+          163,
+          37
+        ],
+        [
+          251,
+          173,
+          85
+        ],
+        [
+          193,
+          176,
+          164
+        ],
+        [
+          141,
+          125,
+          120
+        ],
+        [
+          248,
+          197,
+          125
+        ],
+        [
+          35,
+          11,
+          5
+        ],
+        [
+          67,
+          47,
+          44
+        ],
+        [
+          90,
+          78,
+          75
+        ],
+        [
+          230,
+          148,
+          30
+        ],
+        [
+          214,
+          127,
+          22
+        ]
+      ],
+      "palette_keyfree": false,
+      "key_material_share": 0.10183,
+      "noise_sigma_rgb": 1.32,
+      "material_spread": 25.517,
+      "opaque_margin": 25.517,
+      "changed_px": 7967,
+      "refit_px": 28487,
+      "tint_px": 52,
+      "recovered_px": 3040,
+      "unexplained_px": 164,
+      "restored_px": 0,
+      "key_hue_capped_px": 0
+    }
+  },
+  "chroma": {
+    "out": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\spice-auntie\\base-source.png",
+    "mode": "RGBA",
+    "method": "ycbcr",
+    "size": "991x1588",
+    "key": "magenta",
+    "keyed_pixels": 775339,
+    "fringe_pixels": 7874,
+    "cleaned_transparent_rgb_pixels": 0,
+    "alpha_zero_pct": 49.27,
+    "stale_transparent_rgb_pixels": 0,
+    "decontam": {
+      "mode": "auto",
+      "applied": true,
+      "fit": "still",
+      "band_px": 6,
+      "alpha_depth": 4,
+      "flank_px": 3,
+      "edge_band": 0,
+      "palette_size": 32,
+      "palette_source": "frame",
+      "palette": [
+        [
+          176,
+          107,
+          72
+        ],
+        [
+          251,
+          180,
+          93
+        ],
+        [
+          18,
+          4,
+          1
+        ],
+        [
+          74,
+          53,
+          50
+        ],
+        [
+          237,
+          156,
+          34
+        ],
+        [
+          253,
+          217,
+          154
+        ],
+        [
+          160,
+          48,
+          78
+        ],
+        [
+          203,
+          117,
+          25
+        ],
+        [
+          116,
+          102,
+          99
+        ],
+        [
+          56,
+          34,
+          29
+        ],
+        [
+          233,
+          143,
+          155
+        ],
+        [
+          248,
+          236,
+          217
+        ],
+        [
+          218,
+          201,
+          186
+        ],
+        [
+          165,
+          148,
+          139
+        ],
+        [
+          129,
+          73,
+          33
+        ],
+        [
+          115,
+          29,
+          51
+        ],
+        [
+          231,
+          129,
+          54
+        ],
+        [
+          174,
+          97,
+          21
+        ],
+        [
+          221,
+          138,
+          27
+        ],
+        [
+          99,
+          52,
+          23
+        ],
+        [
+          155,
+          94,
+          49
+        ],
+        [
+          247,
+          153,
+          72
+        ],
+        [
+          242,
+          163,
+          37
+        ],
+        [
+          251,
+          173,
+          85
+        ],
+        [
+          193,
+          176,
+          164
+        ],
+        [
+          141,
+          125,
+          120
+        ],
+        [
+          248,
+          197,
+          125
+        ],
+        [
+          35,
+          11,
+          5
+        ],
+        [
+          67,
+          47,
+          44
+        ],
+        [
+          90,
+          78,
+          75
+        ],
+        [
+          230,
+          148,
+          30
+        ],
+        [
+          214,
+          127,
+          22
+        ]
+      ],
+      "palette_keyfree": false,
+      "key_material_share": 0.10183,
+      "noise_sigma_rgb": 1.32,
+      "material_spread": 25.517,
+      "opaque_margin": 25.517,
+      "changed_px": 7967,
+      "refit_px": 28487,
+      "tint_px": 52,
+      "recovered_px": 3040,
+      "unexplained_px": 164,
+      "restored_px": 0,
+      "key_hue_capped_px": 0
+    }
+  },
+  "extra": {
+    "inline_results": 1,
+    "rollout_cleaned": true,
+    "transparent_background_reported": false
+  },
+  "provider_resolved_from": "explicit",
+  "report": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\spice-auntie\\base-source.report.json"
+}

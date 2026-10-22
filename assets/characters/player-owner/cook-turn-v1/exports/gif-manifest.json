@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "kind": "sprite-gen-gif-run",
+  "run_dir": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\cook-turn-v1",
+  "exports": [
+    {
+      "state": "cook_idle",
+      "output": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\cook-turn-v1\\exports\\cook_idle.gif",
+      "frames": 4,
+      "fps": 4.0,
+      "loop": true,
+      "gif_report": {
+        "path": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\cook-turn-v1\\exports\\cook_idle.gif",
+        "frames": 4,
+        "delay_ticks": [
+          25,
+          25,
+          25,
+          25
+        ],
+        "loop": 0,
+        "transparent": true,
+        "disposal": [
+          2,
+          2,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "state": "turn_to_player",
+      "output": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\cook-turn-v1\\exports\\turn_to_player.gif",
+      "frames": 4,
+      "fps": 5.0,
+      "loop": false,
+      "gif_report": {
+        "path": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\cook-turn-v1\\exports\\turn_to_player.gif",
+        "frames": 4,
+        "delay_ticks": [
+          20,
+          20,
+          20,
+          20
+        ],
+        "loop": 0,
+        "transparent": true,
+        "disposal": [
+          2,
+          2,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "state": "turn_back_to_stove",
+      "output": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\cook-turn-v1\\exports\\turn_back_to_stove.gif",
+      "frames": 4,
+      "fps": 5.0,
+      "loop": false,
+      "gif_report": {
+        "path": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\cook-turn-v1\\exports\\turn_back_to_stove.gif",
+        "frames": 4,
+        "delay_ticks": [
+          20,
+          20,
+          20,
+          20
+        ],
+        "loop": 0,
+        "transparent": true,
+        "disposal": [
+          2,
+          2,
+          2,
+          2
+        ]
+      }
+    }
+  ]
+}

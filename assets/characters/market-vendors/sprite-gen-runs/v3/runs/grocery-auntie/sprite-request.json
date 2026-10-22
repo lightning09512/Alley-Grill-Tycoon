@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "kind": "sprite-gen-request",
+  "engine": "component-row",
+  "character": {
+    "id": "grocery-auntie",
+    "description": "Middle-aged Vietnamese grocery auntie with round glasses, pencil tucked behind ear, blue gingham blouse, brick-red apron with pocket, black bun and key ring.",
+    "base_image": "base-source.png"
+  },
+  "cell": {
+    "shape": "rect",
+    "width": 350,
+    "height": 561,
+    "safe_margin_x": 12,
+    "safe_margin_y": 12
+  },
+  "chroma_key": {
+    "name": "magenta",
+    "hex": "#FF00FF",
+    "rgb": [
+      255,
+      0,
+      255
+    ],
+    "selection": "auto",
+    "score": 218.97,
+    "min_subject_distance": 208.0,
+    "background": {
+      "mode": "transparent",
+      "opaque_border_fraction": 0.0,
+      "subject_pixels": 14987
+    },
+    "candidates": [
+      {
+        "name": "magenta",
+        "hex": "#FF00FF",
+        "score": 218.97,
+        "min_subject_distance": 208.0,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "green",
+        "hex": "#00FF00",
+        "score": 214.61,
+        "min_subject_distance": 210.72,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "cyan",
+        "hex": "#00FFFF",
+        "score": 165.66,
+        "min_subject_distance": 156.24,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "blue",
+        "hex": "#004DFF",
+        "score": 187.2,
+        "min_subject_distance": 145.16,
+        "clears_erase_radius": true
+      }
+    ],
+    "selection_reason": "highest 1st-percentile subject distance among the 4 candidate(s) clearing the 96 erase radius"
+  },
+  "states": {
+    "idle": {
+      "frames": 4,
+      "fps": 2,
+      "loop": true,
+      "action": "Four small front-facing idle beats with sandals planted: hands on hips, she nudges her round glasses up, glances toward the customer with a knowing smile, then returns to the opening pose. Subtle breathing only; preserve scale and foot line."
+    },
+    "work": {
+      "frames": 4,
+      "fps": 3,
+      "loop": true,
+      "action": "A seamless four-frame grocery-selling loop, front-facing and planted: she holds the same small clear grocery jar with both hands at waist height, lifts it a little to show the contents, gives a matter-of-fact nod, then lowers it to the identical opening pose. Keep the same jar, hand placement, outfit, glasses, body size and sandals; no label or scenery."
+    }
+  },
+  "style": "Hand-inked Vietnamese 2D mobile game sprite matching the supplied vendor base exactly. Bold dark-brown comic contour, slightly irregular hand-drawn line, readable simplified shapes, warm limited colors and restrained matte cel shading; no glossy 3D finish. Compact chibi proportions, humorous readable facial acting, stable full-body front view, same height, outfit, head shape and ground line in every frame. Single character on transparent background, no scenery, no labels or text.",
+  "layout": "taxonomy/v1",
+  "chroma": {
+    "mode": "rgb",
+    "unmix_reach": 4,
+    "spill_max_fraction": 0.005
+  }
+}

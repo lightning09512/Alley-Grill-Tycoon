@@ -1,0 +1,23 @@
+{
+  "cell": {
+    "width": 350,
+    "height": 561,
+    "safe_margin_x": 12,
+    "safe_margin_y": 12
+  },
+  "states": {
+    "idle": {
+      "frames": 4,
+      "fps": 2,
+      "loop": true,
+      "action": "Four small front-facing idle beats with sandals planted: hands on hips, blink and moustache twitch, a proud playful wink, then return to the opening pose. Subtle breathing only; preserve scale and foot line."
+    },
+    "work": {
+      "frames": 4,
+      "fps": 3,
+      "loop": true,
+      "action": "A seamless four-frame fruit-selling loop, front-facing and planted: he holds the same ripe mango low in his right hand, polishes it once on the apron, lifts it to present toward the customer with a proud grin, then lowers it to the identical opening position. Keep the same mango, hand, outfit, body size and sandals; no scenery."
+    }
+  },
+  "style": "Hand-inked Vietnamese 2D mobile game sprite matching the supplied vendor base exactly. Bold dark-brown comic contour, slightly irregular hand-drawn line, readable simplified shapes, warm limited colors and restrained matte cel shading; no glossy 3D finish. Compact chibi proportions, humorous readable facial acting, stable full-body front view, same height, outfit, head shape and ground line in every frame. Single character on transparent background, no scenery, no labels or text."
+}

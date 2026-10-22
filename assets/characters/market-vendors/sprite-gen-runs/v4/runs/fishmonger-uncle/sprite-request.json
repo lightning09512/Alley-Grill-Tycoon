@@ -1,0 +1,87 @@
+{
+  "version": 1,
+  "kind": "sprite-gen-request",
+  "engine": "component-row",
+  "character": {
+    "id": "fishmonger-uncle",
+    "description": "Compact Vietnamese fishmonger uncle with graying tousled hair, curled moustache, navy shirt, teal apron, striped towel and rubber boots; funny winking smile.",
+    "base_image": "base-source.png"
+  },
+  "cell": {
+    "shape": "rect",
+    "width": 350,
+    "height": 561,
+    "safe_margin_x": 12,
+    "safe_margin_y": 12
+  },
+  "chroma_key": {
+    "name": "magenta",
+    "hex": "#FF00FF",
+    "rgb": [
+      255,
+      0,
+      255
+    ],
+    "selection": "auto",
+    "score": 204.84,
+    "min_subject_distance": 201.57,
+    "background": {
+      "mode": "transparent",
+      "opaque_border_fraction": 0.0,
+      "subject_pixels": 17079
+    },
+    "candidates": [
+      {
+        "name": "magenta",
+        "hex": "#FF00FF",
+        "score": 204.84,
+        "min_subject_distance": 201.57,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "green",
+        "hex": "#00FF00",
+        "score": 177.22,
+        "min_subject_distance": 173.4,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "cyan",
+        "hex": "#00FFFF",
+        "score": 184.16,
+        "min_subject_distance": 170.1,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "blue",
+        "hex": "#004DFF",
+        "score": 149.68,
+        "min_subject_distance": 136.24,
+        "clears_erase_radius": true
+      }
+    ],
+    "selection_reason": "highest 1st-percentile subject distance among the 4 candidate(s) clearing the 96 erase radius"
+  },
+  "states": {
+    "idle": {
+      "frames": 4,
+      "fps": 2,
+      "loop": true,
+      "action": "Quiet standing idle only. Use the exact same relaxed, cute, slightly funny forward-facing pose and expression in all 4 frames. Keep both feet on the same ground line. Only a tiny, slow whole-body vertical bob: baseline, 2 px up, 4 px up, 2 px up, then loop. No wave, blink, eye glance, head tilt, arm gesture, prop action, pose change, or exaggerated bounce."
+    }
+  },
+  "style": "Keep the exact established vendor design. Cute, gently humorous Vietnamese mobile-game cartoon NPC like the supplied in-game reference: compact body, readable friendly face with one mild quirky detail, bold dark outline, simple matte hand-painted colors and restrained shading. No glossy 3D finish, no extra playful acting, no change in outfit, proportions, palette or silhouette.",
+  "layout": "taxonomy/v1",
+  "fit": {
+    "resample": "lanczos",
+    "align_x": "bbox-center",
+    "align_y": "bottom",
+    "ground_frames": true,
+    "pixel_unfake": false
+  },
+  "chroma": {
+    "mode": "rgb",
+    "unmix_reach": 4,
+    "spill_max_fraction": 0.005
+  }
+}

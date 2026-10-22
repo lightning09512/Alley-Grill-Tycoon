@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "engine": "component-row",
+  "kind": "sprite-gen-inspect-report",
+  "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\vegetable-auntie",
+  "states": [
+    "idle",
+    "work"
+  ],
+  "thresholds": {
+    "histogram_min": 0.0,
+    "dhash_min": 0.55,
+    "motion_min": 0.01
+  },
+  "errors": [],
+  "warnings": [
+    "work: frame 01 has 33 non-transparent edge pixels",
+    "work: frame 02 has 38 non-transparent edge pixels",
+    "work: frame 03 has 37 non-transparent edge pixels"
+  ]
+}

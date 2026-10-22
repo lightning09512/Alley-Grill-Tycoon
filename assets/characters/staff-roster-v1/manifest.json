@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "purpose": "Non-integrated art candidate pack for the restaurant staff roster.",
+  "cell": {
+    "width": 160,
+    "height": 300,
+    "feetPivot": "bottom aligned",
+    "alpha": "transparent"
+  },
+  "employees": [
+    {
+      "id": "mai-linh",
+      "name": "Mai Linh",
+      "role": "Phục vụ",
+      "reference": "assets/characters/restaurant-staff-v1/server-mai-linh.png",
+      "run": "assets/characters/staff-roster-v1/server-mai-linh/run",
+      "states": {
+        "work_serve": "assets/characters/staff-roster-v1/server-mai-linh/run/exports/work_serve.gif",
+        "rest_tired": "assets/characters/staff-roster-v1/server-mai-linh/run/exports/rest_tired.gif",
+        "idle_lazy": "assets/characters/staff-roster-v1/server-mai-linh/run/exports/idle_lazy.gif"
+      }
+    },
+    {
+      "id": "quang-tin",
+      "name": "Quang Tín",
+      "role": "Thu ngân",
+      "reference": "assets/characters/restaurant-staff-v1/cashier-quang-tin.png",
+      "run": "assets/characters/staff-roster-v1/cashier-quang-tin/run",
+      "states": {
+        "work_cashier": "assets/characters/staff-roster-v1/cashier-quang-tin/run/exports/work_cashier.gif",
+        "rest_tired": "assets/characters/staff-roster-v1/cashier-quang-tin/run/exports/rest_tired.gif",
+        "idle_lazy": "assets/characters/staff-roster-v1/cashier-quang-tin/run/exports/idle_lazy.gif"
+      }
+    },
+    {
+      "id": "tan-huy",
+      "name": "Tấn Huy",
+      "role": "Phụ bếp / sơ chế",
+      "reference": "assets/characters/kitchen-prep-staff-v2/base-source.png",
+      "run": "assets/characters/kitchen-prep-staff-v3/run",
+      "states": {
+        "chop_vegetables": "assets/characters/kitchen-prep-staff-v3/run/exports/chop_vegetables.gif",
+        "idle_look_around": "assets/characters/kitchen-prep-staff-v2/run/exports/idle_look_around.gif",
+        "idle_phone": "assets/characters/kitchen-prep-staff-v2/run/exports/idle_phone.gif",
+        "rest_tired": "assets/characters/kitchen-prep-staff-v2/run/exports/idle_wipe_sweat.gif"
+      },
+      "companion_image": "assets/interior-v2/food/kitchen-pass-v1/chopped-vegetables.png"
+    },
+    {
+      "id": "co-hanh",
+      "name": "Cô Hạnh",
+      "role": "Đầu bếp chính",
+      "reference": "assets/characters/restaurant-staff-v1/chef-co-hanh.png",
+      "run": "assets/characters/staff-roster-v1/chef-co-hanh/run",
+      "states": {
+        "work_cook": "assets/characters/staff-roster-v1/chef-co-hanh/run/exports/work_cook.gif",
+        "rest_tired": "assets/characters/staff-roster-v1/chef-co-hanh/run/exports/rest_tired.gif",
+        "idle_lazy": "assets/characters/staff-roster-v1/chef-co-hanh/run/exports/idle_lazy.gif"
+      }
+    },
+    {
+      "id": "line-cook",
+      "name": "Đầu bếp nam mới",
+      "role": "Đầu bếp thứ hai",
+      "reference": "assets/characters/kitchen-line-cook-v1/base-source.png",
+      "run": "assets/characters/kitchen-line-cook-v1/run",
+      "states": {
+        "cook_stir": "assets/characters/kitchen-line-cook-v1/run/exports/cook_stir.gif",
+        "rest_tired": "assets/characters/kitchen-line-cook-v1/run/exports/rest_tired.gif",
+        "idle_lazy": "assets/characters/kitchen-line-cook-v1/run/exports/idle_lazy.gif"
+      }
+    },
+    {
+      "id": "an-nhien",
+      "name": "An Nhiên",
+      "role": "Tiếp thị / đón khách",
+      "reference": "assets/characters/restaurant-staff-v1/promoter-an.png",
+      "run": "assets/characters/staff-roster-v1/promoter-an/run",
+      "states": {
+        "work_promoter": "assets/characters/staff-roster-v1/promoter-an/run/exports/work_promoter.gif",
+        "rest_tired": "assets/characters/staff-roster-v1/promoter-an/run/exports/rest_tired.gif",
+        "idle_lazy": "assets/characters/staff-roster-v1/promoter-an/run/exports/idle_lazy.gif"
+      }
+    }
+  ],
+  "movement": {
+    "status": "prompt-ready, sprite rows not generated",
+    "prompt": "prompts/staff-sprite-prompts.md",
+    "directions": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W",
+      "NW"
+    ],
+    "framesPerDirection": 8
+  },
+  "runtimeIntegration": {
+    "status": "not integrated",
+    "note": "Use the prompt in prompts/staff-system-implementation-prompt.md when implementing the GameStore-driven staff loop."
+  },
+  "pathConvention": "All asset paths are relative to the game repository root."
+}

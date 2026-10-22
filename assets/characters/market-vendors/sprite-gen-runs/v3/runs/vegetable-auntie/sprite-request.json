@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "kind": "sprite-gen-request",
+  "engine": "component-row",
+  "character": {
+    "id": "vegetable-auntie",
+    "description": "Short sturdy Vietnamese vegetable auntie with checked floral headscarf, pale green floral blouse, moss-green apron, cropped trousers, sandals, mischievous smile and small tooth gap.",
+    "base_image": "base-source.png"
+  },
+  "cell": {
+    "shape": "rect",
+    "width": 350,
+    "height": 561,
+    "safe_margin_x": 12,
+    "safe_margin_y": 12
+  },
+  "chroma_key": {
+    "name": "cyan",
+    "hex": "#00FFFF",
+    "rgb": [
+      0,
+      255,
+      255
+    ],
+    "selection": "auto",
+    "score": 256.22,
+    "min_subject_distance": 245.45,
+    "background": {
+      "mode": "transparent",
+      "opaque_border_fraction": 0.0,
+      "subject_pixels": 15482
+    },
+    "candidates": [
+      {
+        "name": "magenta",
+        "hex": "#FF00FF",
+        "score": 218.08,
+        "min_subject_distance": 212.55,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "green",
+        "hex": "#00FF00",
+        "score": 182.79,
+        "min_subject_distance": 179.94,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "cyan",
+        "hex": "#00FFFF",
+        "score": 256.22,
+        "min_subject_distance": 245.45,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "blue",
+        "hex": "#004DFF",
+        "score": 206.34,
+        "min_subject_distance": 197.37,
+        "clears_erase_radius": true
+      }
+    ],
+    "selection_reason": "highest 1st-percentile subject distance among the 4 candidate(s) clearing the 96 erase radius"
+  },
+  "states": {
+    "idle": {
+      "frames": 4,
+      "fps": 2,
+      "loop": true,
+      "action": "Four small front-facing idle beats with both sandals planted: hands on hips, a blink and proud smile, one quick curious glance at the customer, then return to the opening pose. Subtle breathing only; preserve scale and foot line."
+    },
+    "work": {
+      "frames": 4,
+      "fps": 3,
+      "loop": true,
+      "action": "A seamless four-frame vegetable-selling loop, front-facing and planted: she holds the same small bunch of leafy greens at waist height in both hands, raises it to proudly present the fresh leaves, gives a tiny nod, then lowers it back to the identical opening pose. Keep the same leafy bunch, hand placement, outfit, body size and sandals; no scenery. Keep the full figure and every leaf tip inside the central safe area of the cell, with at least 24 transparent pixels at both left and right edges and no pixels touching the image border; slightly shrink and center the character if needed."
+    }
+  },
+  "style": "Hand-inked Vietnamese 2D mobile game sprite matching the supplied vendor base exactly. Bold dark-brown comic contour, slightly irregular hand-drawn line, readable simplified shapes, warm limited colors and restrained matte cel shading; no glossy 3D finish. Compact chibi proportions, humorous readable facial acting, stable full-body front view, same height, outfit, head shape and ground line in every frame. Single character on transparent background, no scenery, no labels or text.",
+  "layout": "taxonomy/v1",
+  "chroma": {
+    "mode": "rgb",
+    "unmix_reach": 4,
+    "spill_max_fraction": 0.005
+  }
+}

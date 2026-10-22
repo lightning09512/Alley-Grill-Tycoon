@@ -1,0 +1,120 @@
+{
+  "characterId": "butcher-auntie",
+  "engine": "component-row",
+  "game_input": "sprite-sheet-alpha.png",
+  "degraded_static_fallback": false,
+  "curation_applied": true,
+  "frame_variant": "pixel",
+  "sprite_sheet_alpha": "sprite-sheet-alpha.png",
+  "sprite_sheet_alpha_report": "sprite-sheet-alpha.report.json",
+  "base_image": "base-source.png",
+  "cell": {
+    "shape": "rect",
+    "width": 350,
+    "height": 561,
+    "safe_margin_x": 12,
+    "safe_margin_y": 12
+  },
+  "chroma_key": {
+    "name": "cyan",
+    "hex": "#00FFFF",
+    "rgb": [
+      0,
+      255,
+      255
+    ],
+    "selection": "auto",
+    "score": 251.97,
+    "min_subject_distance": 234.28,
+    "background": {
+      "mode": "transparent",
+      "opaque_border_fraction": 0.0,
+      "subject_pixels": 17899
+    },
+    "candidates": [
+      {
+        "name": "magenta",
+        "hex": "#FF00FF",
+        "score": 212.38,
+        "min_subject_distance": 198.16,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "green",
+        "hex": "#00FF00",
+        "score": 189.15,
+        "min_subject_distance": 185.99,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "cyan",
+        "hex": "#00FFFF",
+        "score": 251.97,
+        "min_subject_distance": 234.28,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "blue",
+        "hex": "#004DFF",
+        "score": 203.58,
+        "min_subject_distance": 196.68,
+        "clears_erase_radius": true
+      }
+    ],
+    "selection_reason": "highest 1st-percentile subject distance among the 4 candidate(s) clearing the 96 erase radius"
+  },
+  "animation": {
+    "cellWidth": 350,
+    "cellHeight": 561,
+    "columns": 3,
+    "rows": {
+      "idle": {
+        "row": 0,
+        "frames": 4,
+        "fps": 2,
+        "durations_ms": [
+          500,
+          500,
+          500,
+          500
+        ],
+        "loop": true,
+        "frame_variant": "pixel"
+      }
+    }
+  },
+  "frame_layout": {
+    "sheetWidth": 1050,
+    "sheetHeight": 561,
+    "cellWidth": 350,
+    "cellHeight": 561,
+    "rows": {
+      "idle": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 350,
+          "h": 561
+        },
+        {
+          "x": 350,
+          "y": 0,
+          "w": 350,
+          "h": 561
+        },
+        {
+          "x": 700,
+          "y": 0,
+          "w": 350,
+          "h": 561
+        },
+        {
+          "x": 350,
+          "y": 0,
+          "w": 350,
+          "h": 561
+        }
+      ]
+    }
+  }
+}

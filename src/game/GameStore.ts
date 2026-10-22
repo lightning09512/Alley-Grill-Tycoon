@@ -7,15 +7,17 @@ import {
   INGREDIENTS,
   OFFLINE_CAP_MINUTES,
   OFFLINE_COINS_PER_MINUTE,
+  PLAYABLE_RECIPE_IDS,
   RECIPES,
+  STARTER_INGREDIENTS,
   RESTOCK_PACK_COST,
   RESTOCK_PACK_SIZE,
-  SHIFT_SECONDS,
-  STAFF_HIRE_COST,
-  STAFF_WAGE_PER_SHIFT,
+  ACCOUNTING_PERIOD_SECONDS,
   MAX_CART_LEVEL,
+  createStartingMenu,
   createStartingInventory,
   getRecipeCost,
+  getRecipeLearningCost,
   type CustomerType,
   type IngredientId,
   type Inventory,
@@ -34,6 +36,16 @@ import {
 } from "./diningCharacters";
 import { diningArrivalDialogue, diningConversationDialogue, diningOrderDialogue } from "./diningDialogues";
 import { formatVndFromThousands } from "./currency";
+import { MARKET_PRODUCT_DETAILS } from "./marketCatalog";
+import { MENU_DISHES, MENU_INGREDIENTS, type MenuCategory, type MenuIngredientId } from "./menuCatalog";
+import {
+  MAX_STAFF_LEVEL,
+  STAFF_CANDIDATES,
+  STAFF_TRAINING_COST,
+  getStaffCandidate,
+  getStaffRole,
+  type StaffRoleId,
+} from "./staffCatalog";
 
 export interface WaitingCustomer {
   id: number;
@@ -44,7 +56,7 @@ export interface WaitingCustomer {
 }
 
 export type ServiceMode = "street" | "dining";
-export type DiningTableStatus = "empty" | "reserved" | "occupied" | "dirty";
+export type DiningTableStatus = "empty" | "reserved" | "occupied";
 export interface DiningSeat {
   index: number;
   status: DiningTableStatus;
@@ -52,11 +64,21 @@ export interface DiningSeat {
 }
 export type DiningGuestStatus = "approaching" | "entering" | "waiting-order" | "waiting-food" | "eating" | "awaiting-payment" | "leaving" | "departing";
 export const DINING_OUTDOOR_WALK_SECONDS = 9;
-export type DiningOrderStatus = "called" | "queued" | "cooking" | "ready" | "delivered" | "paid";
+export const DINING_ORDER_APPROACH_SECONDS = 4;
+export const DINING_ORDER_GUEST_DIALOGUE_SECONDS = 4;
+export const DINING_ORDER_SERVER_REPLY_SECONDS = 2;
+export const DINING_ORDER_WRITE_SECONDS = 3;
+export const DINING_ORDER_TAKE_SECONDS = DINING_ORDER_APPROACH_SECONDS
+  + DINING_ORDER_GUEST_DIALOGUE_SECONDS
+  + DINING_ORDER_SERVER_REPLY_SECONDS
+  + DINING_ORDER_WRITE_SECONDS;
+export const DINING_ORDER_DELIVERY_SECONDS = 4;
+export type DiningOrderStatus = "called" | "taking" | "queued" | "cooking" | "ready" | "carrying" | "delivered" | "paid";
 
 export interface DiningTable {
   id: number;
   status: DiningTableStatus;
+  cleanliness: "clean" | "dirty";
   guestId: string | null;
   seats: DiningSeat[];
 }
@@ -89,8 +111,10 @@ export interface DiningOrder {
   tableId: number;
   recipe: RecipeId;
   status: DiningOrderStatus;
-  assembly: IngredientId[];
+  takeSeconds: number;
   cookSeconds: number;
+  deliverySeconds: number;
+  carriedByStaff: boolean;
   eatSeconds: number;
 }
 
@@ -98,7 +122,7 @@ export interface DiningDialogueEvent {
   id: number;
   guestId: string;
   text: string;
-  kind: "order" | "conversation";
+  kind: "order" | "conversation" | "complaint";
   endsAt: number;
 }
 
@@ -132,6 +156,30 @@ export interface ShiftReport {
   wages: number;
   net: number;
   reputationEarned: number;
+  bestSellingRecipe: RecipeId | null;
+  bestSellingCount: number;
+}
+
+export interface LedgerEntry {
+  day: number;
+  label: string;
+  amount: number;
+}
+
+export interface HiredStaffMember {
+  id: string;
+  role: StaffRoleId;
+  level: number;
+  isWorking: boolean;
+  energy: number;
+  restSeconds: number;
+}
+
+function createStartingStaff(): HiredStaffMember[] {
+  return [
+    { id: "mai-linh", role: "server", level: 1, isWorking: true, energy: 100, restSeconds: 0 },
+    { id: "co-hanh", role: "chef", level: 1, isWorking: true, energy: 100, restSeconds: 0 },
+  ];
 }
 
 export interface GameSnapshot {
@@ -140,9 +188,14 @@ export interface GameSnapshot {
   reputation: number;
   cartLevel: number;
   hasStaff: boolean;
+  staff: HiredStaffMember[];
+  learnedRecipes: RecipeId[];
+  activeMenu: RecipeId[];
   inventory: Inventory;
+  marketInventory: Record<MenuIngredientId, number>;
+  marketBasketHasItems: boolean;
   inShift: boolean;
-  secondsRemaining: number;
+  closingShift: boolean;
   elapsedSeconds: number;
   customers: WaitingCustomer[];
   assembly: IngredientId[];
@@ -156,24 +209,45 @@ export interface GameSnapshot {
   serviceMode: ServiceMode;
   dining: DiningState;
   cashCollection: CashCollectionEvent | null;
+  ledgerDay: number;
+  ledger: LedgerEntry[];
 }
 
 interface SavedGame {
-  version: 1;
+  version: 1 | 2 | 3;
+  inShift?: boolean;
   storeName?: string;
   coins: number;
   reputation: number;
   cartLevel: number;
-  hasStaff: boolean;
-  inventory: Inventory;
+  hasStaff?: boolean;
+  staff?: HiredStaffMember[];
+  learnedRecipes?: RecipeId[];
+  activeMenu?: RecipeId[];
+  inventory: Partial<Record<string, number>>;
+  marketInventory?: Partial<Record<MenuIngredientId, number>>;
+  marketBasketHasItems?: boolean;
   totalServed: number;
+  shiftRecipeSales?: Partial<Record<RecipeId, number>>;
+  report?: ShiftReport | null;
   diningDialogueNumber?: number;
   diningPartySelection?: DiningPartySelectionState;
   lastSavedAt: number;
+  ledgerDay?: number;
+  ledger?: LedgerEntry[];
 }
 
 const SAVE_KEY = "banh-mi-pho-save-v1";
 const STORE_NAME_MAX_LENGTH = 24;
+const DINING_MAX_ACTIVE_PARTIES = 3;
+const DINING_MAX_ACTIVE_GUESTS = 8;
+const MENU_DISH_BY_ID = new Map(MENU_DISHES.map((dish) => [dish.id, dish]));
+const CUSTOMER_MENU_PREFERENCES: Record<CustomerType, readonly MenuCategory[]> = {
+  student: ["snack", "grill"],
+  office: ["meal", "grill"],
+  shopper: ["snack", "hotpot", "grill"],
+  tourist: ["hotpot", "meal", "grill"],
+};
 
 export function getDiningTableCapacity(): number {
   return 6;
@@ -184,6 +258,7 @@ function createDiningState(): DiningState {
     tables: [1, 2, 3, 4, 5, 6].map((id) => ({
       id,
       status: "empty",
+      cleanliness: "clean",
       guestId: null,
       seats: [0, 1, 2, 3].map((index) => ({ index, status: "empty", guestId: null })),
     })),
@@ -196,7 +271,7 @@ function createDiningState(): DiningState {
     activeOrderId: null,
     dialogueEvent: null,
     arrivalClock: 0,
-    feedback: "Chọn bàn để xem khách; khách mới sẽ tự tìm chỗ trống.",
+    feedback: "Khách tự chọn bàn; Mai Linh sẽ tới nhận món.",
   };
 }
 
@@ -204,15 +279,33 @@ function normalizeStoreName(value: string): string {
   return value.replace(/\s+/g, " ").trim().slice(0, STORE_NAME_MAX_LENGTH);
 }
 
+function recipeIngredientList(recipeId: RecipeId): IngredientId[] {
+  return RECIPES[recipeId].ingredients.flatMap(({ id, quantity }) => Array.from({ length: quantity }, () => id));
+}
+
+function clampStock(value: unknown): number {
+  return Number.isFinite(value) ? Math.max(0, Math.trunc(value as number)) : 0;
+}
+
 export class GameStore {
   private storeName = "";
-  private coins = 100;
+  private coins = 500;
+  private ledgerDay = 1;
+  private ledger: LedgerEntry[] = [];
+  private recordLedger(label: string, amount: number): void {
+    if (!amount) return;
+    this.ledger.push({ day: this.ledgerDay, label, amount });
+    if (this.ledger.length > 300) this.ledger.shift();
+  }
   private reputation = 0;
   private cartLevel = 1;
-  private hasStaff = false;
+  private staff: HiredStaffMember[] = createStartingStaff();
   private inventory = createStartingInventory();
+  private marketBasketHasItems = false;
+  private learnedRecipes = createStartingMenu();
+  private activeMenu = createStartingMenu();
   private inShift = false;
-  private secondsRemaining = 0;
+  private closingShift = false;
   private elapsedSeconds = 0;
   private customers: WaitingCustomer[] = [];
   private assembly: IngredientId[] = [];
@@ -225,11 +318,15 @@ export class GameStore {
   private shiftServed = 0;
   private shiftLeft = 0;
   private shiftReputation = 0;
+  private shiftRecipeSales: Record<RecipeId, number> = Object.fromEntries(PLAYABLE_RECIPE_IDS.map((id) => [id, 0])) as Record<RecipeId, number>;
   private arrivalClock = 0;
   private staffClock = 0;
   private diningStaffClock = 0;
+  private diningArrivalClock = 0;
+  private diningArrivalIntervalSeconds = 22;
   private customerId = 0;
   private diningPartyNumber = 0;
+  private recentMenuOrders: RecipeId[] = [];
   private diningPartySelection = createDiningPartySelectionState();
   private diningDialogueNumber = 0;
   private diningConversationNumber = 0;
@@ -246,6 +343,38 @@ export class GameStore {
   private dining = createDiningState();
   private readonly listeners = new Set<(snapshot: GameSnapshot) => void>();
 
+  private get hasStaff(): boolean {
+    return this.staff.some((member) => member.isWorking);
+  }
+
+  private getWorkingLevel(role: StaffRoleId): number {
+    return this.staff.filter((member) => member.isWorking && member.role === role && member.restSeconds <= 0 && member.energy > 18)
+      .reduce((total, member) => total + member.level, 0);
+  }
+
+  private getAvailableStaff(role: StaffRoleId): HiredStaffMember | undefined {
+    return this.staff
+      .filter((member) => member.isWorking && member.role === role && member.restSeconds <= 0 && member.energy > 18)
+      .sort((a, b) => b.level - a.level || b.energy - a.energy)[0];
+  }
+
+  private consumeStaffEnergy(member: HiredStaffMember, amount: number): void {
+    member.energy = Math.max(0, member.energy - amount);
+    if (member.energy <= 18 && member.restSeconds <= 0) member.restSeconds = 8;
+  }
+
+  private tickStaffRecovery(): void {
+    for (const member of this.staff) {
+      if (!member.isWorking) continue;
+      if (member.restSeconds <= 0) {
+        if (member.energy <= 18) member.restSeconds = 8;
+        continue;
+      }
+      member.energy = Math.min(100, member.energy + 10);
+      member.restSeconds = member.energy >= 90 ? 0 : Math.max(0, member.restSeconds - 1);
+    }
+  }
+
   constructor() {
     this.load();
   }
@@ -257,19 +386,27 @@ export class GameStore {
   }
 
   getSnapshot(): GameSnapshot {
+    const dayPhase = this.elapsedSeconds % ACCOUNTING_PERIOD_SECONDS;
     const nightAmount = this.inShift
-      ? Math.max(0, Math.min(1, (this.elapsedSeconds - 85) / 35))
+      ? Math.max(0, Math.min(1, (dayPhase - 85) / 18, (ACCOUNTING_PERIOD_SECONDS - dayPhase) / 17))
       : 0;
 
     return {
       storeName: this.storeName,
       coins: this.coins,
+      ledgerDay: this.ledgerDay,
+      ledger: this.ledger.map((entry) => ({ ...entry })),
       reputation: this.reputation,
       cartLevel: this.cartLevel,
       hasStaff: this.hasStaff,
+      staff: this.staff.map((member) => ({ ...member })),
+      learnedRecipes: [...this.learnedRecipes],
+      activeMenu: [...this.activeMenu],
       inventory: { ...this.inventory },
+      marketInventory: this.getMarketInventory(),
+      marketBasketHasItems: this.marketBasketHasItems,
       inShift: this.inShift,
-      secondsRemaining: this.secondsRemaining,
+      closingShift: this.closingShift,
       elapsedSeconds: this.elapsedSeconds,
       customers: this.customers.map((customer) => ({ ...customer })),
       assembly: [...this.assembly],
@@ -287,7 +424,7 @@ export class GameStore {
         dialogueEvent: this.dining.dialogueEvent ? { ...this.dining.dialogueEvent } : null,
         tables: this.dining.tables.map((table) => ({ ...table, seats: table.seats.map((seat) => ({ ...seat })) })),
         guests: this.dining.guests.map((guest) => ({ ...guest })),
-        orders: this.dining.orders.map((order) => ({ ...order, assembly: [...order.assembly] })),
+        orders: this.dining.orders.map((order) => ({ ...order })),
       },
     };
   }
@@ -295,11 +432,19 @@ export class GameStore {
   setServiceMode(mode: ServiceMode): void {
     if (this.serviceMode === mode) return;
     this.serviceMode = mode;
-    if (mode === "dining" && this.inShift && this.dining.guests.length === 0) {
-      this.arriveDiningParty();
+    if (mode === "dining" && this.inShift) {
+      for (const guest of this.dining.guests) {
+        if (guest.status !== "approaching") continue;
+        guest.status = "entering";
+        guest.transitionSeconds = diningArrivalSeconds(guest.tableId) + guest.arrivalDelaySeconds;
+      }
+      if (this.dining.guests.length === 0) {
+        this.diningArrivalClock = 0;
+        this.diningArrivalIntervalSeconds = this.nextDiningArrivalInterval(true);
+      }
     }
     this.dining.feedback = mode === "dining"
-      ? "Khách sẽ tự vào và chọn bàn trống. Chạm khách để xem lời gọi món."
+      ? "Khách tự chọn bàn; Mai Linh sẽ tới hỏi món."
       : "Bạn đang ở ngoài phố; vòng phục vụ tại quầy vẫn giữ nguyên.";
     this.publish();
   }
@@ -308,12 +453,32 @@ export class GameStore {
     this.streetDemandMultiplier = Math.max(0.65, Math.min(1.25, multiplier));
   }
 
+  private getEnabledRecipes(): RecipeId[] {
+    return this.activeMenu.filter((id) => RECIPES[id] && RECIPES[id].unlockLevel <= this.cartLevel);
+  }
+
+  private getMostPopularActiveRecipe(type: CustomerType): RecipeId {
+    const enabled = this.getEnabledRecipes();
+    const preferred = enabled.filter((id) => {
+      const category = MENU_DISH_BY_ID.get(id)?.category;
+      return category && CUSTOMER_MENU_PREFERENCES[type].includes(category);
+    });
+    const choices = preferred.length > 0 ? preferred : enabled;
+    const recentCount = Math.min(2, choices.length - 1);
+    const recent = new Set(this.recentMenuOrders.slice(-recentCount));
+    const variedChoices = choices.filter((id) => !recent.has(id));
+    const recipe = (variedChoices.length > 0 ? variedChoices : choices)[Math.floor(Math.random() * (variedChoices.length || choices.length))]
+      ?? createStartingMenu()[0];
+    this.recentMenuOrders.push(recipe);
+    if (this.recentMenuOrders.length > 8) this.recentMenuOrders.shift();
+    return recipe;
+  }
+
   selectDiningTable(tableId: number): void {
     const table = this.dining.tables.find((entry) => entry.id === tableId);
     if (!table) return;
     const seat = table.seats.find((entry) => entry.guestId === this.dining.selectedGuestId)
       ?? table.seats.find((entry) => entry.guestId)
-      ?? table.seats.find((entry) => entry.status === "dirty")
       ?? table.seats[0];
     this.selectDiningSeat(tableId, seat.index);
   }
@@ -324,13 +489,6 @@ export class GameStore {
     if (!table || !seat) return;
     this.dining.selectedTableId = tableId;
     this.dining.selectedSeatIndex = seatIndex;
-    if (seat.status === "dirty") {
-      this.dining.selectedGuestId = null;
-      this.dining.selectedOrderId = null;
-      this.dining.feedback = `Chỗ ${seatIndex + 1} tại bàn ${tableId} cần dọn.`;
-      this.publish();
-      return;
-    }
     if (seat.status === "empty") {
       this.dining.selectedGuestId = null;
       this.dining.selectedOrderId = null;
@@ -351,47 +509,13 @@ export class GameStore {
     this.dining.selectedGuestId = guest.id;
     const order = this.dining.orders.find((entry) => entry.guestId === guest.id);
     this.dining.selectedOrderId = order?.id ?? null;
-    const party = this.dining.guests.filter((member) => member.partyId === guest.partyId);
-    const partyOrders = this.dining.orders.filter((entry) => entry.partyId === guest.partyId);
-    const missingIngredients = guest.status === "waiting-order" && party.length === guest.partySize
-      && party.every((member) => member.status === "waiting-order")
-      ? this.getMissingPartyIngredients(partyOrders)
-      : [];
-    this.dining.feedback = missingIngredients.length > 0
-      ? `Order nhóm bàn ${guest.tableId} chưa nhận được: kho thiếu ${missingIngredients.join(", ")}.`
-      : this.getDiningGuestDialogue(guest);
-    this.publish();
-  }
-
-  acceptDiningOrder(): void {
-    const guest = this.dining.guests.find((entry) => entry.id === this.dining.selectedGuestId);
-    const partyGuests = guest && this.dining.guests.filter((entry) => entry.partyId === guest.partyId);
-    const partyOrders = guest && this.dining.orders.filter((entry) => entry.partyId === guest.partyId);
-    if (!this.inShift || !guest || !partyGuests?.length || !partyOrders?.length
-      || partyGuests.length !== guest.partySize
-      || partyGuests.some((member) => member.status !== "waiting-order")
-      || partyOrders.length !== partyGuests.length
-      || partyOrders.some((entry) => entry.status !== "called")) {
-      this.dining.feedback = "Chọn khách đang chờ gọi món để nhận phiếu nhé.";
-      this.publish();
-      return;
-    }
-    const missing = this.getMissingPartyIngredients(partyOrders);
-    if (missing.length > 0) {
-      this.dining.feedback = `Kho thiếu ${missing.join(", ")}; chưa gửi order nhóm tới bếp.`;
-      this.publish();
-      return;
-    }
-    for (const order of partyOrders) order.status = "queued";
-    for (const member of partyGuests) member.status = "waiting-food";
-    this.dining.selectedOrderId = partyOrders[0].id;
-    this.dining.feedback = `Đã nhận order bàn ${guest.tableId} gồm ${partyOrders.length} món; các phiếu đang chờ ở bếp.`;
+    this.dining.feedback = this.getDiningGuestDialogue(guest);
     this.publish();
   }
 
   selectDiningOrder(orderId: string): void {
     const order = this.dining.orders.find((entry) => entry.id === orderId);
-    if (!order || !["queued", "cooking", "ready", "delivered", "paid"].includes(order.status)) return;
+    if (!order || !["taking", "queued", "cooking", "ready", "carrying", "delivered", "paid"].includes(order.status)) return;
     if (order.status === "queued" && this.dining.activeOrderId && this.dining.activeOrderId !== order.id) {
       this.dining.feedback = "Bếp đang nấu phiếu khác. Hoàn tất phiếu đó rồi hãy bắt đầu phiếu này.";
       this.publish();
@@ -405,54 +529,6 @@ export class GameStore {
       this.dining.selectedSeatIndex = guest.seatIndex;
     }
     this.dining.feedback = `${RECIPES[order.recipe].name} · ${this.getDiningOrderStatusName(order.status)}.`;
-    this.publish();
-  }
-
-  tapDiningIngredient(ingredientId: IngredientId): void {
-    const order = this.dining.orders.find((entry) => entry.id === this.dining.selectedOrderId);
-    if (!this.inShift || !order || order.status !== "queued" || (this.dining.activeOrderId && this.dining.activeOrderId !== order.id)) {
-      this.dining.feedback = "Chọn một phiếu đang chờ ở bếp trước khi lấy nguyên liệu.";
-      this.publish();
-      return;
-    }
-    const firstQueuedOrder = this.dining.orders.find((entry) => entry.status === "queued");
-    if (firstQueuedOrder && firstQueuedOrder.id !== order.id) {
-      this.dining.feedback = `Bếp làm lần lượt; hãy hoàn tất phiếu bàn ${firstQueuedOrder.tableId} trước.`;
-      this.publish();
-      return;
-    }
-    const recipe = RECIPES[order.recipe];
-    const expectedIngredient = recipe.ingredients[order.assembly.length];
-    if (ingredientId !== expectedIngredient) {
-      const expectedName = INGREDIENTS.find((item) => item.id === expectedIngredient)?.name ?? "nguyên liệu kế tiếp";
-      this.dining.feedback = `Sai thứ tự rồi — bếp cần ${expectedName}. Kho chưa bị trừ.`;
-      this.publish();
-      return;
-    }
-    order.assembly.push(ingredientId);
-    this.dining.activeOrderId = order.id;
-    if (order.assembly.length < recipe.ingredients.length) {
-      const next = recipe.ingredients[order.assembly.length];
-      const nextName = INGREDIENTS.find((item) => item.id === next)?.name;
-      this.dining.feedback = `Đúng rồi! Phiếu này cần thêm ${nextName}.`;
-      this.publish();
-      return;
-    }
-    if (!this.hasRecipeStock(order.recipe)) {
-      order.assembly = [];
-      this.dining.activeOrderId = null;
-      this.dining.feedback = "Kho không đủ nguyên liệu cho món này. Chưa có nguyên liệu nào bị trừ.";
-      this.publish();
-      return;
-    }
-    if (!this.startDiningOrderCooking(order)) {
-      order.assembly = [];
-      this.dining.activeOrderId = null;
-      this.dining.feedback = "Không thể bắt đầu món này; nguyên liệu được giữ nguyên và phiếu vẫn chờ bếp.";
-    } else {
-      this.dining.feedback = `Bếp đang nấu ${recipe.name.toLowerCase()}…`;
-    }
-    this.persist();
     this.publish();
   }
 
@@ -474,7 +550,12 @@ export class GameStore {
       this.publish();
       return;
     }
-    this.serveDiningOrder(order, guest, false);
+    if (this.dining.orders.some((entry) => entry.status === "carrying")) {
+      this.dining.feedback = "Đang bưng món trước tới bàn; hãy chờ một chút.";
+      this.publish();
+      return;
+    }
+    this.takeDiningOrder(order, guest, false);
     this.publish();
   }
 
@@ -505,25 +586,31 @@ export class GameStore {
     this.payDiningOrder(order, guest, false);
   }
 
-  cleanDiningTable(tableId: number, seatIndex = this.dining.selectedSeatIndex ?? 0): void {
-    const table = this.dining.tables.find((entry) => entry.id === tableId);
-    const seat = table?.seats[seatIndex];
-    if (!table || !seat || seat.status !== "dirty") {
-      this.dining.feedback = "Bàn này chưa cần dọn hoặc vẫn đang có khách.";
+  collectDiningPaymentForTable(tableId: number): void {
+    const guest = this.dining.guests.find((entry) => entry.tableId === tableId && entry.status === "awaiting-payment");
+    const order = guest && this.dining.orders.find((entry) => entry.partyId === guest.partyId && entry.status === "delivered");
+    const partyGuests = guest && this.dining.guests.filter((entry) => entry.partyId === guest.partyId);
+    const partyOrders = guest && this.dining.orders.filter((entry) => entry.partyId === guest.partyId);
+    if (!guest || !order || !partyGuests?.every((entry) => entry.status === "awaiting-payment")
+      || !partyOrders?.every((entry) => entry.status === "delivered")) {
+      this.dining.feedback = `Bàn ${tableId} chưa sẵn sàng thanh toán.`;
       this.publish();
       return;
     }
-    seat.status = "empty";
-    seat.guestId = null;
-    this.syncDiningTable(table);
-    this.dining.selectedTableId = table.id;
-    this.dining.selectedSeatIndex = seatIndex;
-    this.dining.selectedGuestId = null;
-    if (this.dining.selectedOrderId && !this.dining.guests.some((guest) => guest.id === this.dining.orders.find((order) => order.id === this.dining.selectedOrderId)?.guestId)) {
-      this.dining.selectedOrderId = null;
+    this.payDiningOrder(order, guest, false);
+  }
+
+  cleanDiningTable(tableId: number): void {
+    const table = this.dining.tables.find((entry) => entry.id === tableId);
+    if (!table || table.cleanliness !== "dirty") return;
+    if (table.seats.some((seat) => seat.status !== "empty" || seat.guestId)) {
+      this.dining.feedback = `Khách ở bàn ${tableId} chưa rời hết; chưa thể dọn bàn.`;
+      this.publish();
+      return;
     }
-    this.dining.orders = this.dining.orders.filter((order) => order.status !== "paid" || this.dining.guests.some((guest) => guest.id === order.guestId));
-    this.dining.feedback = `Đã dọn chỗ ${seatIndex + 1} tại bàn ${tableId}.`;
+    table.cleanliness = "clean";
+    this.dining.feedback = `Đã dọn sạch bàn ${tableId}; bàn sẵn sàng đón khách.`;
+    this.persist();
     this.publish();
   }
 
@@ -537,19 +624,29 @@ export class GameStore {
     return true;
   }
 
-  startShift(): void {
-    if (this.inShift) return;
+  startShift(menuSelection: readonly RecipeId[] = this.activeMenu): boolean {
+    if (this.inShift || this.closingShift) return false;
+    const selectedMenu = [...new Set(menuSelection.filter((id) => PLAYABLE_RECIPE_IDS.includes(id)
+      && this.learnedRecipes.includes(id)
+      && RECIPES[id].unlockLevel <= this.cartLevel))];
+    if (selectedMenu.length === 0) {
+      this.feedback = "Chọn ít nhất một món đã học để bắt đầu ca.";
+      this.publish();
+      return false;
+    }
+    this.activeMenu = selectedMenu;
     this.offlineNotice = "";
     this.inShift = true;
-    this.secondsRemaining = SHIFT_SECONDS;
+    this.closingShift = false;
     this.elapsedSeconds = 0;
     this.customers = this.serviceMode === "street" ? [this.makeCustomer()] : [];
+    const tableCleanliness = this.dining.tables.map((table) => table.cleanliness ?? "clean");
     this.dining = createDiningState();
+    this.dining.tables.forEach((table, index) => { table.cleanliness = tableCleanliness[index] ?? "clean"; });
     this.diningPartyNumber = 0;
     this.diningConversationClock = 0;
     this.diningDialogueAvailableAt = 0;
     this.pendingDiningDialogues = [];
-    this.arriveDiningParty();
     this.assembly = [];
     this.shiftRevenue = 0;
     this.shiftTips = 0;
@@ -557,15 +654,60 @@ export class GameStore {
     this.shiftServed = 0;
     this.shiftLeft = 0;
     this.shiftReputation = 0;
+    this.shiftRecipeSales = Object.fromEntries(PLAYABLE_RECIPE_IDS.map((id) => [id, 0])) as Record<RecipeId, number>;
     this.arrivalClock = 0;
     this.staffClock = 0;
     this.diningStaffClock = 0;
-    this.report = null;
+    this.diningArrivalClock = 0;
+    this.diningArrivalIntervalSeconds = this.nextDiningArrivalInterval(true);
+    if (this.serviceMode === "dining") {
+      this.arriveDiningParty();
+      this.diningArrivalIntervalSeconds = this.nextDiningArrivalInterval();
+    }
     this.feedback = this.serviceMode === "street"
       ? "Khách đầu tiên đang đi bộ tới quán từ ngoài phố."
-      : "Ca bán trong phòng ăn bắt đầu. Khách đầu tiên đang chọn bàn.";
+      : "Quán đã mở bán liên tục. Nhóm khách đầu tiên đang đi từ phố tới quán.";
     this.persist();
     this.publish();
+    return true;
+  }
+
+  toggleShift(menuSelection?: readonly RecipeId[]): boolean {
+    if (this.inShift) {
+      this.inShift = false;
+      this.beginShiftClosure();
+      return true;
+    }
+    if (this.closingShift) {
+      this.feedback = "Khách đang đi ra cửa; đợi họ ra hết rồi hãy mở bán lại.";
+      this.publish();
+      return false;
+    }
+
+    const selectedMenu = [...new Set((menuSelection ?? this.activeMenu).filter((id) => PLAYABLE_RECIPE_IDS.includes(id)
+      && this.learnedRecipes.includes(id)
+      && RECIPES[id].unlockLevel <= this.cartLevel))];
+    if (selectedMenu.length === 0) {
+      this.feedback = "Chọn ít nhất một món đã học để mở bán.";
+      this.publish();
+      return false;
+    }
+    this.activeMenu = selectedMenu;
+    const hasExistingShift = this.elapsedSeconds > 0
+      || this.shiftServed > 0
+      || this.shiftLeft > 0
+      || this.customers.length > 0
+      || this.dining.guests.length > 0;
+    if (!hasExistingShift) {
+      return this.startShift(selectedMenu);
+    }
+
+    this.offlineNotice = "";
+    this.inShift = true;
+    this.feedback = "Quán đã mở bán lại; tiếp tục phục vụ khách đang chờ.";
+    this.persist();
+    this.publish();
+    return true;
   }
 
   tapIngredient(ingredientId: IngredientId): void {
@@ -601,7 +743,8 @@ export class GameStore {
       return;
     }
 
-    const expectedIngredient = recipe.ingredients[this.assembly.length];
+    const requiredIngredients = recipeIngredientList(customer.recipe);
+    const expectedIngredient = requiredIngredients[this.assembly.length];
     if (ingredientId !== expectedIngredient) {
       const expectedName = INGREDIENTS.find((item) => item.id === expectedIngredient)?.name ?? "nguyên liệu kế tiếp";
       this.feedback = `Khách đang chờ ${expectedName}. Chọn đúng thứ tự để hoàn thành món nhé.`;
@@ -610,10 +753,10 @@ export class GameStore {
     }
 
     this.assembly.push(ingredientId);
-    if (this.assembly.length === recipe.ingredients.length) {
+    if (this.assembly.length === requiredIngredients.length) {
       this.completeOrder(false);
     } else {
-      const next = recipe.ingredients[this.assembly.length];
+      const next = requiredIngredients[this.assembly.length];
       const nextName = INGREDIENTS.find((item) => item.id === next)?.name;
       this.feedback = `Đúng rồi! Tiếp theo: ${nextName}.`;
       this.publish();
@@ -641,8 +784,8 @@ export class GameStore {
     this.offlineNotice = "";
     if (this.coins < RESTOCK_PACK_COST) {
       if (!this.canMakeAnyRecipe()) {
-        for (const ingredient of INGREDIENTS) this.inventory[ingredient.id] += 4;
-        this.feedback = "Quán đã nhận 4 phần nguyên liệu cơ bản để tiếp tục phục vụ khách.";
+        for (const ingredientId of STARTER_INGREDIENTS) this.inventory[ingredientId] += 4;
+        this.feedback = "Kho cạn tiền nhập hàng: quán nhận 4 phần nguyên liệu cơ bản để mở bán lại.";
         this.persist();
       } else {
         this.feedback = `Chưa đủ tiền nhập hàng; cần ${formatVndFromThousands(RESTOCK_PACK_COST)}.`;
@@ -652,8 +795,180 @@ export class GameStore {
     }
 
     this.coins -= RESTOCK_PACK_COST;
-    for (const ingredient of INGREDIENTS) this.inventory[ingredient.id] += RESTOCK_PACK_SIZE;
-    this.feedback = `Đã nhập hàng: +${RESTOCK_PACK_SIZE} phần mỗi loại.`;
+    this.recordLedger("Nhập nguyên liệu cơ bản", -RESTOCK_PACK_COST);
+    for (const ingredientId of STARTER_INGREDIENTS) this.inventory[ingredientId] += RESTOCK_PACK_SIZE;
+    this.feedback = `Đã nhập gói cơ bản: +${RESTOCK_PACK_SIZE} phần mỗi loại nguyên liệu đầu ca.`;
+    this.persist();
+    this.publish();
+  }
+
+  buyMarketIngredient(ingredientId: MenuIngredientId, quantity: number): boolean {
+    const product = MARKET_PRODUCT_DETAILS[ingredientId];
+    const amount = Math.trunc(quantity);
+    if (!product || amount < 1 || amount > 99) return false;
+
+    const total = product.priceThousands * amount;
+    if (this.coins < total) {
+      this.feedback = `Chưa đủ tiền; cần ${formatVndFromThousands(total)} để mua ${MENU_INGREDIENTS[ingredientId].name}.`;
+      this.publish();
+      return false;
+    }
+
+    this.coins -= total;
+    this.recordLedger(`Đi chợ: ${MENU_INGREDIENTS[ingredientId].name} ×${amount}`, -total);
+    this.inventory[ingredientId] += amount;
+    this.marketBasketHasItems = true;
+    this.feedback = `Đã mua ${amount} ${product.unit} ${MENU_INGREDIENTS[ingredientId].name.toLowerCase()} · ${formatVndFromThousands(total)}.`;
+    this.persist();
+    this.publish();
+    return true;
+  }
+
+  toggleMenuDish(recipeId: RecipeId): void {
+    const recipe = RECIPES[recipeId];
+    if (!recipe) return;
+    if (!this.learnedRecipes.includes(recipeId)) {
+      this.feedback = `Hãy học công thức ${recipe.name.toLowerCase()} trước khi đưa vào thực đơn.`;
+      this.publish();
+      return;
+    }
+    if (recipe.unlockLevel > this.cartLevel) {
+      this.feedback = `Nâng quán lên cấp ${recipe.unlockLevel} để bán ${recipe.name.toLowerCase()}.`;
+      this.publish();
+      return;
+    }
+    const isActive = this.activeMenu.includes(recipeId);
+    if (isActive && this.activeMenu.length === 1) {
+      this.feedback = "Quán cần giữ ít nhất một món trong thực đơn.";
+      this.publish();
+      return;
+    }
+    this.activeMenu = isActive
+      ? this.activeMenu.filter((id) => id !== recipeId)
+      : [...this.activeMenu, recipeId];
+    this.feedback = isActive
+      ? `Đã tạm ngừng bán ${recipe.name.toLowerCase()}.`
+      : `Đã đưa ${recipe.name.toLowerCase()} vào thực đơn.`;
+    this.persist();
+    this.publish();
+  }
+
+  learnRecipe(recipeId: RecipeId): boolean {
+    const recipe = RECIPES[recipeId];
+    if (!recipe || this.learnedRecipes.includes(recipeId)) return false;
+    if (recipe.unlockLevel > this.cartLevel) {
+      this.feedback = `Nâng quán lên cấp ${recipe.unlockLevel} để học ${recipe.name.toLowerCase()}.`;
+      this.publish();
+      return false;
+    }
+    const cost = getRecipeLearningCost(recipeId);
+    if (this.coins < cost) {
+      this.feedback = `Chưa đủ tiền để học ${recipe.name.toLowerCase()}; cần ${formatVndFromThousands(cost)}.`;
+      this.publish();
+      return false;
+    }
+    this.coins -= cost;
+    this.recordLedger(`Học món: ${recipe.name}`, -cost);
+    this.learnedRecipes = [...this.learnedRecipes, recipeId];
+    this.feedback = `Đã học công thức ${recipe.name.toLowerCase()}. Hãy chọn món này khi mở ca.`;
+    this.persist();
+    this.publish();
+    return true;
+  }
+
+  hireEmployee(candidateId: string): void {
+    const candidate = getStaffCandidate(candidateId);
+    if (!candidate) return;
+    if (candidate.unlockLevel > this.cartLevel) {
+      this.feedback = `Nâng quán lên cấp ${candidate.unlockLevel} để tuyển ${candidate.name}.`;
+      this.publish();
+      return;
+    }
+    if (this.staff.some((member) => member.id === candidateId)) {
+      this.feedback = `${candidate.name} đã có trong đội ngũ.`;
+      this.publish();
+      return;
+    }
+    if (this.coins < candidate.hireCost) {
+      this.feedback = `Cần thêm ${formatVndFromThousands(candidate.hireCost - this.coins)} để tuyển ${candidate.name}.`;
+      this.publish();
+      return;
+    }
+    this.coins -= candidate.hireCost;
+    this.recordLedger(`Tuyển nhân viên: ${candidate.name}`, -candidate.hireCost);
+    this.staff.push({ id: candidate.id, role: candidate.role, level: 1, isWorking: true, energy: 100, restSeconds: 0 });
+    this.feedback = `Đã tuyển ${candidate.name} vào vị trí ${getStaffRole(candidate.role).shortName.toLowerCase()}.`;
+    this.persist();
+    this.publish();
+  }
+
+  trainEmployee(employeeId: string): void {
+    const employee = this.staff.find((member) => member.id === employeeId);
+    if (!employee) return;
+    if (employee.level >= MAX_STAFF_LEVEL) {
+      this.feedback = "Nhân viên này đã đạt bậc kỹ năng tối đa.";
+      this.publish();
+      return;
+    }
+    const cost = STAFF_TRAINING_COST[employee.level] ?? Number.POSITIVE_INFINITY;
+    if (this.coins < cost) {
+      this.feedback = `Cần thêm ${formatVndFromThousands(cost - this.coins)} để đào tạo.`;
+      this.publish();
+      return;
+    }
+    employee.level += 1;
+    this.coins -= cost;
+    const candidate = getStaffCandidate(employee.id);
+    this.recordLedger(`Đào tạo: ${candidate?.name ?? "Nhân viên"}`, -cost);
+    this.feedback = `${candidate?.name ?? "Nhân viên"} lên bậc ${employee.level}; kỹ năng nghề được cải thiện.`;
+    this.persist();
+    this.publish();
+  }
+
+  toggleEmployeeShift(employeeId: string): void {
+    const employee = this.staff.find((member) => member.id === employeeId);
+    if (!employee) return;
+    employee.isWorking = !employee.isWorking;
+    if (!employee.isWorking) employee.restSeconds = 0;
+    const candidate = getStaffCandidate(employee.id);
+    this.feedback = employee.isWorking
+      ? `${candidate?.name ?? "Nhân viên"} đã vào ca.`
+      : `${candidate?.name ?? "Nhân viên"} nghỉ ca này; quán không tính lương vị trí đó.`;
+    this.persist();
+    this.publish();
+  }
+
+  prioritizeDiningOrder(orderId: string): void {
+    const target = this.dining.orders.find((order) => order.id === orderId && order.status === "queued");
+    if (!target) return;
+    if (this.dining.activeOrderId) {
+      this.dining.feedback = "Món đang nấu sẽ hoàn tất trước; phiếu này được ưu tiên ngay sau đó.";
+      this.publish();
+      return;
+    }
+    const queued = this.dining.orders.filter((order) => order.status === "queued");
+    this.dining.orders = [...this.dining.orders.filter((order) => order.status !== "queued"), target, ...queued.filter((order) => order.id !== target.id)];
+    this.dining.feedback = `Đã ưu tiên phiếu bàn ${target.tableId}.`;
+    this.persist();
+    this.publish();
+  }
+
+  boostDiningKitchen(): void {
+    const order = this.dining.orders.find((entry) => entry.id === this.dining.activeOrderId && entry.status === "cooking");
+    if (!this.inShift || !order) {
+      this.dining.feedback = "Chưa có món đang nấu để hỗ trợ.";
+      this.publish();
+      return;
+    }
+    if (this.coins < 5) {
+      this.dining.feedback = "Cần 5.000đ để gọi một lượt hỗ trợ bếp.";
+      this.publish();
+      return;
+    }
+    this.coins -= 5;
+    this.recordLedger("Hỗ trợ bếp", -5);
+    order.cookSeconds = Math.max(1, order.cookSeconds - 3);
+    this.dining.feedback = `Đã gọi hỗ trợ bếp cho bàn ${order.tableId}; món sẽ ra sớm hơn.`;
     this.persist();
     this.publish();
   }
@@ -674,6 +989,7 @@ export class GameStore {
 
     this.coins -= cost;
     this.cartLevel += 1;
+    this.recordLedger(`Nâng cấp quán lên cấp ${this.cartLevel}`, -cost);
     this.feedback = this.cartLevel === 2
       ? "Quán có bếp nướng mới và mặt quầy rộng hơn. Món đặc biệt đã mở!"
       : `Đã mở khóa ${BUSINESS_STAGE_NAMES[this.cartLevel - 1]}.`;
@@ -683,38 +999,135 @@ export class GameStore {
 
   hireStaff(): void {
     this.offlineNotice = "";
-    if (this.cartLevel < 2) {
-      this.feedback = "Cần nâng quán lên cấp 2 trước khi thuê phụ bếp.";
-      this.publish();
-      return;
-    }
-    if (this.hasStaff) {
-      this.feedback = "Phụ bếp đang phụ mình trông quán rồi!";
-      this.publish();
-      return;
-    }
-    if (this.coins < STAFF_HIRE_COST) {
-      this.feedback = `Cần thêm ${formatVndFromThousands(STAFF_HIRE_COST - this.coins)} để thuê phụ bếp.`;
-      this.publish();
-      return;
+    this.hireEmployee("huy-phu-bep");
+  }
+
+  private beginShiftClosure(): void {
+    this.offlineNotice = "";
+    this.closingShift = false;
+    this.customers = [];
+    this.assembly = [];
+    this.arrivalClock = 0;
+    this.pendingDiningDialogues = [];
+    this.dining.dialogueEvent = null;
+
+    const parties = [...new Set(this.dining.guests.map((guest) => guest.partyId))];
+    for (const partyId of parties) {
+      const guests = this.dining.guests.filter((guest) => guest.partyId === partyId);
+      if (guests.length === 0 || guests.every((guest) => guest.status === "leaving" || guest.status === "departing")) continue;
+      const orders = this.dining.orders.filter((order) => order.partyId === partyId);
+      const allPaid = orders.length > 0 && orders.every((order) => order.status === "paid");
+      if (allPaid) continue;
+      const allDelivered = orders.length === guests.length && orders.every((order) => order.status === "delivered");
+      if (allDelivered) {
+        for (const guest of guests) guest.status = "awaiting-payment";
+        this.payDiningOrder(orders[0], guests[0], false);
+        continue;
+      }
+
+      for (const order of orders) {
+        if (["cooking", "ready", "carrying", "delivered"].includes(order.status)) {
+          for (const ingredient of RECIPES[order.recipe].ingredients) this.inventory[ingredient.id] += ingredient.quantity;
+          this.shiftIngredientCosts = Math.max(0, this.shiftIngredientCosts - getRecipeCost(order.recipe));
+        }
+      }
+      const cancelledOrderIds = new Set(orders.map((order) => order.id));
+      this.dining.orders = this.dining.orders.filter((order) => order.partyId !== partyId);
+      if (this.dining.activeOrderId && cancelledOrderIds.has(this.dining.activeOrderId)) this.dining.activeOrderId = null;
+      if (guests.some((guest) => guest.id === this.dining.selectedGuestId)) this.dining.selectedGuestId = null;
+      if (orders.some((order) => order.id === this.dining.selectedOrderId)) this.dining.selectedOrderId = null;
+      this.shiftLeft += guests.length;
+
+      for (const guest of guests) {
+        guest.arrivalDialogue = null;
+        if (guest.status === "approaching") {
+          guest.status = "entering";
+          guest.transitionSeconds = diningArrivalSeconds(guest.tableId) + guest.arrivalDelaySeconds;
+        } else if (guest.status !== "entering" && guest.status !== "leaving" && guest.status !== "departing") {
+          guest.status = "leaving";
+          guest.transitionSeconds = diningTravelSeconds(guest.tableId);
+        }
+      }
     }
 
-    this.coins -= STAFF_HIRE_COST;
-    this.hasStaff = true;
-    this.feedback = "Đã thuê phụ bếp! Bạn ấy sẽ tự phục vụ khách và giúp quán có thu nhập ngoại tuyến.";
+    this.closingShift = this.dining.guests.length > 0;
+    this.dining.feedback = this.closingShift
+      ? "Quán đã nghỉ bán; khách đang đi ra. Đơn chưa giao đã hủy và nguyên liệu được trả lại kho."
+      : "Quán đang nghỉ bán. Khách ở quầy đã rời đi.";
+    this.persist();
+    this.publish();
+  }
+
+  private tickClosingDepartures(): void {
+    for (const guest of this.dining.guests) {
+      if (guest.status === "entering") {
+        guest.transitionSeconds -= 1;
+        if (guest.transitionSeconds <= 0) {
+          guest.status = "leaving";
+          guest.transitionSeconds = diningTravelSeconds(guest.tableId);
+          const table = this.dining.tables.find((entry) => entry.id === guest.tableId);
+          if (table) {
+            table.seats[guest.seatIndex].status = "occupied";
+            this.syncDiningTable(table);
+          }
+        }
+      } else if (guest.status === "leaving") {
+        guest.transitionSeconds -= 1;
+      } else if (guest.status === "departing") {
+        guest.transitionSeconds = Math.max(-1, guest.transitionSeconds - 1);
+      }
+    }
+
+    const leavingParties = new Set(this.dining.guests
+      .filter((guest) => guest.status === "leaving" && guest.transitionSeconds <= 0)
+      .map((guest) => guest.partyId));
+    for (const partyId of leavingParties) {
+      const party = this.dining.guests.filter((guest) => guest.partyId === partyId);
+      if (party.length === 0 || !party.every((guest) => guest.status === "leaving" && guest.transitionSeconds <= 0)) continue;
+      const table = this.dining.tables.find((entry) => entry.id === party[0].tableId);
+      if (table) {
+        for (const guest of party) {
+          table.seats[guest.seatIndex].status = "empty";
+          table.seats[guest.seatIndex].guestId = null;
+        }
+        table.cleanliness = "dirty";
+        this.syncDiningTable(table);
+      }
+      for (const guest of party) {
+        guest.status = "departing";
+        guest.transitionSeconds = DINING_OUTDOOR_WALK_SECONDS;
+      }
+    }
+
+    const departedParties = new Set(this.dining.guests
+      .filter((guest) => guest.status === "departing" && guest.transitionSeconds < 0)
+      .map((guest) => guest.partyId));
+    for (const partyId of departedParties) {
+      this.dining.guests = this.dining.guests.filter((guest) => guest.partyId !== partyId);
+      this.dining.orders = this.dining.orders.filter((order) => order.partyId !== partyId);
+    }
+    if (this.dining.guests.length === 0) {
+      this.closingShift = false;
+      this.dining.selectedGuestId = null;
+      this.dining.selectedOrderId = null;
+      this.dining.feedback = "Khách đã ra khỏi quán. Quán đang nghỉ bán.";
+    }
     this.persist();
     this.publish();
   }
 
   tick(): void {
-    if (!this.inShift) return;
+    if (!this.inShift) {
+      if (this.closingShift) this.tickClosingDepartures();
+      return;
+    }
 
     this.elapsedSeconds += 1;
-    this.secondsRemaining = SHIFT_SECONDS - (this.elapsedSeconds % SHIFT_SECONDS);
+    this.tickStaffRecovery();
     this.tickDiningRoom();
     if (this.serviceMode === "street") this.tickStreetShift();
 
-    if (this.elapsedSeconds % SHIFT_SECONDS === 0) this.settleServicePeriod();
+    if (this.elapsedSeconds % ACCOUNTING_PERIOD_SECONDS === 0) this.settleServicePeriod();
 
     if (this.elapsedSeconds % 10 === 0) this.persist();
     this.publish();
@@ -730,12 +1143,7 @@ export class GameStore {
           ? "shopper"
           : "tourist";
 
-    let recipe: RecipeId;
-    if (type === "student") recipe = "cha";
-    else if (type === "office") recipe = "egg";
-    else if (type === "tourist" && this.cartLevel >= 2) recipe = "special";
-    else if (type === "shopper" && this.cartLevel >= 2 && Math.random() < 0.4) recipe = "special";
-    else recipe = Math.random() < 0.5 ? "cha" : "egg";
+    const recipe = this.getMostPopularActiveRecipe(type);
 
     return { id: ++this.customerId, type, recipe, patience: CUSTOMER_PATIENCE_SECONDS, status: "walking" };
   }
@@ -752,17 +1160,18 @@ export class GameStore {
       this.assembly = [];
       this.feedback = "Có khách đi mất vì đợi lâu. Nâng cấp quán hoặc nhờ phụ bếp để phục vụ nhanh hơn.";
     }
-    const arrivalInterval = Math.max(1, Math.round(CUSTOMER_ARRIVAL_SECONDS / this.streetDemandMultiplier));
+    const promoterBonus = Math.min(4, this.getWorkingLevel("promoter"));
+    const arrivalInterval = Math.max(4, Math.round((CUSTOMER_ARRIVAL_SECONDS - promoterBonus) / this.streetDemandMultiplier));
     if (this.arrivalClock >= arrivalInterval) {
       this.arrivalClock = 0;
       if (this.customers.length < 3) this.customers.push(this.makeCustomer());
     }
-    if (this.hasStaff) {
-      this.staffClock += 1;
-      if (this.staffClock >= 8 && this.customers[0]?.status === "waiting" && this.assembly.length === 0) {
-        this.staffClock = 0;
-        this.completeOrder(true);
-      }
+    this.staffClock += 1;
+    const serviceSkill = this.getWorkingLevel("server") + this.getWorkingLevel("prep") + this.getWorkingLevel("chef");
+    const serviceInterval = Math.max(6, 18 - serviceSkill * 3 - this.getWorkingLevel("cashier"));
+    if (this.staffClock >= serviceInterval && this.customers[0]?.status === "waiting" && this.assembly.length === 0) {
+      this.staffClock = 0;
+      this.completeOrder(true);
     }
   }
 
@@ -786,17 +1195,27 @@ export class GameStore {
             table.seats[guest.seatIndex].status = "occupied";
             this.syncDiningTable(table);
           }
-          this.dining.feedback = `Khách đã ngồi bàn ${guest.tableId}; chạm khách để xem món muốn gọi.`;
-          this.queueDiningDialogue(guest.id, guest.orderDialogue, "order");
+          this.dining.feedback = `Khách đã ngồi bàn ${guest.tableId}; Mai Linh sẽ tới hỏi món.`;
         }
       } else if (guest.status === "leaving") {
         guest.transitionSeconds -= 1;
-      } else if (guest.status === "departing" && this.serviceMode === "street") {
+      } else if (guest.status === "departing") {
         guest.transitionSeconds = Math.max(-1, guest.transitionSeconds - 1);
       } else if (guest.status === "waiting-order" || guest.status === "waiting-food") {
         guest.patience -= 1;
         if (guest.patience <= 0) impatientParties.add(guest.partyId);
       }
+    }
+    const takingParties = new Set(this.dining.orders.filter((order) => order.status === "taking").map((order) => order.partyId));
+    for (const partyId of takingParties) {
+      const partyOrders = this.dining.orders.filter((order) => order.partyId === partyId);
+      for (const order of partyOrders) order.takeSeconds = Math.max(0, order.takeSeconds - 1);
+      if (partyOrders.length === 0 || !partyOrders.every((order) => order.takeSeconds <= 0)) continue;
+      const partyGuests = this.dining.guests.filter((guest) => guest.partyId === partyId);
+      for (const order of partyOrders) order.status = "queued";
+      for (const guest of partyGuests) guest.status = "waiting-food";
+      this.dining.selectedOrderId = partyOrders[0].id;
+      this.dining.feedback = `Mai Linh đã nhận ${partyOrders.length} món ở bàn ${partyOrders[0].tableId}; bếp bắt đầu xử lý.`;
     }
     for (const partyId of impatientParties) {
       const party = this.dining.guests.filter((guest) => guest.partyId === partyId);
@@ -807,13 +1226,23 @@ export class GameStore {
         guest.transitionSeconds = diningTravelSeconds(guest.tableId);
       }
       this.shiftLeft += party.length;
-      const cancelledIds = new Set(this.dining.orders.filter((order) => order.partyId === partyId).map((order) => order.id));
+      const cancelledOrders = this.dining.orders.filter((order) => order.partyId === partyId);
+      for (const order of cancelledOrders) {
+        if (!["cooking", "ready", "carrying", "delivered"].includes(order.status)) continue;
+        for (const ingredient of RECIPES[order.recipe].ingredients) this.inventory[ingredient.id] += ingredient.quantity;
+        this.shiftIngredientCosts = Math.max(0, this.shiftIngredientCosts - getRecipeCost(order.recipe));
+      }
+      const cancelledIds = new Set(cancelledOrders.map((order) => order.id));
       this.dining.orders = this.dining.orders.filter((order) => order.partyId !== partyId);
       if (this.dining.activeOrderId && cancelledIds.has(this.dining.activeOrderId)) this.dining.activeOrderId = null;
       if (party.some((guest) => guest.id === this.dining.selectedGuestId)) this.dining.selectedGuestId = null;
       this.dining.feedback = waitingForFood
-        ? `Cả nhóm bàn ${party[0].tableId} rời đi vì chờ món quá lâu.`
-        : `Cả nhóm bàn ${party[0].tableId} rời đi vì chờ nhận order quá lâu.`;
+        ? `Cả nhóm bàn ${party[0].tableId} phàn nàn rồi rời đi vì chờ món quá lâu.`
+        : `Cả nhóm bàn ${party[0].tableId} phàn nàn rồi rời đi vì chờ nhận món quá lâu.`;
+      const complaint = waitingForFood
+        ? "Tụi mình đợi hơi lâu rồi, xin phép đi trước nhé."
+        : "Mình ngồi đợi mà chưa ai nhận món, thôi để hôm khác ghé lại nhé.";
+      this.queueDiningDialogue(party[0].id, complaint, "complaint");
     }
     const leavingParties = new Map<string, DiningGuest[]>();
     for (const guest of this.dining.guests) {
@@ -830,16 +1259,17 @@ export class GameStore {
       if (table) {
         for (const guest of party) {
           const seat = table.seats[guest.seatIndex];
-          seat.status = "dirty";
+          seat.status = "empty";
           seat.guestId = null;
         }
+        table.cleanliness = "dirty";
         this.syncDiningTable(table);
       }
       for (const guest of party) {
         guest.status = "departing";
         guest.transitionSeconds = DINING_OUTDOOR_WALK_SECONDS;
       }
-      this.dining.feedback = `Cả nhóm đã ra tới cửa quán; ${arrivedMembers.length} chỗ bàn ${party[0].tableId} đang cần dọn.`;
+      this.dining.feedback = `Cả nhóm đã ra tới cửa quán; ${arrivedMembers.length} chỗ bàn ${party[0].tableId} đã trống.`;
     }
     const departedParties = new Set(this.dining.guests
       .filter((guest) => guest.status === "departing" && guest.transitionSeconds < 0)
@@ -852,14 +1282,10 @@ export class GameStore {
       this.dining.orders = this.dining.orders.filter((order) => order.partyId !== partyId);
       if (party.some((guest) => guest.id === this.dining.selectedGuestId)) this.dining.selectedGuestId = null;
       if (party.some((guest) => guest.id === selectedOrderGuest)) this.dining.selectedOrderId = null;
-      this.dining.feedback = `Cả nhóm đã đi khỏi quán; chỗ bàn ${party[0].tableId} đã sẵn sàng sau khi dọn.`;
+      this.dining.feedback = `Cả nhóm đã đi khỏi quán; bàn ${party[0].tableId} cần được dọn trước khi đón khách mới.`;
     }
     const activeOrder = this.dining.orders.find((order) => order.id === this.dining.activeOrderId);
-    const firstQueuedOrder = this.dining.orders.find((order) => order.status === "queued");
-    if (this.dining.activeOrderId && (!activeOrder
-      || (activeOrder.status !== "cooking" && activeOrder.status !== "queued")
-      || (activeOrder.status === "queued" && (activeOrder.assembly.length === 0 || firstQueuedOrder?.id !== activeOrder.id)))) {
-      if (activeOrder?.status === "queued") activeOrder.assembly = [];
+    if (this.dining.activeOrderId && (!activeOrder || activeOrder.status !== "cooking")) {
       this.dining.activeOrderId = null;
     }
     const cookingOrder = this.dining.orders.find((order) => order.id === this.dining.activeOrderId && order.status === "cooking");
@@ -871,6 +1297,13 @@ export class GameStore {
         this.dining.selectedOrderId = cookingOrder.id;
         this.dining.feedback = `${RECIPES[cookingOrder.recipe].name} đã sẵn sàng. Chọn đúng khách để bưng món.`;
       }
+    }
+    for (const order of this.dining.orders) {
+      if (order.status !== "carrying") continue;
+      order.deliverySeconds = Math.max(0, order.deliverySeconds - 1);
+      if (order.deliverySeconds > 0) continue;
+      const guest = this.dining.guests.find((entry) => entry.id === order.guestId);
+      if (guest?.status === "waiting-food") this.serveDiningOrder(order, guest, order.carriedByStaff);
     }
     for (const order of this.dining.orders) {
       if (order.status !== "delivered") continue;
@@ -887,25 +1320,37 @@ export class GameStore {
         this.dining.feedback = `Cả nhóm bàn ${party[0].tableId} đã ăn xong; có thể thu hóa đơn.`;
       }
     }
-    if (this.dining.arrivalClock >= CUSTOMER_ARRIVAL_SECONDS + 4) {
-      this.dining.arrivalClock = 0;
+    this.diningArrivalClock += 1;
+    if (this.elapsedSeconds % 32 === 0) {
+      const promoter = this.getAvailableStaff("promoter");
+      if (promoter) this.consumeStaffEnergy(promoter, 8);
+    }
+    if (this.diningArrivalClock >= this.diningArrivalIntervalSeconds) {
+      this.diningArrivalClock = 0;
       this.arriveDiningParty();
+      this.diningArrivalIntervalSeconds = this.nextDiningArrivalInterval();
     }
     if (this.serviceMode === "dining") {
       this.tickDiningConversation();
       this.advanceDiningDialogue();
     }
-    if (this.hasStaff) {
-      this.diningStaffClock += 1;
-      if (this.diningStaffClock >= 3) {
-        this.diningStaffClock = 0;
-        this.helpDiningRoom();
-      }
+    this.diningStaffClock += 1;
+    const serviceLevel = this.getWorkingLevel("server") + this.getWorkingLevel("cashier") + this.getWorkingLevel("prep") + this.getWorkingLevel("chef");
+    const supportInterval = Math.max(3, 8 - serviceLevel);
+    if (this.diningStaffClock >= supportInterval) {
+      this.diningStaffClock = 0;
+      this.helpDiningRoom();
     }
   }
 
   private arriveDiningParty(): void {
     if (!this.inShift) return;
+    const activeParties = new Set(this.dining.guests
+      .filter((guest) => guest.status !== "departing")
+      .map((guest) => guest.partyId));
+    const activeGuestCount = this.dining.guests.filter((guest) => guest.status !== "departing").length;
+    if (activeParties.size >= DINING_MAX_ACTIVE_PARTIES || activeGuestCount >= DINING_MAX_ACTIVE_GUESTS) return;
+
     const unlockedTableCount = getDiningTableCapacity();
     const nextPartyNumber = this.diningPartyNumber + 1;
     const previousSelectionState = cloneDiningPartySelectionState(this.diningPartySelection);
@@ -918,7 +1363,7 @@ export class GameStore {
       return [1, 3, 2, 0];
     };
     const findTableForParty = (size: number) => this.dining.tables
-      .filter((entry) => entry.id <= unlockedTableCount)
+      .filter((entry) => entry.id <= unlockedTableCount && entry.cleanliness !== "dirty")
       .filter((entry) => preferredSeatOrder(size).filter((index) => entry.seats[index].status === "empty").length >= size)
       .sort((a, b) => a.seats.filter((seat) => seat.guestId).length - b.seats.filter((seat) => seat.guestId).length || a.id - b.id)[0];
     let table = findTableForParty(partySize);
@@ -928,7 +1373,7 @@ export class GameStore {
       partySize -= 1;
       table = findTableForParty(partySize);
     }
-    if (!table) {
+    if (!table || activeGuestCount + partySize > DINING_MAX_ACTIVE_GUESTS) {
       this.diningPartySelection = previousSelectionState;
       return;
     }
@@ -940,10 +1385,10 @@ export class GameStore {
     const familyContext = diningFamilyContext(memberCharacterIds);
     const arrivalDialogue = diningArrivalDialogue(party.type, this.diningDialogueNumber, partySize, familyContext, memberCharacterIds);
     const outsideDirection: -1 | 1 = Math.random() < 0.5 ? -1 : 1;
-    const initialStatus: DiningGuestStatus = this.serviceMode === "street" ? "approaching" : "entering";
+    const initialStatus: DiningGuestStatus = "approaching";
     const seatIndices = preferredSeatOrder(partySize).filter((index) => table!.seats[index].status === "empty").slice(0, partySize);
     memberCharacterIds.forEach((characterId, memberIndex) => {
-      const customer = this.makeCustomer();
+    const customer = this.makeCustomer();
       const guestId = `dining-guest-${customer.id}`;
       const seat = table!.seats[seatIndices[memberIndex]];
       const orderDialogue = diningOrderDialogue(
@@ -975,9 +1420,7 @@ export class GameStore {
         recipe: customer.recipe,
         status: initialStatus,
         patience: CUSTOMER_PATIENCE_SECONDS,
-        transitionSeconds: initialStatus === "approaching"
-          ? DINING_OUTDOOR_WALK_SECONDS
-          : diningArrivalSeconds(table!.id) + memberIndex * 0.8,
+        transitionSeconds: DINING_OUTDOOR_WALK_SECONDS,
       });
       this.dining.orders.push({
         id: `dining-order-${customer.id}`,
@@ -986,8 +1429,10 @@ export class GameStore {
         tableId: table!.id,
         recipe: customer.recipe,
         status: "called",
-        assembly: [],
+        takeSeconds: 0,
         cookSeconds: 0,
+        deliverySeconds: 0,
+        carriedByStaff: false,
         eatSeconds: 0,
       });
     });
@@ -996,17 +1441,58 @@ export class GameStore {
     this.dining.feedback = `${partyName} ${partySize} người vào bàn ${table.id}: “${arrivalDialogue.text}”`;
   }
 
-  private queueDiningDialogue(guestId: string, text: string, kind: DiningDialogueEvent["kind"]): void {
-    const startsAt = Math.max(this.elapsedSeconds, this.diningDialogueAvailableAt);
+  private nextDiningArrivalInterval(firstArrival = false): number {
+    const activePartyCount = new Set(this.dining.guests
+      .filter((guest) => guest.status !== "departing")
+      .map((guest) => guest.partyId)).size;
+    let minSeconds: number;
+    let maxSeconds: number;
+    if (firstArrival) {
+      // Get the first party moving soon so the room does not feel broken at shift start.
+      // Later arrivals keep the slower, variable cadence below.
+      minSeconds = 3;
+      maxSeconds = 5;
+    } else if (activePartyCount >= 2) {
+      minSeconds = 42;
+      maxSeconds = 56;
+    } else if (Math.random() < 0.28) {
+      // Short busy spells happen occasionally; most arrivals stay spaced out.
+      minSeconds = 20;
+      maxSeconds = 28;
+    } else {
+      minSeconds = 32;
+      maxSeconds = 46;
+    }
+    const randomSeconds = minSeconds + Math.floor(Math.random() * (maxSeconds - minSeconds + 1));
+    const promoterBonus = Math.min(4, this.getWorkingLevel("promoter") * 2);
+    return Math.max(firstArrival ? 3 : 18, randomSeconds - promoterBonus);
+  }
+
+  private queueDiningDialogue(guestId: string, text: string, kind: DiningDialogueEvent["kind"], delaySeconds = 0): void {
+    const isComplaint = kind === "complaint";
+    const isOrder = kind === "order";
+    const requestedStart = this.elapsedSeconds + Math.max(0, delaySeconds);
+    const startsAt = isComplaint ? this.elapsedSeconds : isOrder ? requestedStart : Math.max(requestedStart, this.diningDialogueAvailableAt);
     const event: DiningDialogueEvent = {
       id: ++this.diningDialogueId,
       guestId,
       text,
       kind,
-      endsAt: startsAt + 3,
+      endsAt: startsAt + 4,
     };
-    this.pendingDiningDialogues.push({ event, startsAt });
-    this.diningDialogueAvailableAt = startsAt + 4;
+    if (isComplaint && this.dining.dialogueEvent?.kind !== "complaint") {
+      this.dining.dialogueEvent = { ...event, endsAt: this.elapsedSeconds + 3 };
+    } else if (isComplaint) {
+      this.pendingDiningDialogues.unshift({ event, startsAt });
+    } else if (isOrder) {
+      // Service dialogue takes priority over optional table chatter so the
+      // customer's line starts after Mai Linh actually reaches the table.
+      this.pendingDiningDialogues = this.pendingDiningDialogues.filter((entry) => entry.event.kind !== "conversation");
+      this.pendingDiningDialogues.unshift({ event, startsAt });
+    } else {
+      this.pendingDiningDialogues.push({ event, startsAt });
+    }
+    if (!isComplaint) this.diningDialogueAvailableAt = startsAt + 4;
   }
 
   private advanceDiningDialogue(): void {
@@ -1020,8 +1506,10 @@ export class GameStore {
       if (next.startsAt > this.elapsedSeconds) return;
       this.pendingDiningDialogues.shift();
       const guest = this.dining.guests.find((entry) => entry.id === next.event.guestId);
-      if (!guest || guest.status === "approaching" || guest.status === "entering" || guest.status === "leaving" || guest.status === "departing") continue;
-      this.dining.dialogueEvent = next.event;
+      if (!guest || guest.status === "approaching" || guest.status === "entering" || guest.status === "departing") continue;
+      if (guest.status === "leaving" && next.event.kind !== "complaint") continue;
+      const displaySeconds = next.event.kind === "complaint" ? 3 : 4;
+      this.dining.dialogueEvent = { ...next.event, endsAt: this.elapsedSeconds + displaySeconds };
       return;
     }
   }
@@ -1076,9 +1564,11 @@ export class GameStore {
   private getDiningOrderStatusName(status: DiningOrderStatus): string {
     const names: Record<DiningOrderStatus, string> = {
       called: "khách vừa gọi",
+      taking: "Mai Linh đang nhận món",
       queued: "chờ bếp",
       cooking: "đang nấu",
       ready: "đã sẵn sàng",
+      carrying: "đang bưng tới bàn",
       delivered: "đã giao",
       paid: "đã thanh toán",
     };
@@ -1101,6 +1591,8 @@ export class GameStore {
       member.transitionSeconds = transitionSeconds;
     }
     this.coins += revenue + tip;
+    this.recordLedger(`Bán ${partyOrders.length} món · bàn ${guest.tableId}`, revenue);
+    this.recordLedger("Tiền boa", tip);
     this.cashCollection = {
       id: ++this.cashCollectionId,
       amount: revenue + tip,
@@ -1110,6 +1602,7 @@ export class GameStore {
     this.shiftRevenue += revenue;
     this.shiftTips += tip;
     this.shiftServed += partyOrders.length;
+    for (const partyOrder of partyOrders) this.shiftRecipeSales[partyOrder.recipe] += 1;
     this.totalServed += partyGuests.length;
     this.reputation += reputationEarned;
     this.shiftReputation += reputationEarned;
@@ -1120,8 +1613,16 @@ export class GameStore {
     this.publish();
   }
 
-  private serveDiningOrder(order: DiningOrder, guest: DiningGuest, byStaff: boolean): void {
+  private takeDiningOrder(order: DiningOrder, guest: DiningGuest, byStaff: boolean): void {
     if (order.status !== "ready" || guest.status !== "waiting-food") return;
+    order.status = "carrying";
+    order.deliverySeconds = DINING_ORDER_DELIVERY_SECONDS;
+    order.carriedByStaff = byStaff;
+    this.dining.feedback = `${byStaff ? "Phục vụ" : "Bạn"} đã lấy ${RECIPES[order.recipe].name.toLowerCase()} ở quầy, đang mang tới bàn ${order.tableId}.`;
+  }
+
+  private serveDiningOrder(order: DiningOrder, guest: DiningGuest, byStaff: boolean): void {
+    if (order.status !== "carrying" || guest.status !== "waiting-food") return;
     order.status = "delivered";
     const partyOrders = this.dining.orders.filter((entry) => entry.partyId === guest.partyId);
     const partyGuests = this.dining.guests.filter((entry) => entry.partyId === guest.partyId);
@@ -1138,97 +1639,107 @@ export class GameStore {
     }
   }
 
-  private startDiningOrderCooking(order: DiningOrder): boolean {
+  private startDiningOrderCooking(order: DiningOrder, staffMember?: HiredStaffMember): boolean {
     const firstQueuedOrder = this.dining.orders.find((entry) => entry.status === "queued");
     if (order.status !== "queued"
       || (this.dining.activeOrderId && this.dining.activeOrderId !== order.id)
       || (firstQueuedOrder && firstQueuedOrder.id !== order.id)
       || !this.hasRecipeStock(order.recipe)) return false;
     const recipe = RECIPES[order.recipe];
-    for (const ingredient of recipe.ingredients) this.inventory[ingredient] -= 1;
-    order.assembly = [...recipe.ingredients];
+    for (const ingredient of recipe.ingredients) this.inventory[ingredient.id] -= ingredient.quantity;
     order.status = "cooking";
-    order.cookSeconds = 3;
+    const chefLevel = this.getWorkingLevel("chef");
+    const prepLevel = this.getWorkingLevel("prep");
+    const fatiguePenalty = staffMember ? Math.max(0, Math.ceil((78 - staffMember.energy) / 20)) : 0;
+    const prepAssistPenalty = staffMember?.role === "prep" && chefLevel === 0 ? 2 : 0;
+    order.cookSeconds = Math.max(1, 5 - chefLevel * 2 - prepLevel + fatiguePenalty + prepAssistPenalty);
     this.dining.activeOrderId = order.id;
     this.shiftIngredientCosts += getRecipeCost(order.recipe);
+    if (staffMember) this.consumeStaffEnergy(staffMember, staffMember.role === "chef" ? 26 : 32);
     this.persist();
     return true;
   }
 
   private helpDiningRoom(): void {
+    this.takeCalledDiningOrder();
+
+    const queuedOrder = this.dining.orders.find((order) => order.status === "queued");
+    const activeKitchenOrder = this.dining.orders.some((order) => order.status === "cooking");
+    const cook = this.getAvailableStaff("chef") ?? this.getAvailableStaff("prep");
+    if (queuedOrder && !activeKitchenOrder && cook && this.startDiningOrderCooking(queuedOrder, cook)) {
+      const cookName = getStaffCandidate(cook.id)?.name ?? "Đầu bếp";
+      this.dining.feedback = `${cookName} bắt đầu nấu ${RECIPES[queuedOrder.recipe].name.toLowerCase()} cho bàn ${queuedOrder.tableId}.`;
+    }
+
     const awaitingPayment = this.dining.guests.find((guest) => guest.status === "awaiting-payment");
     const payableOrder = awaitingPayment && this.dining.orders.find((order) => order.partyId === awaitingPayment.partyId && order.status === "delivered");
     const payableParty = awaitingPayment && this.dining.guests.filter((guest) => guest.partyId === awaitingPayment.partyId);
     const payablePartyOrders = awaitingPayment && this.dining.orders.filter((order) => order.partyId === awaitingPayment.partyId);
-    if (awaitingPayment && payableOrder && payableParty?.every((guest) => guest.status === "awaiting-payment")
+    const cashier = this.getAvailableStaff("cashier");
+    if (cashier && awaitingPayment && payableOrder && payableParty?.every((guest) => guest.status === "awaiting-payment")
       && payablePartyOrders?.every((order) => order.status === "delivered")) {
+      this.consumeStaffEnergy(cashier, 16);
       this.payDiningOrder(payableOrder, awaitingPayment, true);
       return;
     }
 
     const readyOrder = this.dining.orders.find((order) => order.status === "ready");
     const readyGuest = readyOrder && this.dining.guests.find((guest) => guest.id === readyOrder.guestId && guest.status === "waiting-food");
-    if (readyOrder && readyGuest) {
-      this.serveDiningOrder(readyOrder, readyGuest, true);
+    const server = this.getAvailableStaff("server");
+    if (server && readyOrder && readyGuest
+      && !this.dining.orders.some((order) => order.status === "taking" || order.status === "carrying")) {
+      this.consumeStaffEnergy(server, 17);
+      this.takeDiningOrder(readyOrder, readyGuest, true);
       return;
     }
 
-    const queuedOrder = this.dining.orders.find((order) => order.status === "queued");
-    if (queuedOrder && (!this.dining.activeOrderId || this.dining.activeOrderId === queuedOrder.id)) {
-      if (this.hasRecipeStock(queuedOrder.recipe)) {
-        if (!this.startDiningOrderCooking(queuedOrder)) return;
-        this.dining.feedback = `Phụ bếp đang nấu món cho bàn ${queuedOrder.tableId}.`;
-      } else {
-        const missing = this.getMissingRecipeIngredients(queuedOrder.recipe).join(", ");
-        this.dining.feedback = `Phiếu bàn ${queuedOrder.tableId} chưa thể bắt đầu: kho thiếu ${missing}. Phiếu vẫn chờ, nguyên liệu chưa bị trừ.`;
-      }
-      return;
-    }
+  }
 
-    const waitingGuest = this.dining.guests
-      .filter((guest) => guest.status === "waiting-order")
-      .sort((a, b) => a.patience - b.patience)
-      .find((guest) => {
-        const party = this.dining.guests.filter((member) => member.partyId === guest.partyId);
-        const orders = this.dining.orders.filter((order) => order.partyId === guest.partyId);
-        return party.length === guest.partySize
-          && party.every((member) => member.status === "waiting-order")
-          && orders.length === party.length
-          && orders.every((order) => order.status === "called")
-          && this.getMissingPartyIngredients(orders).length === 0;
-      });
-    const calledOrders = waitingGuest && this.dining.orders.filter((order) => order.partyId === waitingGuest.partyId && order.status === "called");
-    if (waitingGuest && calledOrders?.length) {
-      for (const order of calledOrders) order.status = "queued";
-      for (const member of this.dining.guests.filter((entry) => entry.partyId === waitingGuest.partyId)) member.status = "waiting-food";
-      this.dining.feedback = `Phụ bếp đã nhận ${calledOrders.length} món của bàn ${waitingGuest.tableId}.`;
-      return;
-    }
+  private takeCalledDiningOrder(): boolean {
+    if (this.dining.orders.some((order) => order.status === "taking" || order.status === "carrying")) return false;
+    const server = this.getAvailableStaff("server");
+    if (!server) return false;
+    const waitingGuest = this.dining.guests.find((guest) => guest.status === "waiting-order");
+    if (!waitingGuest) return false;
+    const partyGuests = this.dining.guests.filter((guest) => guest.partyId === waitingGuest.partyId);
+    const partyOrders = this.dining.orders.filter((order) => order.partyId === waitingGuest.partyId);
+    if (partyGuests.length !== waitingGuest.partySize
+      || partyGuests.some((guest) => guest.status !== "waiting-order")
+      || partyOrders.length !== partyGuests.length
+      || partyOrders.some((order) => order.status !== "called")) return false;
 
-    const dirtyTable = this.dining.tables.find((table) => table.seats.some((seat) => seat.status === "dirty"));
-    if (dirtyTable) {
-      const dirtySeat = dirtyTable.seats.find((seat) => seat.status === "dirty")!;
-      dirtySeat.status = "empty";
-      dirtySeat.guestId = null;
-      this.syncDiningTable(dirtyTable);
-      this.dining.orders = this.dining.orders.filter((order) => order.status !== "paid" || this.dining.guests.some((guest) => guest.id === order.guestId));
-      if (this.dining.selectedOrderId && !this.dining.orders.some((order) => order.id === this.dining.selectedOrderId)) {
-        this.dining.selectedOrderId = null;
-      }
-      this.dining.feedback = `Phụ bếp đã dọn chỗ ${dirtySeat.index + 1} tại bàn ${dirtyTable.id}.`;
+    for (const order of partyOrders) {
+      order.status = "taking";
+      order.takeSeconds = DINING_ORDER_TAKE_SECONDS;
+      order.carriedByStaff = true;
     }
+    if (this.serviceMode === "dining") {
+      this.queueDiningDialogue(waitingGuest.id, waitingGuest.orderDialogue, "order", DINING_ORDER_APPROACH_SECONDS);
+    }
+    this.consumeStaffEnergy(server, 8);
+    const serverName = getStaffCandidate(server.id)?.name ?? "Phục vụ";
+    this.dining.feedback = `${serverName} đang tới bàn ${waitingGuest.tableId} để nhận món.`;
+    return true;
   }
 
   private syncDiningTable(table: DiningTable): void {
     table.status = table.seats.some((seat) => seat.status === "occupied") ? "occupied"
       : table.seats.some((seat) => seat.status === "reserved") ? "reserved"
-        : table.seats.some((seat) => seat.status === "dirty") ? "dirty" : "empty";
+        : "empty";
     table.guestId = table.seats.find((seat) => seat.guestId)?.guestId ?? null;
   }
 
   private settleServicePeriod(): void {
-    const wages = this.hasStaff ? Math.min(this.coins, STAFF_WAGE_PER_SHIFT) : 0;
+    const wagesDue = this.staff.filter((member) => member.isWorking).reduce((total, member) => {
+      return total + (getStaffCandidate(member.id)?.wagePerShift ?? 0) * member.level;
+    }, 0);
+    const wages = Math.min(this.coins, wagesDue);
+    const bestSelling = PLAYABLE_RECIPE_IDS
+      .map((id) => ({ id, count: this.shiftRecipeSales[id] }))
+      .sort((a, b) => b.count - a.count)[0];
+    const bestSellingRecipe = bestSelling && bestSelling.count > 0 ? bestSelling.id : null;
     this.coins -= wages;
+    this.recordLedger("Lương nhân viên", -wages);
     this.report = {
       served: this.shiftServed,
       left: this.shiftLeft,
@@ -1238,6 +1749,8 @@ export class GameStore {
       wages,
       net: this.shiftRevenue + this.shiftTips - this.shiftIngredientCosts - wages,
       reputationEarned: this.shiftReputation,
+      bestSellingRecipe,
+      bestSellingCount: bestSelling?.count ?? 0,
     };
     this.shiftRevenue = 0;
     this.shiftTips = 0;
@@ -1245,6 +1758,8 @@ export class GameStore {
     this.shiftServed = 0;
     this.shiftLeft = 0;
     this.shiftReputation = 0;
+    this.shiftRecipeSales = Object.fromEntries(PLAYABLE_RECIPE_IDS.map((id) => [id, 0])) as Record<RecipeId, number>;
+    this.ledgerDay += 1;
     this.persist();
   }
 
@@ -1254,30 +1769,16 @@ export class GameStore {
 
   private getMissingRecipeIngredients(recipeId: RecipeId): string[] {
     return RECIPES[recipeId].ingredients
-      .filter((ingredient) => this.inventory[ingredient] <= 0)
-      .map((ingredient) => INGREDIENTS.find((entry) => entry.id === ingredient)?.name ?? ingredient);
-  }
-
-  private getMissingPartyIngredients(orders: DiningOrder[]): string[] {
-    const required = new Map<IngredientId, number>();
-    const incomingOrderIds = new Set(orders.map((order) => order.id));
-    const reservedOrders = this.dining.orders.filter((order) => order.status === "queued" && !incomingOrderIds.has(order.id));
-    for (const order of [...reservedOrders, ...orders]) {
-      for (const ingredient of RECIPES[order.recipe].ingredients) {
-        required.set(ingredient, (required.get(ingredient) ?? 0) + 1);
-      }
-    }
-    return [...required.entries()]
-      .filter(([ingredient, amount]) => this.inventory[ingredient] < amount)
-      .map(([ingredient, amount]) => {
-        const name = INGREDIENTS.find((item) => item.id === ingredient)?.name ?? ingredient;
-        const shortfall = amount - this.inventory[ingredient];
-        return `${name} (thiếu ${shortfall})`;
+      .filter((ingredient) => this.inventory[ingredient.id] < ingredient.quantity)
+      .map((ingredient) => {
+        const name = INGREDIENTS.find((entry) => entry.id === ingredient.id)?.name ?? ingredient.id;
+        const missing = ingredient.quantity - this.inventory[ingredient.id];
+        return `${name}${missing > 1 ? ` (thiếu ${missing})` : ""}`;
       });
   }
 
   private canMakeAnyRecipe(): boolean {
-    return Object.values(RECIPES).some((recipe) => recipe.unlockLevel <= this.cartLevel && this.hasRecipeStock(recipe.id));
+    return this.getEnabledRecipes().some((recipeId) => this.hasRecipeStock(recipeId));
   }
 
   private completeOrder(byStaff: boolean): void {
@@ -1297,8 +1798,10 @@ export class GameStore {
     const tip = byStaff ? 0 : baseTip + speedTip;
     const reputationEarned = byStaff ? 1 : customer.patience >= 25 ? 2 : 1;
 
-    for (const ingredient of recipe.ingredients) this.inventory[ingredient] -= 1;
+    for (const ingredient of recipe.ingredients) this.inventory[ingredient.id] -= ingredient.quantity;
     this.coins += recipe.salePrice + tip;
+    this.recordLedger(`Bán ${recipe.name}`, recipe.salePrice);
+    this.recordLedger("Tiền boa", tip);
     this.cashCollection = {
       id: ++this.cashCollectionId,
       amount: recipe.salePrice + tip,
@@ -1307,6 +1810,7 @@ export class GameStore {
     this.shiftRevenue += recipe.salePrice;
     this.shiftTips += tip;
     this.shiftIngredientCosts += ingredientCost;
+    this.shiftRecipeSales[customer.recipe] += 1;
     this.shiftServed += 1;
     this.totalServed += 1;
     this.reputation += reputationEarned;
@@ -1327,14 +1831,56 @@ export class GameStore {
       const raw = localStorage.getItem(SAVE_KEY);
       if (!raw) return;
       const saved = JSON.parse(raw) as SavedGame;
-      if (saved.version !== 1) return;
+      if (saved.version !== 1 && saved.version !== 2 && saved.version !== 3) return;
 
       this.storeName = typeof saved.storeName === "string" ? normalizeStoreName(saved.storeName) : "";
+      this.inShift = saved.inShift === true;
       this.coins = Math.max(0, saved.coins);
+      this.ledgerDay = Number.isFinite(saved.ledgerDay) ? Math.max(1, Math.trunc(saved.ledgerDay!)) : 1;
+      this.ledger = Array.isArray(saved.ledger) ? saved.ledger.filter((entry) => Number.isFinite(entry.day) && typeof entry.label === "string" && Number.isFinite(entry.amount)).slice(-300) : [];
       this.reputation = Math.max(0, saved.reputation);
       this.cartLevel = Math.max(1, Math.min(MAX_CART_LEVEL, saved.cartLevel));
-      this.hasStaff = saved.hasStaff;
-      this.inventory = { ...createStartingInventory(), ...saved.inventory };
+      this.inventory = Object.fromEntries((Object.keys(MENU_INGREDIENTS) as MenuIngredientId[]).map((id) => [id, 0])) as Inventory;
+      const savedInventory = saved.inventory ?? {};
+      for (const id of Object.keys(MENU_INGREDIENTS) as MenuIngredientId[]) {
+        if (Number.isFinite(savedInventory[id])) this.inventory[id] = clampStock(savedInventory[id]);
+      }
+      const legacyIngredientIds: Record<string, MenuIngredientId> = {
+        bread: "corn",
+        pate: "marinade",
+        cha: "porkBelly",
+        egg: "chickenEggs",
+        greens: "sideVegetables",
+      };
+      for (const [legacyId, ingredientId] of Object.entries(legacyIngredientIds)) {
+        if (Number.isFinite(savedInventory[legacyId])) this.inventory[ingredientId] += clampStock(savedInventory[legacyId]);
+      }
+      for (const [ingredientId, amount] of Object.entries(saved.marketInventory ?? {})) {
+        if (ingredientId in MENU_INGREDIENTS) this.inventory[ingredientId as MenuIngredientId] += clampStock(amount);
+      }
+      const restoredStaff = Array.isArray(saved.staff)
+        ? saved.staff.filter((member) => getStaffCandidate(member.id) && member.role === getStaffCandidate(member.id)?.role)
+          .map((member) => ({ ...member, level: Math.max(1, Math.min(MAX_STAFF_LEVEL, Math.trunc(member.level))), isWorking: member.isWorking === true }))
+        : saved.hasStaff ? [{ id: "huy-phu-bep", role: "prep" as const, level: 1, isWorking: true, energy: 100, restSeconds: 0 }] : [];
+      this.staff = restoredStaff.length > 0 ? restoredStaff : createStartingStaff();
+      const savedMenu = Array.isArray(saved.activeMenu)
+        ? saved.activeMenu.filter((id): id is RecipeId => PLAYABLE_RECIPE_IDS.includes(id as RecipeId) && RECIPES[id as RecipeId].unlockLevel <= this.cartLevel)
+        : createStartingMenu();
+      const savedLearned = Array.isArray(saved.learnedRecipes)
+        ? saved.learnedRecipes.filter((id): id is RecipeId => PLAYABLE_RECIPE_IDS.includes(id as RecipeId))
+        : savedMenu;
+      this.learnedRecipes = [...new Set([...createStartingMenu(), ...savedLearned, ...savedMenu])];
+      this.activeMenu = savedMenu.length > 0 ? [...new Set(savedMenu)].filter((id) => this.learnedRecipes.includes(id)) : createStartingMenu();
+      if (saved.version === 1) {
+        this.activeMenu = [...new Set([...this.activeMenu, ...createStartingMenu()])];
+      }
+      if (this.inShift) {
+        this.customers = [this.makeCustomer()];
+        this.diningArrivalIntervalSeconds = this.nextDiningArrivalInterval(true);
+      }
+      this.shiftRecipeSales = Object.fromEntries(PLAYABLE_RECIPE_IDS.map((id) => [id, clampStock(saved.shiftRecipeSales?.[id])])) as Record<RecipeId, number>;
+      this.report = saved.report ? { ...saved.report } : null;
+      this.marketBasketHasItems = saved.marketBasketHasItems === true;
       this.totalServed = Math.max(0, saved.totalServed ?? 0);
       this.diningDialogueNumber = Number.isFinite(saved.diningDialogueNumber)
         ? Math.max(0, Math.trunc(saved.diningDialogueNumber!))
@@ -1349,7 +1895,8 @@ export class GameStore {
         const offlineCoins = elapsedMinutes * OFFLINE_COINS_PER_MINUTE;
         if (offlineCoins > 0) {
           this.coins += offlineCoins;
-          this.offlineNotice = `Phụ bếp đã bán giúp bạn ${elapsedMinutes} phút, mang về ${formatVndFromThousands(offlineCoins)}.`;
+          this.recordLedger("Thu nhập khi vắng mặt", offlineCoins);
+          this.offlineNotice = `Đội ngũ đã vận hành ${elapsedMinutes} phút khi bạn vắng mặt, mang về ${formatVndFromThousands(offlineCoins)}.`;
         }
       }
       this.persist();
@@ -1361,14 +1908,23 @@ export class GameStore {
   private persist(): void {
     this.lastPersistAt = Date.now();
     const saved: SavedGame = {
-      version: 1,
+      version: 3,
+      inShift: this.inShift,
       storeName: this.storeName,
       coins: this.coins,
+      ledgerDay: this.ledgerDay,
+      ledger: this.ledger,
       reputation: this.reputation,
       cartLevel: this.cartLevel,
       hasStaff: this.hasStaff,
+      staff: this.staff,
+      learnedRecipes: this.learnedRecipes,
+      activeMenu: this.activeMenu,
       inventory: this.inventory,
+      marketBasketHasItems: this.marketBasketHasItems,
       totalServed: this.totalServed,
+      shiftRecipeSales: this.shiftRecipeSales,
+      report: this.report,
       diningDialogueNumber: this.diningDialogueNumber,
       diningPartySelection: cloneDiningPartySelectionState(this.diningPartySelection),
       lastSavedAt: this.lastPersistAt,
@@ -1383,5 +1939,11 @@ export class GameStore {
   private publish(): void {
     const snapshot = this.getSnapshot();
     for (const listener of this.listeners) listener(snapshot);
+  }
+
+  private getMarketInventory(): Record<MenuIngredientId, number> {
+    return Object.fromEntries(
+      (Object.keys(MENU_INGREDIENTS) as MenuIngredientId[]).map((id) => [id, this.inventory[id]]),
+    ) as Record<MenuIngredientId, number>;
   }
 }

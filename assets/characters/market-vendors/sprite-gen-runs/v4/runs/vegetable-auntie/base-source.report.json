@@ -1,0 +1,417 @@
+{
+  "kind": "sprite-gen-image-report",
+  "provider": "codex",
+  "prompt": "Create one full-body Vietnamese 2D mobile game vendor, front-facing and standing straight, feet visible and aligned, centered with generous space above her head and below her sandals. A short, sturdy, lively middle-aged vegetable auntie with a checked headscarf tied over dark hair, faded pale green floral blouse, moss-green apron with a small front pocket, dark cropped trousers and worn rubber sandals. Give her a warm mischievous smile, one eyebrow raised, and a tiny gap between her front teeth; she should read as funny and kind, not grotesque. Her hands rest at her hips, relaxed and empty. Use the attached Vietnamese market seller as a style and scale reference only; design a distinct face and outfit, do not copy the reference character. Hand-inked 2D Vietnamese cartoon game art, bold dark brown outlines, clear simplified shapes, warm limited palette, matte cel shading, slightly irregular drawn lines, expressive large face and compact chibi proportions matching a polished mobile game sprite. No realistic rendering, no 3D, no painterly texture, no scenery, no objects, no text or logo. Flat solid pure magenta background (#FF00FF), evenly lit, no cast shadow, subject completely separated from every edge.",
+  "out": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\vegetable-auntie\\base-source.png",
+  "raw": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\vegetable-auntie\\base-source.png.raw.png",
+  "raw_bytes": 1640893,
+  "elapsed_seconds": 44.141,
+  "model": null,
+  "session_id": "01a1554a-2473-75f0-96d2-0de9ef6a97d4",
+  "refs": [
+    "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v2\\butcher-auntie\\base-source.png"
+  ],
+  "transparent": true,
+  "alpha": {
+    "strategy": "chroma",
+    "strategy_source": "explicit",
+    "out": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\vegetable-auntie\\base-source.png",
+    "mode": "RGBA",
+    "method": "ycbcr",
+    "size": "991x1588",
+    "key": "magenta",
+    "keyed_pixels": 840944,
+    "fringe_pixels": 8017,
+    "cleaned_transparent_rgb_pixels": 0,
+    "alpha_zero_pct": 53.44,
+    "stale_transparent_rgb_pixels": 0,
+    "decontam": {
+      "mode": "auto",
+      "applied": true,
+      "fit": "still",
+      "band_px": 6,
+      "alpha_depth": 4,
+      "flank_px": 3,
+      "edge_band": 0,
+      "palette_size": 32,
+      "palette_source": "frame",
+      "palette": [
+        [
+          139,
+          108,
+          58
+        ],
+        [
+          252,
+          177,
+          100
+        ],
+        [
+          57,
+          44,
+          35
+        ],
+        [
+          82,
+          99,
+          57
+        ],
+        [
+          251,
+          238,
+          189
+        ],
+        [
+          21,
+          13,
+          3
+        ],
+        [
+          80,
+          60,
+          49
+        ],
+        [
+          66,
+          83,
+          45
+        ],
+        [
+          236,
+          132,
+          58
+        ],
+        [
+          230,
+          218,
+          142
+        ],
+        [
+          234,
+          91,
+          52
+        ],
+        [
+          202,
+          183,
+          100
+        ],
+        [
+          169,
+          153,
+          56
+        ],
+        [
+          250,
+          154,
+          82
+        ],
+        [
+          39,
+          38,
+          28
+        ],
+        [
+          74,
+          92,
+          51
+        ],
+        [
+          63,
+          60,
+          56
+        ],
+        [
+          45,
+          12,
+          2
+        ],
+        [
+          108,
+          78,
+          44
+        ],
+        [
+          243,
+          146,
+          67
+        ],
+        [
+          249,
+          122,
+          73
+        ],
+        [
+          251,
+          170,
+          92
+        ],
+        [
+          53,
+          67,
+          34
+        ],
+        [
+          79,
+          98,
+          54
+        ],
+        [
+          69,
+          51,
+          38
+        ],
+        [
+          251,
+          195,
+          128
+        ],
+        [
+          128,
+          41,
+          15
+        ],
+        [
+          195,
+          70,
+          35
+        ],
+        [
+          252,
+          245,
+          222
+        ],
+        [
+          9,
+          4,
+          1
+        ],
+        [
+          242,
+          226,
+          162
+        ],
+        [
+          29,
+          27,
+          16
+        ]
+      ],
+      "palette_keyfree": true,
+      "key_material_share": 0.0,
+      "noise_sigma_rgb": 1.339,
+      "material_spread": 20.329,
+      "opaque_margin": 20.329,
+      "changed_px": 9237,
+      "refit_px": 27764,
+      "tint_px": 334,
+      "recovered_px": 2738,
+      "unexplained_px": 14,
+      "restored_px": 0,
+      "key_hue_capped_px": 875
+    }
+  },
+  "chroma": {
+    "out": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\vegetable-auntie\\base-source.png",
+    "mode": "RGBA",
+    "method": "ycbcr",
+    "size": "991x1588",
+    "key": "magenta",
+    "keyed_pixels": 840944,
+    "fringe_pixels": 8017,
+    "cleaned_transparent_rgb_pixels": 0,
+    "alpha_zero_pct": 53.44,
+    "stale_transparent_rgb_pixels": 0,
+    "decontam": {
+      "mode": "auto",
+      "applied": true,
+      "fit": "still",
+      "band_px": 6,
+      "alpha_depth": 4,
+      "flank_px": 3,
+      "edge_band": 0,
+      "palette_size": 32,
+      "palette_source": "frame",
+      "palette": [
+        [
+          139,
+          108,
+          58
+        ],
+        [
+          252,
+          177,
+          100
+        ],
+        [
+          57,
+          44,
+          35
+        ],
+        [
+          82,
+          99,
+          57
+        ],
+        [
+          251,
+          238,
+          189
+        ],
+        [
+          21,
+          13,
+          3
+        ],
+        [
+          80,
+          60,
+          49
+        ],
+        [
+          66,
+          83,
+          45
+        ],
+        [
+          236,
+          132,
+          58
+        ],
+        [
+          230,
+          218,
+          142
+        ],
+        [
+          234,
+          91,
+          52
+        ],
+        [
+          202,
+          183,
+          100
+        ],
+        [
+          169,
+          153,
+          56
+        ],
+        [
+          250,
+          154,
+          82
+        ],
+        [
+          39,
+          38,
+          28
+        ],
+        [
+          74,
+          92,
+          51
+        ],
+        [
+          63,
+          60,
+          56
+        ],
+        [
+          45,
+          12,
+          2
+        ],
+        [
+          108,
+          78,
+          44
+        ],
+        [
+          243,
+          146,
+          67
+        ],
+        [
+          249,
+          122,
+          73
+        ],
+        [
+          251,
+          170,
+          92
+        ],
+        [
+          53,
+          67,
+          34
+        ],
+        [
+          79,
+          98,
+          54
+        ],
+        [
+          69,
+          51,
+          38
+        ],
+        [
+          251,
+          195,
+          128
+        ],
+        [
+          128,
+          41,
+          15
+        ],
+        [
+          195,
+          70,
+          35
+        ],
+        [
+          252,
+          245,
+          222
+        ],
+        [
+          9,
+          4,
+          1
+        ],
+        [
+          242,
+          226,
+          162
+        ],
+        [
+          29,
+          27,
+          16
+        ]
+      ],
+      "palette_keyfree": true,
+      "key_material_share": 0.0,
+      "noise_sigma_rgb": 1.339,
+      "material_spread": 20.329,
+      "opaque_margin": 20.329,
+      "changed_px": 9237,
+      "refit_px": 27764,
+      "tint_px": 334,
+      "recovered_px": 2738,
+      "unexplained_px": 14,
+      "restored_px": 0,
+      "key_hue_capped_px": 875
+    }
+  },
+  "extra": {
+    "inline_results": 1,
+    "rollout_cleaned": true,
+    "transparent_background_reported": false
+  },
+  "provider_resolved_from": "explicit"
+}

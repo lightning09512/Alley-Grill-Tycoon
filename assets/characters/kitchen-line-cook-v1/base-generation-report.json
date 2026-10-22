@@ -1,0 +1,58 @@
+{
+  "kind": "sprite-gen-image-report",
+  "provider": "codex",
+  "prompt": "Use case: illustration-story\nAsset type: canonical full-body base image for a Vietnamese restaurant game cook\nPrimary request: Create one new male line cook for Banh Mi Pho. He is distinct from the player-owner and from Tấn Huy: an average-build Vietnamese man in his early forties, friendly slightly weary face, tidy short black hair mostly covered by a dark navy bandana, small round wire-frame glasses, clean-shaven, deep navy short-sleeve cook shirt, sand-colored apron, charcoal trousers, brown kitchen shoes. Relaxed neutral standing pose, facing the viewer, both hands visible and empty.\nInput image: Image 1 is a style-only reference from the existing game staff art. Do not copy that person's gender, face, hair, outfit, pose, or props.\nStyle/medium: polished painted 2D chibi game art matching the Banh Mi Pho character look, warm natural shading, clean dark outline, expressive friendly face; not pixel art.\nComposition/framing: one complete full-body character centered in a portrait canvas, shoes fully visible, enough breathing room above the head and around the body.\nConstraints: transparent background; one character only; no kitchen, counter, stove, food, utensils, text, labels, logos, border, cast shadow, glow, or watermark. Preserve this new character design as the identity source for all future directions and animation rows.\n\nThe entire background is one perfectly flat, uniform pure magenta chroma-key fill (#FF00FF) with no gradient, no texture, no shadow and no ground line.",
+  "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-line-cook-v1\\base-source.png",
+  "raw": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-line-cook-v1\\base-source.png.raw.png",
+  "raw_bytes": 1524563,
+  "elapsed_seconds": 43.25,
+  "model": null,
+  "session_id": "01a15d04-70bd-7561-b9f9-cda7292e7ef1",
+  "refs": [
+    "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\restaurant-staff-v1\\cashier-quang-tin.png"
+  ],
+  "transparent": true,
+  "alpha": {
+    "strategy": "chroma",
+    "strategy_source": "refs-attached",
+    "key_background": {
+      "injected": true,
+      "key": "magenta"
+    },
+    "raw_alpha": {
+      "mode": "RGB",
+      "has_alpha_band": false,
+      "verdict": "no-alpha",
+      "alpha_zero_pct": 0.0,
+      "border_alpha_zero_pct": 0.0
+    },
+    "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-line-cook-v1\\base-source.png",
+    "mode": "RGBA",
+    "method": "ycbcr",
+    "size": "1024x1536",
+    "key": "magenta",
+    "keyed_pixels": 1066953,
+    "fringe_pixels": 380,
+    "cleaned_transparent_rgb_pixels": 3183,
+    "alpha_zero_pct": 67.84,
+    "stale_transparent_rgb_pixels": 0
+  },
+  "chroma": {
+    "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-line-cook-v1\\base-source.png",
+    "mode": "RGBA",
+    "method": "ycbcr",
+    "size": "1024x1536",
+    "key": "magenta",
+    "keyed_pixels": 1066953,
+    "fringe_pixels": 380,
+    "cleaned_transparent_rgb_pixels": 3183,
+    "alpha_zero_pct": 67.84,
+    "stale_transparent_rgb_pixels": 0
+  },
+  "extra": {
+    "inline_results": 1,
+    "rollout_cleaned": true,
+    "transparent_background_reported": false
+  },
+  "provider_resolved_from": "explicit"
+}

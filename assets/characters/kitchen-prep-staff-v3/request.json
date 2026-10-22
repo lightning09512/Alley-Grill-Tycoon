@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "kind": "sprite-gen-request",
+  "engine": "component-row",
+  "character": {
+    "id": "kitchen-prep-staff-v3",
+    "description": "The same distinct stocky middle-aged Vietnamese prep cook from kitchen-prep-staff-v2: broad round face, neat salt-and-pepper moustache, tall white chef toque, white double-breasted chef jacket, paprika-red apron, charcoal trousers and dark kitchen clogs; three-quarter side view facing screen-left toward the existing prep board. Keep him clearly different from the young player-owner.",
+    "base_image": "base-source.png"
+  },
+  "cell": {
+    "shape": "rect",
+    "width": 160,
+    "height": 300,
+    "safe_margin_x": 15,
+    "safe_margin_y": 15
+  },
+  "chroma_key": {
+    "name": "magenta",
+    "hex": "#FF00FF",
+    "rgb": [255, 0, 255],
+    "selection": "manual"
+  },
+  "states": {
+    "chop_vegetables": {
+      "frames": 4,
+      "fps": 6,
+      "loop": true,
+      "action": "Four-frame seamless vegetable-prep loop at the existing left cutting board. Keep exact same identity, side-left facing, uniform, full-body scale and feet pivot. Hold a broad rectangular stainless-steel chef's cleaver with a sturdy wooden handle; the blade should be clearly larger than his palm and read as a real kitchen cleaver, not a small narrow knife. Show the elbow lifting, a decisive controlled chop toward waist-height, a visible wrist rebound and return to the opening pose. Feet remain planted; small shoulder and apron response only. Do not draw a replacement table, board, kitchen, plate, food pile, other person or shadow; the game map supplies the board and the separate transparent chopped-vegetables overlay supplies cut produce while this row plays. Flat magenta background."
+    }
+  },
+  "style": "Polished painted 2D chibi game art matching the existing Banh Mi Pho staff and player characters, warm natural shading, clean dark outline, expressive face; not pixel art.",
+  "layout": "taxonomy/v1",
+  "fit": { "align_x": "bbox-center", "align_y": "bottom", "ground_frames": true }
+}

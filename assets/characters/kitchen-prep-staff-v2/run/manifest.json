@@ -1,0 +1,199 @@
+{
+  "characterId": "kitchen-prep-staff-v2",
+  "engine": "component-row",
+  "game_input": "sprite-sheet-alpha.png",
+  "degraded_static_fallback": false,
+  "curation_applied": false,
+  "frame_variant": "pixel",
+  "sprite_sheet_alpha": "sprite-sheet-alpha.png",
+  "sprite_sheet_alpha_report": "sprite-sheet-alpha.report.json",
+  "base_image": "base-source.png",
+  "cell": {
+    "shape": "rect",
+    "width": 160,
+    "height": 300,
+    "safe_margin_x": 15,
+    "safe_margin_y": 15
+  },
+  "chroma_key": {
+    "name": "magenta",
+    "hex": "#FF00FF",
+    "rgb": [
+      255,
+      0,
+      255
+    ],
+    "selection": "manual"
+  },
+  "animation": {
+    "cellWidth": 160,
+    "cellHeight": 300,
+    "columns": 4,
+    "rows": {
+      "chop_vegetables": {
+        "row": 0,
+        "frames": 4,
+        "fps": 6,
+        "durations_ms": [
+          167,
+          167,
+          167,
+          167
+        ],
+        "loop": true,
+        "frame_variant": "pixel"
+      },
+      "idle_phone": {
+        "row": 1,
+        "frames": 4,
+        "fps": 3,
+        "durations_ms": [
+          333,
+          333,
+          333,
+          333
+        ],
+        "loop": true,
+        "frame_variant": "pixel"
+      },
+      "idle_wipe_sweat": {
+        "row": 2,
+        "frames": 4,
+        "fps": 3,
+        "durations_ms": [
+          333,
+          333,
+          333,
+          333
+        ],
+        "loop": true,
+        "frame_variant": "pixel"
+      },
+      "idle_look_around": {
+        "row": 3,
+        "frames": 4,
+        "fps": 3,
+        "durations_ms": [
+          333,
+          333,
+          333,
+          333
+        ],
+        "loop": true,
+        "frame_variant": "pixel"
+      }
+    }
+  },
+  "frame_layout": {
+    "sheetWidth": 640,
+    "sheetHeight": 1200,
+    "cellWidth": 160,
+    "cellHeight": 300,
+    "rows": {
+      "chop_vegetables": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 160,
+          "h": 300
+        },
+        {
+          "x": 160,
+          "y": 0,
+          "w": 160,
+          "h": 300
+        },
+        {
+          "x": 320,
+          "y": 0,
+          "w": 160,
+          "h": 300
+        },
+        {
+          "x": 480,
+          "y": 0,
+          "w": 160,
+          "h": 300
+        }
+      ],
+      "idle_phone": [
+        {
+          "x": 0,
+          "y": 300,
+          "w": 160,
+          "h": 300
+        },
+        {
+          "x": 160,
+          "y": 300,
+          "w": 160,
+          "h": 300
+        },
+        {
+          "x": 320,
+          "y": 300,
+          "w": 160,
+          "h": 300
+        },
+        {
+          "x": 480,
+          "y": 300,
+          "w": 160,
+          "h": 300
+        }
+      ],
+      "idle_wipe_sweat": [
+        {
+          "x": 0,
+          "y": 600,
+          "w": 160,
+          "h": 300
+        },
+        {
+          "x": 160,
+          "y": 600,
+          "w": 160,
+          "h": 300
+        },
+        {
+          "x": 320,
+          "y": 600,
+          "w": 160,
+          "h": 300
+        },
+        {
+          "x": 480,
+          "y": 600,
+          "w": 160,
+          "h": 300
+        }
+      ],
+      "idle_look_around": [
+        {
+          "x": 0,
+          "y": 900,
+          "w": 160,
+          "h": 300
+        },
+        {
+          "x": 160,
+          "y": 900,
+          "w": 160,
+          "h": 300
+        },
+        {
+          "x": 320,
+          "y": 900,
+          "w": 160,
+          "h": 300
+        },
+        {
+          "x": 480,
+          "y": 900,
+          "w": 160,
+          "h": 300
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "kind": "sprite-gen-request",
+  "engine": "component-row",
+  "character": {
+    "id": "bag-seller-auntie",
+    "description": "Slender Vietnamese handbag auntie with low black bun and decorative hair stick, large round glasses, cream-red floral blouse, rust-orange apron, dark loose trousers, blue sandals and confident smile.",
+    "base_image": "base-source.png"
+  },
+  "cell": {
+    "shape": "rect",
+    "width": 350,
+    "height": 561,
+    "safe_margin_x": 12,
+    "safe_margin_y": 12
+  },
+  "chroma_key": {
+    "name": "cyan",
+    "hex": "#00FFFF",
+    "rgb": [
+      0,
+      255,
+      255
+    ],
+    "selection": "auto",
+    "score": 242.28,
+    "min_subject_distance": 217.67,
+    "background": {
+      "mode": "transparent",
+      "opaque_border_fraction": 0.0,
+      "subject_pixels": 11926
+    },
+    "candidates": [
+      {
+        "name": "magenta",
+        "hex": "#FF00FF",
+        "score": 225.17,
+        "min_subject_distance": 211.09,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "green",
+        "hex": "#00FF00",
+        "score": 215.18,
+        "min_subject_distance": 211.98,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "cyan",
+        "hex": "#00FFFF",
+        "score": 242.28,
+        "min_subject_distance": 217.67,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "blue",
+        "hex": "#004DFF",
+        "score": 162.95,
+        "min_subject_distance": 148.52,
+        "clears_erase_radius": true
+      }
+    ],
+    "selection_reason": "highest 1st-percentile subject distance among the 4 candidate(s) clearing the 96 erase radius"
+  },
+  "states": {
+    "idle": {
+      "frames": 4,
+      "fps": 2,
+      "loop": true,
+      "action": "Four small front-facing idle beats with both sandals planted: hands on hips, blink behind the big glasses, she taps the tiny key charm once and gives a confident smile, then returns to the opening pose. Subtle breathing only; preserve scale and foot line."
+    },
+    "work": {
+      "frames": 4,
+      "fps": 3,
+      "loop": true,
+      "action": "A seamless four-frame handbag-selling loop, front-facing and planted: she holds the same small plain leather handbag in both hands at waist height, opens the flap a little to show inside, presents it with a proud smile, then closes it and returns to the identical opening pose. Keep the same bag, hand placement, outfit, body size and sandals; no logos or scenery."
+    }
+  },
+  "style": "Hand-inked Vietnamese 2D mobile game sprite matching the supplied vendor base exactly. Bold dark-brown comic contour, slightly irregular hand-drawn line, readable simplified shapes, warm limited colors and restrained matte cel shading; no glossy 3D finish. Compact chibi proportions, humorous readable facial acting, stable full-body front view, same height, outfit, head shape and ground line in every frame. Single character on transparent background, no scenery, no labels or text.",
+  "layout": "taxonomy/v1",
+  "chroma": {
+    "mode": "rgb",
+    "unmix_reach": 4,
+    "spill_max_fraction": 0.005
+  }
+}

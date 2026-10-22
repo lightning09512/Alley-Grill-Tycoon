@@ -1,0 +1,49 @@
+{
+  "ok": true,
+  "engine": "component-row",
+  "kind": "sprite-gen-inspect-report",
+  "run_dir": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v3\\run",
+  "states": [
+    "chop_vegetables"
+  ],
+  "thresholds": {
+    "histogram_min": 0.0,
+    "dhash_min": 0.55,
+    "motion_min": 0.01
+  },
+  "rows": [
+    {
+      "state": "chop_vegetables",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/chop_vegetables/frame-0.png",
+        "frames/chop_vegetables/frame-1.png",
+        "frames/chop_vegetables/frame-2.png",
+        "frames/chop_vegetables/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9614232014062318,
+          "mean": 0.9689678733928632
+        },
+        "dhash_similarity": {
+          "min": 0.8125,
+          "mean": 0.8671875
+        },
+        "motion_presence": 0.10411815767973856,
+        "centroid_sigma": {
+          "x": 2.2497679633381873,
+          "y": 4.429168071923892
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}

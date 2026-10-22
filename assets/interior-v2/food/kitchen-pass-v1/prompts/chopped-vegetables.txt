@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: static transparent food overlay placed on the existing kitchen cutting board
+Primary request: A small realistic pile of freshly chopped vegetables for a Vietnamese kitchen prep station: fine green scallion rings, small orange carrot cubes and pale onion pieces, mixed naturally with a few larger just-cut pieces at the edge. It must read clearly as chopped produce at game scale.
+Style/medium: polished painted 2D game food art matching the existing Banh Mi Pho sprites; warm natural colors, clean outline, restrained highlights, slightly elevated tabletop view.
+Composition/framing: one compact loose pile, centered in a square transparent image, low profile and wide enough to sit on the existing wooden chopping board without hiding it. No board or other surface is included.
+Constraints: transparent background; vegetables only; no knife, hands, character, room, counter, bowl, text, label, border, logo, shadow, or watermark.

@@ -1,0 +1,81 @@
+{
+  "ok": true,
+  "engine": "component-row",
+  "kind": "sprite-gen-inspect-report",
+  "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\grocery-auntie",
+  "states": [
+    "idle",
+    "work"
+  ],
+  "thresholds": {
+    "histogram_min": 0.0,
+    "dhash_min": 0.55,
+    "motion_min": 0.01
+  },
+  "rows": [
+    {
+      "state": "idle",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/idle/frame-0.png",
+        "frames/idle/frame-1.png",
+        "frames/idle/frame-2.png",
+        "frames/idle/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9324684983332288,
+          "mean": 0.9465595991000434
+        },
+        "dhash_similarity": {
+          "min": 0.921875,
+          "mean": 0.9479166666666666
+        },
+        "motion_presence": 0.059798256867851306,
+        "centroid_sigma": {
+          "x": 0.8637705790006543,
+          "y": 2.9164083743253317
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "work",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/work/frame-0.png",
+        "frames/work/frame-1.png",
+        "frames/work/frame-2.png",
+        "frames/work/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9393571652249544,
+          "mean": 0.9534128946508185
+        },
+        "dhash_similarity": {
+          "min": 0.921875,
+          "mean": 0.9505208333333334
+        },
+        "motion_presence": 0.050222040313521246,
+        "centroid_sigma": {
+          "x": 2.2828601988735397,
+          "y": 1.8566694668892991
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}

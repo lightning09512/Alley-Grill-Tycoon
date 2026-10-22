@@ -1,0 +1,160 @@
+{
+  "characterId": "server-mai-linh",
+  "engine": "component-row",
+  "game_input": "sprite-sheet-alpha.png",
+  "degraded_static_fallback": false,
+  "curation_applied": false,
+  "frame_variant": "pixel",
+  "sprite_sheet_alpha": "sprite-sheet-alpha.png",
+  "sprite_sheet_alpha_report": "sprite-sheet-alpha.report.json",
+  "base_image": "base-source.png",
+  "cell": {
+    "shape": "rect",
+    "width": 160,
+    "height": 300,
+    "safe_margin_x": 15,
+    "safe_margin_y": 15
+  },
+  "chroma_key": {
+    "name": "magenta",
+    "hex": "#FF00FF",
+    "rgb": [
+      255,
+      0,
+      255
+    ],
+    "selection": "manual"
+  },
+  "animation": {
+    "cellWidth": 160,
+    "cellHeight": 300,
+    "columns": 4,
+    "rows": {
+      "work_serve": {
+        "row": 0,
+        "frames": 4,
+        "fps": 5,
+        "durations_ms": [
+          200,
+          200,
+          200,
+          200
+        ],
+        "loop": true,
+        "frame_variant": "pixel"
+      },
+      "rest_tired": {
+        "row": 1,
+        "frames": 4,
+        "fps": 3,
+        "durations_ms": [
+          333,
+          333,
+          333,
+          333
+        ],
+        "loop": true,
+        "frame_variant": "pixel"
+      },
+      "idle_lazy": {
+        "row": 2,
+        "frames": 4,
+        "fps": 3,
+        "durations_ms": [
+          333,
+          333,
+          333,
+          333
+        ],
+        "loop": true,
+        "frame_variant": "pixel"
+      }
+    }
+  },
+  "frame_layout": {
+    "sheetWidth": 640,
+    "sheetHeight": 900,
+    "cellWidth": 160,
+    "cellHeight": 300,
+    "rows": {
+      "work_serve": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 160,
+          "h": 300
+        },
+        {
+          "x": 160,
+          "y": 0,
+          "w": 160,
+          "h": 300
+        },
+        {
+          "x": 320,
+          "y": 0,
+          "w": 160,
+          "h": 300
+        },
+        {
+          "x": 480,
+          "y": 0,
+          "w": 160,
+          "h": 300
+        }
+      ],
+      "rest_tired": [
+        {
+          "x": 0,
+          "y": 300,
+          "w": 160,
+          "h": 300
+        },
+        {
+          "x": 160,
+          "y": 300,
+          "w": 160,
+          "h": 300
+        },
+        {
+          "x": 320,
+          "y": 300,
+          "w": 160,
+          "h": 300
+        },
+        {
+          "x": 480,
+          "y": 300,
+          "w": 160,
+          "h": 300
+        }
+      ],
+      "idle_lazy": [
+        {
+          "x": 0,
+          "y": 600,
+          "w": 160,
+          "h": 300
+        },
+        {
+          "x": 160,
+          "y": 600,
+          "w": 160,
+          "h": 300
+        },
+        {
+          "x": 320,
+          "y": 600,
+          "w": 160,
+          "h": 300
+        },
+        {
+          "x": 480,
+          "y": 600,
+          "w": 160,
+          "h": 300
+        }
+      ]
+    }
+  }
+}

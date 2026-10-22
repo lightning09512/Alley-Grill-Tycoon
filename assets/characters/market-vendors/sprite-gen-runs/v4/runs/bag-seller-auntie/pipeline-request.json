@@ -1,0 +1,17 @@
+{
+  "cell": {
+    "width": 350,
+    "height": 561,
+    "safe_margin_x": 12,
+    "safe_margin_y": 12
+  },
+  "states": {
+    "idle": {
+      "frames": 4,
+      "fps": 2,
+      "loop": true,
+      "action": "Quiet standing idle only. Use the exact same relaxed, cute, slightly funny forward-facing pose and expression in all 4 frames. Keep both feet on the same ground line. Only a tiny, slow whole-body vertical bob: baseline, 2 px up, 4 px up, 2 px up, then loop. No wave, blink, eye glance, head tilt, arm gesture, prop action, pose change, or exaggerated bounce."
+    }
+  },
+  "style": "Keep the exact established vendor design. Cute, gently humorous Vietnamese mobile-game cartoon NPC like the supplied in-game reference: compact body, readable friendly face with one mild quirky detail, bold dark outline, simple matte hand-painted colors and restrained shading. No glossy 3D finish, no extra playful acting, no change in outfit, proportions, palette or silhouette."
+}

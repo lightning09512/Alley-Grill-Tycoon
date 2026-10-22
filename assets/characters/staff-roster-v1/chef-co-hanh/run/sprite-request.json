@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "kind": "sprite-gen-request",
+  "engine": "component-row",
+  "character": {
+    "id": "chef-co-hanh",
+    "description": "",
+    "base_image": "base-source.png"
+  },
+  "cell": {
+    "shape": "rect",
+    "width": 160,
+    "height": 300,
+    "safe_margin_x": 15,
+    "safe_margin_y": 15
+  },
+  "chroma_key": {
+    "name": "magenta",
+    "hex": "#FF00FF",
+    "rgb": [
+      255,
+      0,
+      255
+    ],
+    "selection": "manual"
+  },
+  "states": {
+    "work_cook": {
+      "frames": 4,
+      "fps": 5,
+      "loop": true,
+      "action": "Four-frame cooking loop in a three-quarter back view toward the existing assigned kitchen station: turn toward up-screen, stir a shallow wok with her wooden spatula, lift the utensil slightly to check the food, then settle back into the opening pose. Keep white cap, teal-edged jacket, navy apron, identity and scale consistent. Feet remain planted on one ground pivot. The map supplies stove, pot and fire; include no station, burner, pan, flame, counter, other character or background. Flat magenta background."
+    },
+    "rest_tired": {
+      "frames": 4,
+      "fps": 3,
+      "loop": true,
+      "action": "A subtle four-frame tired rest loop at a safe standing rest point: shoulders lower, wipe forehead with a small clean towel, exhale, then return close to the relaxed opening pose. Feet planted, stable body scale and ground pivot. No walking or active work. Flat magenta background."
+    },
+    "idle_lazy": {
+      "frames": 4,
+      "fps": 3,
+      "loop": true,
+      "action": "A restrained four-frame idle-only loop used only when no work is waiting: briefly take out a small phone, glance at it and tap once, lower it and return to the opening pose. Mildly bored but charming, feet planted, stable scale and pivot. Never use this pose while an active task is waiting. Flat magenta background."
+    }
+  },
+  "style": "Polished painted 2D chibi game character matching existing Banh Mi Pho NPCs, warm natural shading, expressive face, clean dark outline, rich but restrained colors; never pixel art.",
+  "layout": "taxonomy/v1",
+  "fit": {
+    "align_x": "bbox-center",
+    "align_y": "bottom",
+    "ground_frames": true
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "kind": "sprite-gen-image-report",
+  "provider": "codex",
+  "prompt": "Use case: stylized-concept\nAsset type: one static recipe image for the kitchen pass counter and serving tray\nPrimary request: A small Vietnamese serving of grilled eggs with scallion oil (trứng nướng mỡ hành). Show a compact shallow ceramic plate holding several whole grilled egg halves with golden browned edges, glossy green scallion oil and a little chili salt; clearly recognizable as the menu dish, appetizing but not oversized.\nStyle/medium: polished painted 2D game food art matching the existing Banh Mi Pho dish sheet; warm highlights, natural colors, clean outline, slightly elevated three-quarter tabletop view.\nComposition/framing: one complete serving centered in a square image, fully visible with generous transparent padding, sized to read in a small kitchen pass-counter slot.\nConstraints: transparent background. Plate and food only. No table, counter, stove, burner, hands, people, words, labels, price, logo, border, duplicate serving or watermark.",
+  "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\interior-v2\\food\\kitchen-pass-v1\\scallion-grilled-eggs.png",
+  "raw": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\interior-v2\\food\\kitchen-pass-v1\\scallion-grilled-eggs.png.raw.png",
+  "raw_bytes": 1820922,
+  "elapsed_seconds": 51.297,
+  "model": null,
+  "session_id": "01a15d04-70ee-70d1-994c-d1e6470c8bef",
+  "refs": [],
+  "transparent": true,
+  "alpha": {
+    "strategy": "native",
+    "strategy_source": "provider-default",
+    "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\interior-v2\\food\\kitchen-pass-v1\\scallion-grilled-eggs.png",
+    "mode": "RGBA",
+    "method": "native",
+    "size": "1254x1254",
+    "alpha_zero_pct": 54.35,
+    "partial_alpha_pct": 45.62,
+    "opaque_pct": 0.02,
+    "cleaned_transparent_rgb_pixels": 290,
+    "stale_transparent_rgb_pixels": 0
+  },
+  "chroma": null,
+  "extra": {
+    "inline_results": 1,
+    "rollout_cleaned": true,
+    "transparent_background_reported": true
+  },
+  "provider_resolved_from": "explicit"
+}

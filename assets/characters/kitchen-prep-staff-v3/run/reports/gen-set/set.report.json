@@ -1,0 +1,25 @@
+{
+  "kind": "sprite-gen-gen-set-report",
+  "run_dir": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v3\\run",
+  "states": [
+    "chop_vegetables"
+  ],
+  "ok": 1,
+  "failed": [],
+  "not_started": [],
+  "items": [
+    {
+      "state": "chop_vegetables",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v3\\run\\raw\\chop_vegetables.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v3\\run\\reports\\gen-set\\chop_vegetables.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v3\\run\\base-source.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v3\\run\\references\\layout-guides\\chop_vegetables.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 54.7,
+      "ok": true
+    }
+  ]
+}

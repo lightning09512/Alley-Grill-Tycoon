@@ -6,6 +6,12 @@ import exteriorRainUrl from "../../assets/backgrounds/wholesale-market/exterior/
 
 export type WholesaleMarketTimeOfDay = "morning" | "noon" | "afternoon" | "night";
 export type WholesaleMarketBackgroundMood = WholesaleMarketTimeOfDay | "rain";
+export type WholesaleMarketLightingState = {
+  from: WholesaleMarketTimeOfDay;
+  to: WholesaleMarketTimeOfDay;
+  blend: number;
+  rain: number;
+};
 
 export const WHOLESALE_MARKET_EXTERIOR_SIZE = { width: 1_672, height: 941 } as const;
 

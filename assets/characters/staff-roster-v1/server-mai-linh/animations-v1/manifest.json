@@ -1,0 +1,366 @@
+{
+  "character": "Mai Linh",
+  "version": 1,
+  "format": "transparent PNG frames + animated GIFs",
+  "directions": [
+    "south",
+    "southwest",
+    "west",
+    "northwest",
+    "north",
+    "northeast",
+    "east",
+    "southeast"
+  ],
+  "motions": [
+    {
+      "id": "walk-empty",
+      "source": "walk-empty-8dir-12f.png",
+      "fps": 7,
+      "framesPerDirection": 12,
+      "directions": [
+        {
+          "name": "south",
+          "gif": "gif/walk-empty/dir-0.gif",
+          "frames": 12
+        },
+        {
+          "name": "southwest",
+          "gif": "gif/walk-empty/dir-1.gif",
+          "frames": 12
+        },
+        {
+          "name": "west",
+          "gif": "gif/walk-empty/dir-2.gif",
+          "frames": 12
+        },
+        {
+          "name": "northwest",
+          "gif": "gif/walk-empty/dir-3.gif",
+          "frames": 12
+        },
+        {
+          "name": "north",
+          "gif": "gif/walk-empty/dir-4.gif",
+          "frames": 12
+        },
+        {
+          "name": "northeast",
+          "gif": "gif/walk-empty/dir-5.gif",
+          "frames": 12
+        },
+        {
+          "name": "east",
+          "gif": "gif/walk-empty/dir-6.gif",
+          "frames": 12
+        },
+        {
+          "name": "southeast",
+          "gif": "gif/walk-empty/dir-7.gif",
+          "frames": 12
+        }
+      ]
+    },
+    {
+      "id": "walk-tray",
+      "source": "walk-tray-8dir-12f.png",
+      "fps": 7,
+      "framesPerDirection": 12,
+      "directions": [
+        {
+          "name": "south",
+          "gif": "gif/walk-tray/dir-0.gif",
+          "frames": 12
+        },
+        {
+          "name": "southwest",
+          "gif": "gif/walk-tray/dir-1.gif",
+          "frames": 12
+        },
+        {
+          "name": "west",
+          "gif": "gif/walk-tray/dir-2.gif",
+          "frames": 12
+        },
+        {
+          "name": "northwest",
+          "gif": "gif/walk-tray/dir-3.gif",
+          "frames": 12
+        },
+        {
+          "name": "north",
+          "gif": "gif/walk-tray/dir-4.gif",
+          "frames": 12
+        },
+        {
+          "name": "northeast",
+          "gif": "gif/walk-tray/dir-5.gif",
+          "frames": 12
+        },
+        {
+          "name": "east",
+          "gif": "gif/walk-tray/dir-6.gif",
+          "frames": 12
+        },
+        {
+          "name": "southeast",
+          "gif": "gif/walk-tray/dir-7.gif",
+          "frames": 12
+        }
+      ]
+    },
+    {
+      "id": "idle",
+      "source": "idle-8dir-8f.png",
+      "fps": 4,
+      "framesPerDirection": 8,
+      "directions": [
+        {
+          "name": "south",
+          "gif": "gif/idle/dir-0.gif",
+          "frames": 8
+        },
+        {
+          "name": "southwest",
+          "gif": "gif/idle/dir-1.gif",
+          "frames": 8
+        },
+        {
+          "name": "west",
+          "gif": "gif/idle/dir-2.gif",
+          "frames": 8
+        },
+        {
+          "name": "northwest",
+          "gif": "gif/idle/dir-3.gif",
+          "frames": 8
+        },
+        {
+          "name": "north",
+          "gif": "gif/idle/dir-4.gif",
+          "frames": 8
+        },
+        {
+          "name": "northeast",
+          "gif": "gif/idle/dir-5.gif",
+          "frames": 8
+        },
+        {
+          "name": "east",
+          "gif": "gif/idle/dir-6.gif",
+          "frames": 8
+        },
+        {
+          "name": "southeast",
+          "gif": "gif/idle/dir-7.gif",
+          "frames": 8
+        }
+      ]
+    },
+    {
+      "id": "take-order",
+      "source": "take-order-8dir-12f.png",
+      "fps": 6,
+      "framesPerDirection": 12,
+      "directions": [
+        {
+          "name": "south",
+          "gif": "gif/take-order/dir-0.gif",
+          "frames": 12
+        },
+        {
+          "name": "southwest",
+          "gif": "gif/take-order/dir-1.gif",
+          "frames": 12
+        },
+        {
+          "name": "west",
+          "gif": "gif/take-order/dir-2.gif",
+          "frames": 12
+        },
+        {
+          "name": "northwest",
+          "gif": "gif/take-order/dir-3.gif",
+          "frames": 12
+        },
+        {
+          "name": "north",
+          "gif": "gif/take-order/dir-4.gif",
+          "frames": 12
+        },
+        {
+          "name": "northeast",
+          "gif": "gif/take-order/dir-5.gif",
+          "frames": 12
+        },
+        {
+          "name": "east",
+          "gif": "gif/take-order/dir-6.gif",
+          "frames": 12
+        },
+        {
+          "name": "southeast",
+          "gif": "gif/take-order/dir-7.gif",
+          "frames": 12
+        }
+      ]
+    },
+    {
+      "id": "pickup-kitchen",
+      "source": "pickup-kitchen-12f.png",
+      "fps": 6,
+      "framesPerDirection": 12,
+      "directions": [
+        {
+          "name": "south",
+          "gif": "gif/pickup-kitchen/dir-0.gif",
+          "frames": 12
+        }
+      ]
+    },
+    {
+      "id": "serve-table",
+      "source": "serve-table-8dir-12f.png",
+      "fps": 6,
+      "framesPerDirection": 12,
+      "directions": [
+        {
+          "name": "south",
+          "gif": "gif/serve-table/dir-0.gif",
+          "frames": 12
+        },
+        {
+          "name": "southwest",
+          "gif": "gif/serve-table/dir-1.gif",
+          "frames": 12
+        },
+        {
+          "name": "west",
+          "gif": "gif/serve-table/dir-2.gif",
+          "frames": 12
+        },
+        {
+          "name": "northwest",
+          "gif": "gif/serve-table/dir-3.gif",
+          "frames": 12
+        },
+        {
+          "name": "north",
+          "gif": "gif/serve-table/dir-4.gif",
+          "frames": 12
+        },
+        {
+          "name": "northeast",
+          "gif": "gif/serve-table/dir-5.gif",
+          "frames": 12
+        },
+        {
+          "name": "east",
+          "gif": "gif/serve-table/dir-6.gif",
+          "frames": 12
+        },
+        {
+          "name": "southeast",
+          "gif": "gif/serve-table/dir-7.gif",
+          "frames": 12
+        }
+      ]
+    },
+    {
+      "id": "rest",
+      "source": "rest-tired-8dir-8f.png",
+      "fps": 4,
+      "framesPerDirection": 8,
+      "directions": [
+        {
+          "name": "south",
+          "gif": "gif/rest/dir-0.gif",
+          "frames": 8
+        },
+        {
+          "name": "southwest",
+          "gif": "gif/rest/dir-1.gif",
+          "frames": 8
+        },
+        {
+          "name": "west",
+          "gif": "gif/rest/dir-2.gif",
+          "frames": 8
+        },
+        {
+          "name": "northwest",
+          "gif": "gif/rest/dir-3.gif",
+          "frames": 8
+        },
+        {
+          "name": "north",
+          "gif": "gif/rest/dir-4.gif",
+          "frames": 8
+        },
+        {
+          "name": "northeast",
+          "gif": "gif/rest/dir-5.gif",
+          "frames": 8
+        },
+        {
+          "name": "east",
+          "gif": "gif/rest/dir-6.gif",
+          "frames": 8
+        },
+        {
+          "name": "southeast",
+          "gif": "gif/rest/dir-7.gif",
+          "frames": 8
+        }
+      ]
+    },
+    {
+      "id": "phone",
+      "source": "idle-phone-8dir-8f.png",
+      "fps": 4,
+      "framesPerDirection": 8,
+      "directions": [
+        {
+          "name": "south",
+          "gif": "gif/phone/dir-0.gif",
+          "frames": 8
+        },
+        {
+          "name": "southwest",
+          "gif": "gif/phone/dir-1.gif",
+          "frames": 8
+        },
+        {
+          "name": "west",
+          "gif": "gif/phone/dir-2.gif",
+          "frames": 8
+        },
+        {
+          "name": "northwest",
+          "gif": "gif/phone/dir-3.gif",
+          "frames": 8
+        },
+        {
+          "name": "north",
+          "gif": "gif/phone/dir-4.gif",
+          "frames": 8
+        },
+        {
+          "name": "northeast",
+          "gif": "gif/phone/dir-5.gif",
+          "frames": 8
+        },
+        {
+          "name": "east",
+          "gif": "gif/phone/dir-6.gif",
+          "frames": 8
+        },
+        {
+          "name": "southeast",
+          "gif": "gif/phone/dir-7.gif",
+          "frames": 8
+        }
+      ]
+    }
+  ]
+}

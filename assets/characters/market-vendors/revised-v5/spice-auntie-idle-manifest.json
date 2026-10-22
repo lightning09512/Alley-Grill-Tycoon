@@ -1,0 +1,81 @@
+{
+  "characterId": "spice-auntie",
+  "engine": "component-row",
+  "game_input": "spice-auntie-idle-atlas.png",
+  "degraded_static_fallback": false,
+  "curation_applied": true,
+  "frame_variant": "pixel",
+  "sprite_sheet_alpha": "spice-auntie-idle-atlas.png",
+  "sprite_sheet_alpha_report": "reports/spice-auntie-atlas.json",
+  "base_image": null,
+  "cell": {
+    "shape": "rect",
+    "width": 1024,
+    "height": 1536,
+    "size": 1024,
+    "safe_margin": 0
+  },
+  "chroma_key": {
+    "name": "magenta",
+    "hex": "#FF00FF",
+    "rgb": [
+      255,
+      0,
+      255
+    ]
+  },
+  "animation": {
+    "cellWidth": 1024,
+    "cellHeight": 1536,
+    "columns": 4,
+    "rows": {
+      "idle": {
+        "row": 0,
+        "frames": 4,
+        "fps": 2,
+        "durations_ms": [
+          500,
+          500,
+          500,
+          500
+        ],
+        "loop": true,
+        "frame_variant": "pixel"
+      }
+    }
+  },
+  "frame_layout": {
+    "sheetWidth": 4096,
+    "sheetHeight": 1536,
+    "cellWidth": 1024,
+    "cellHeight": 1536,
+    "rows": {
+      "idle": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 1024,
+          "h": 1536
+        },
+        {
+          "x": 1024,
+          "y": 0,
+          "w": 1024,
+          "h": 1536
+        },
+        {
+          "x": 2048,
+          "y": 0,
+          "w": 1024,
+          "h": 1536
+        },
+        {
+          "x": 3072,
+          "y": 0,
+          "w": 1024,
+          "h": 1536
+        }
+      ]
+    }
+  }
+}

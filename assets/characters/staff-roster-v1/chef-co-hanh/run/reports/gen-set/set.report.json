@@ -1,0 +1,53 @@
+{
+  "kind": "sprite-gen-gen-set-report",
+  "run_dir": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\chef-co-hanh\\run",
+  "states": [
+    "work_cook",
+    "rest_tired",
+    "idle_lazy"
+  ],
+  "ok": 3,
+  "failed": [],
+  "not_started": [],
+  "items": [
+    {
+      "state": "work_cook",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\chef-co-hanh\\run\\raw\\work_cook.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\chef-co-hanh\\run\\reports\\gen-set\\work_cook.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\chef-co-hanh\\run\\base-source.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\chef-co-hanh\\run\\references\\layout-guides\\work_cook.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 82.5,
+      "ok": true
+    },
+    {
+      "state": "rest_tired",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\chef-co-hanh\\run\\raw\\rest_tired.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\chef-co-hanh\\run\\reports\\gen-set\\rest_tired.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\chef-co-hanh\\run\\base-source.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\chef-co-hanh\\run\\references\\layout-guides\\rest_tired.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 95.8,
+      "ok": true
+    },
+    {
+      "state": "idle_lazy",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\chef-co-hanh\\run\\raw\\idle_lazy.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\chef-co-hanh\\run\\reports\\gen-set\\idle_lazy.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\chef-co-hanh\\run\\base-source.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\chef-co-hanh\\run\\references\\layout-guides\\idle_lazy.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 66.2,
+      "ok": true
+    }
+  ]
+}

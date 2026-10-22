@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "styleSet": "market-vendors-revised-v5",
+  "animation": { "state": "idle", "frames": 4, "fps": 2, "loop": true },
+  "vendors": [
+    { "stall": "meat", "characterId": "butcher-auntie", "base": "butcher-auntie.png", "atlas": "butcher-auntie-idle-atlas.png", "manifest": "butcher-auntie-idle-manifest.json", "preview": "butcher-auntie-idle.gif" },
+    { "stall": "fish", "characterId": "fishmonger-uncle", "base": "fishmonger-uncle.png", "atlas": "fishmonger-uncle-idle-atlas.png", "manifest": "fishmonger-uncle-idle-manifest.json", "preview": "fishmonger-uncle-idle.gif" },
+    { "stall": "seafood-crab", "characterId": "crab-seller-auntie", "base": "crab-seller-auntie.png", "atlas": "crab-seller-auntie-idle-atlas.png", "manifest": "crab-seller-auntie-idle-manifest.json", "preview": "crab-seller-auntie-idle.gif" },
+    { "stall": "vegetables", "characterId": "vegetable-auntie", "base": "vegetable-auntie.png", "atlas": "vegetable-auntie-idle-atlas.png", "manifest": "vegetable-auntie-idle-manifest.json", "preview": "vegetable-auntie-idle.gif" },
+    { "stall": "fruit", "characterId": "fruit-uncle", "base": "fruit-uncle.png", "atlas": "fruit-uncle-idle-atlas.png", "manifest": "fruit-uncle-idle-manifest.json", "preview": "fruit-uncle-idle.gif" },
+    { "stall": "spices", "characterId": "spice-auntie", "base": "spice-auntie.png", "atlas": "spice-auntie-idle-atlas.png", "manifest": "spice-auntie-idle-manifest.json", "preview": "spice-auntie-idle.gif" },
+    { "stall": "grocery", "characterId": "grocery-auntie", "base": "grocery-auntie.png", "atlas": "grocery-auntie-idle-atlas.png", "manifest": "grocery-auntie-idle-manifest.json", "preview": "grocery-auntie-idle.gif" }
+  ]
+}

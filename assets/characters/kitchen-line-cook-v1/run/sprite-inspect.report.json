@@ -1,0 +1,113 @@
+{
+  "ok": true,
+  "engine": "component-row",
+  "kind": "sprite-gen-inspect-report",
+  "run_dir": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-line-cook-v1\\run",
+  "states": [
+    "cook_stir",
+    "rest_tired",
+    "idle_lazy"
+  ],
+  "thresholds": {
+    "histogram_min": 0.0,
+    "dhash_min": 0.55,
+    "motion_min": 0.01
+  },
+  "rows": [
+    {
+      "state": "cook_stir",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/cook_stir/frame-0.png",
+        "frames/cook_stir/frame-1.png",
+        "frames/cook_stir/frame-2.png",
+        "frames/cook_stir/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9733513477522885,
+          "mean": 0.9792766230842325
+        },
+        "dhash_similarity": {
+          "min": 0.90625,
+          "mean": 0.9401041666666666
+        },
+        "motion_presence": 0.06013686236213235,
+        "centroid_sigma": {
+          "x": 0.5912076985068875,
+          "y": 2.807609936519612
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "rest_tired",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/rest_tired/frame-0.png",
+        "frames/rest_tired/frame-1.png",
+        "frames/rest_tired/frame-2.png",
+        "frames/rest_tired/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9358490820626623,
+          "mean": 0.9570579699153583
+        },
+        "dhash_similarity": {
+          "min": 0.6875,
+          "mean": 0.8229166666666666
+        },
+        "motion_presence": 0.12214818218954249,
+        "centroid_sigma": {
+          "x": 4.790005931707439,
+          "y": 2.8205928663069777
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "idle_lazy",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/idle_lazy/frame-0.png",
+        "frames/idle_lazy/frame-1.png",
+        "frames/idle_lazy/frame-2.png",
+        "frames/idle_lazy/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9247490563042211,
+          "mean": 0.94873495052894
+        },
+        "dhash_similarity": {
+          "min": 0.90625,
+          "mean": 0.9401041666666666
+        },
+        "motion_presence": 0.049002055249183,
+        "centroid_sigma": {
+          "x": 0.7231621595748684,
+          "y": 1.5584316592990113
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}

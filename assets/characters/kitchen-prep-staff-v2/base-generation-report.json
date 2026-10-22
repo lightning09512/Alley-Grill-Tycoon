@@ -1,0 +1,458 @@
+{
+  "kind": "sprite-gen-image-report",
+  "provider": "codex",
+  "prompt": "Create one full-body character sprite for an original Vietnamese restaurant kitchen employee, visibly distinct from the player-owner. The character is a stocky, middle-aged Vietnamese man in his late 40s with a round broad face, warm medium-tan skin, a small neat salt-and-pepper moustache, thick eyebrows, and short dark hair fully covered by a tall white chef toque. He wears a white double-breasted short-sleeve chef jacket with dark buttons, a paprika-red apron tied at the back, charcoal trousers, and dark brown non-slip kitchen clogs. He is noticeably shorter and broader than the young slim player-owner, with a different face, hair silhouette, outfit palette, and footwear. No messy fringe, no teal shirt, no olive apron, no shoulder straps, and no white sneakers.\n\nUse the attached in-game character only as a reference for the game's clean chibi proportions, painted 2D rendering, outline weight, warm highlights, and detail density. Do not copy that character's face, hairstyle, age, clothes, colors, pose, or accessories. This must be a newly designed male cook NPC.\n\nDraw him in a natural three-quarter side view facing screen-left toward the prep counter, arms resting near waist height, feet planted and fully visible, relaxed friendly-but-tired expression. Keep a compact readable silhouette that fits beside a counter in the provided top-down restaurant kitchen map. Entire body inside the canvas with safe transparent space around it. Pure flat magenta (#FF00FF) background for chroma extraction. No environment, floor, shadows, counter, chopping board, knife, phone, towel prop, ingredients, food, text, UI, logo, border, or extra people.\n\nSeen from the exact side, facing left.\n\nThe subject must be facing left (toward the left edge of the image), regardless of the reference image's orientation. Preserve the subject's design.",
+  "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v2\\base-source.png",
+  "raw": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v2\\base-source.png.raw.png",
+  "raw_bytes": 1440623,
+  "elapsed_seconds": 39.562,
+  "model": null,
+  "session_id": "01a15cd1-a86f-7842-9ec4-69ffe5a7d552",
+  "refs": [
+    "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v2\\references\\game-style-only.png"
+  ],
+  "transparent": true,
+  "alpha": {
+    "strategy": "chroma",
+    "strategy_source": "explicit",
+    "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v2\\base-source.png",
+    "mode": "RGBA",
+    "method": "ycbcr",
+    "size": "1199x1312",
+    "key": "magenta",
+    "keyed_pixels": 1158498,
+    "fringe_pixels": 4975,
+    "cleaned_transparent_rgb_pixels": 0,
+    "alpha_zero_pct": 73.64,
+    "stale_transparent_rgb_pixels": 0,
+    "decontam": {
+      "mode": "auto",
+      "applied": true,
+      "fit": "still",
+      "band_px": 6,
+      "alpha_depth": 4,
+      "flank_px": 3,
+      "edge_band": 0,
+      "palette_size": 32,
+      "palette_source": "frame",
+      "palette": [
+        [
+          173,
+          140,
+          114
+        ],
+        [
+          254,
+          249,
+          227
+        ],
+        [
+          29,
+          13,
+          3
+        ],
+        [
+          252,
+          171,
+          94
+        ],
+        [
+          217,
+          50,
+          32
+        ],
+        [
+          70,
+          53,
+          42
+        ],
+        [
+          229,
+          202,
+          172
+        ],
+        [
+          160,
+          35,
+          22
+        ],
+        [
+          45,
+          33,
+          25
+        ],
+        [
+          189,
+          42,
+          27
+        ],
+        [
+          212,
+          111,
+          53
+        ],
+        [
+          249,
+          228,
+          197
+        ],
+        [
+          87,
+          48,
+          27
+        ],
+        [
+          253,
+          238,
+          209
+        ],
+        [
+          58,
+          44,
+          34
+        ],
+        [
+          254,
+          246,
+          221
+        ],
+        [
+          206,
+          46,
+          29
+        ],
+        [
+          232,
+          135,
+          68
+        ],
+        [
+          197,
+          164,
+          136
+        ],
+        [
+          114,
+          28,
+          15
+        ],
+        [
+          105,
+          83,
+          68
+        ],
+        [
+          68,
+          34,
+          17
+        ],
+        [
+          243,
+          219,
+          188
+        ],
+        [
+          142,
+          76,
+          41
+        ],
+        [
+          187,
+          92,
+          44
+        ],
+        [
+          213,
+          183,
+          154
+        ],
+        [
+          238,
+          211,
+          178
+        ],
+        [
+          51,
+          24,
+          11
+        ],
+        [
+          222,
+          194,
+          165
+        ],
+        [
+          248,
+          157,
+          83
+        ],
+        [
+          141,
+          111,
+          89
+        ],
+        [
+          104,
+          59,
+          34
+        ]
+      ],
+      "palette_keyfree": true,
+      "key_material_share": 0.0,
+      "noise_sigma_rgb": 1.275,
+      "material_spread": 12.484,
+      "opaque_margin": 12.484,
+      "changed_px": 5574,
+      "refit_px": 16174,
+      "tint_px": 26,
+      "recovered_px": 1887,
+      "unexplained_px": 438,
+      "restored_px": 0,
+      "key_hue_capped_px": 572
+    }
+  },
+  "chroma": {
+    "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v2\\base-source.png",
+    "mode": "RGBA",
+    "method": "ycbcr",
+    "size": "1199x1312",
+    "key": "magenta",
+    "keyed_pixels": 1158498,
+    "fringe_pixels": 4975,
+    "cleaned_transparent_rgb_pixels": 0,
+    "alpha_zero_pct": 73.64,
+    "stale_transparent_rgb_pixels": 0,
+    "decontam": {
+      "mode": "auto",
+      "applied": true,
+      "fit": "still",
+      "band_px": 6,
+      "alpha_depth": 4,
+      "flank_px": 3,
+      "edge_band": 0,
+      "palette_size": 32,
+      "palette_source": "frame",
+      "palette": [
+        [
+          173,
+          140,
+          114
+        ],
+        [
+          254,
+          249,
+          227
+        ],
+        [
+          29,
+          13,
+          3
+        ],
+        [
+          252,
+          171,
+          94
+        ],
+        [
+          217,
+          50,
+          32
+        ],
+        [
+          70,
+          53,
+          42
+        ],
+        [
+          229,
+          202,
+          172
+        ],
+        [
+          160,
+          35,
+          22
+        ],
+        [
+          45,
+          33,
+          25
+        ],
+        [
+          189,
+          42,
+          27
+        ],
+        [
+          212,
+          111,
+          53
+        ],
+        [
+          249,
+          228,
+          197
+        ],
+        [
+          87,
+          48,
+          27
+        ],
+        [
+          253,
+          238,
+          209
+        ],
+        [
+          58,
+          44,
+          34
+        ],
+        [
+          254,
+          246,
+          221
+        ],
+        [
+          206,
+          46,
+          29
+        ],
+        [
+          232,
+          135,
+          68
+        ],
+        [
+          197,
+          164,
+          136
+        ],
+        [
+          114,
+          28,
+          15
+        ],
+        [
+          105,
+          83,
+          68
+        ],
+        [
+          68,
+          34,
+          17
+        ],
+        [
+          243,
+          219,
+          188
+        ],
+        [
+          142,
+          76,
+          41
+        ],
+        [
+          187,
+          92,
+          44
+        ],
+        [
+          213,
+          183,
+          154
+        ],
+        [
+          238,
+          211,
+          178
+        ],
+        [
+          51,
+          24,
+          11
+        ],
+        [
+          222,
+          194,
+          165
+        ],
+        [
+          248,
+          157,
+          83
+        ],
+        [
+          141,
+          111,
+          89
+        ],
+        [
+          104,
+          59,
+          34
+        ]
+      ],
+      "palette_keyfree": true,
+      "key_material_share": 0.0,
+      "noise_sigma_rgb": 1.275,
+      "material_spread": 12.484,
+      "opaque_margin": 12.484,
+      "changed_px": 5574,
+      "refit_px": 16174,
+      "tint_px": 26,
+      "recovered_px": 1887,
+      "unexplained_px": 438,
+      "restored_px": 0,
+      "key_hue_capped_px": 572
+    }
+  },
+  "extra": {
+    "inline_results": 1,
+    "rollout_cleaned": true,
+    "transparent_background_reported": false,
+    "trim_alpha": {
+      "bbox": [
+        336,
+        77,
+        826,
+        1254
+      ],
+      "before": [
+        1199,
+        1312
+      ],
+      "after": [
+        490,
+        1177
+      ],
+      "margin_px": {
+        "left": 336,
+        "top": 77,
+        "right": 373,
+        "bottom": 58
+      }
+    },
+    "facing": {
+      "transport": "codex-exec",
+      "auth_source": "codex-login",
+      "direction": "left",
+      "confidence": 0.99,
+      "confidence_source": "model-self-report",
+      "model": null,
+      "requested": "left",
+      "fix": "none",
+      "action": "none",
+      "final_direction": "left",
+      "final_direction_source": "observation",
+      "reason": "already-matched"
+    },
+    "view": {
+      "direction": "side",
+      "facing": "left",
+      "handed": []
+    }
+  },
+  "provider_resolved_from": "explicit"
+}

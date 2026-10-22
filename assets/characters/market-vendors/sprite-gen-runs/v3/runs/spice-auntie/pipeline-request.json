@@ -1,0 +1,23 @@
+{
+  "cell": {
+    "width": 350,
+    "height": 561,
+    "safe_margin_x": 12,
+    "safe_margin_y": 12
+  },
+  "states": {
+    "idle": {
+      "frames": 4,
+      "fps": 2,
+      "loop": true,
+      "action": "Four small front-facing idle beats with both sandals planted: hands on hips, she peers over her low glasses, gives a suspicious side-eye and amused smirk, then returns to the opening pose. Subtle breathing only; preserve scale and foot line."
+    },
+    "work": {
+      "frames": 4,
+      "fps": 3,
+      "loop": true,
+      "action": "A seamless four-frame spice-selling loop, front-facing and planted: she keeps the same little wooden scoop in her right hand and one small blank paper sachet in her left in every frame, carefully scoops a pinch of spice into the sachet, gives it a tiny shake, then returns to the identical waist-high opening pose. Keep scoop, sachet, hand placement, outfit, body size and sandals consistent; no writing or scenery."
+    }
+  },
+  "style": "Hand-inked Vietnamese 2D mobile game sprite matching the supplied vendor base exactly. Bold dark-brown comic contour, slightly irregular hand-drawn line, readable simplified shapes, warm limited colors and restrained matte cel shading; no glossy 3D finish. Compact chibi proportions, humorous readable facial acting, stable full-body front view, same height, outfit, head shape and ground line in every frame. Single character on transparent background, no scenery, no labels or text."
+}

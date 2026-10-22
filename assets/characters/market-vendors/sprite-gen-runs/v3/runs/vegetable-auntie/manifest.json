@@ -1,0 +1,159 @@
+{
+  "characterId": "vegetable-auntie",
+  "engine": "component-row",
+  "game_input": "sprite-sheet-alpha.png",
+  "degraded_static_fallback": false,
+  "curation_applied": false,
+  "frame_variant": "pixel",
+  "sprite_sheet_alpha": "sprite-sheet-alpha.png",
+  "sprite_sheet_alpha_report": "sprite-sheet-alpha.report.json",
+  "base_image": "base-source.png",
+  "cell": {
+    "shape": "rect",
+    "width": 350,
+    "height": 561,
+    "safe_margin_x": 12,
+    "safe_margin_y": 12
+  },
+  "chroma_key": {
+    "name": "cyan",
+    "hex": "#00FFFF",
+    "rgb": [
+      0,
+      255,
+      255
+    ],
+    "selection": "auto",
+    "score": 256.22,
+    "min_subject_distance": 245.45,
+    "background": {
+      "mode": "transparent",
+      "opaque_border_fraction": 0.0,
+      "subject_pixels": 15482
+    },
+    "candidates": [
+      {
+        "name": "magenta",
+        "hex": "#FF00FF",
+        "score": 218.08,
+        "min_subject_distance": 212.55,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "green",
+        "hex": "#00FF00",
+        "score": 182.79,
+        "min_subject_distance": 179.94,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "cyan",
+        "hex": "#00FFFF",
+        "score": 256.22,
+        "min_subject_distance": 245.45,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "blue",
+        "hex": "#004DFF",
+        "score": 206.34,
+        "min_subject_distance": 197.37,
+        "clears_erase_radius": true
+      }
+    ],
+    "selection_reason": "highest 1st-percentile subject distance among the 4 candidate(s) clearing the 96 erase radius"
+  },
+  "animation": {
+    "cellWidth": 350,
+    "cellHeight": 561,
+    "columns": 4,
+    "rows": {
+      "idle": {
+        "row": 0,
+        "frames": 4,
+        "fps": 2,
+        "durations_ms": [
+          500,
+          500,
+          500,
+          500
+        ],
+        "loop": true,
+        "frame_variant": "pixel"
+      },
+      "work": {
+        "row": 1,
+        "frames": 4,
+        "fps": 3,
+        "durations_ms": [
+          333,
+          333,
+          333,
+          333
+        ],
+        "loop": true,
+        "frame_variant": "pixel"
+      }
+    }
+  },
+  "frame_layout": {
+    "sheetWidth": 1400,
+    "sheetHeight": 1122,
+    "cellWidth": 350,
+    "cellHeight": 561,
+    "rows": {
+      "idle": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 350,
+          "h": 561
+        },
+        {
+          "x": 350,
+          "y": 0,
+          "w": 350,
+          "h": 561
+        },
+        {
+          "x": 700,
+          "y": 0,
+          "w": 350,
+          "h": 561
+        },
+        {
+          "x": 1050,
+          "y": 0,
+          "w": 350,
+          "h": 561
+        }
+      ],
+      "work": [
+        {
+          "x": 0,
+          "y": 561,
+          "w": 350,
+          "h": 561
+        },
+        {
+          "x": 350,
+          "y": 561,
+          "w": 350,
+          "h": 561
+        },
+        {
+          "x": 700,
+          "y": 561,
+          "w": 350,
+          "h": 561
+        },
+        {
+          "x": 1050,
+          "y": 561,
+          "w": 350,
+          "h": 561
+        }
+      ]
+    }
+  }
+}

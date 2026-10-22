@@ -1,0 +1,7 @@
+Use case: illustration-story
+Asset type: canonical full-body base image for a Vietnamese restaurant game cook
+Primary request: Create one new male line cook for Banh Mi Pho. He is distinct from the player-owner and from Tấn Huy: an average-build Vietnamese man in his early forties, friendly slightly weary face, tidy short black hair mostly covered by a dark navy bandana, small round wire-frame glasses, clean-shaven, deep navy short-sleeve cook shirt, sand-colored apron, charcoal trousers, brown kitchen shoes. Relaxed neutral standing pose, facing the viewer, both hands visible and empty.
+Input image: Image 1 is a style-only reference from the existing game staff art. Do not copy that person's gender, face, hair, outfit, pose, or props.
+Style/medium: polished painted 2D chibi game art matching the Banh Mi Pho character look, warm natural shading, clean dark outline, expressive friendly face; not pixel art.
+Composition/framing: one complete full-body character centered in a portrait canvas, shoes fully visible, enough breathing room above the head and around the body.
+Constraints: transparent background; one character only; no kitchen, counter, stove, food, utensils, text, labels, logos, border, cast shadow, glow, or watermark. Preserve this new character design as the identity source for all future directions and animation rows.

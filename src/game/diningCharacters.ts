@@ -21,9 +21,13 @@ export interface DiningPartySelectionState {
 export interface DiningFamilyContext {
   hasFather: boolean;
   hasMother: boolean;
+  hasGrandmother: boolean;
+  hasGrandfather: boolean;
   hasChild: boolean;
   fatherIndex: number | null;
   motherIndex: number | null;
+  grandmotherIndex: number | null;
+  grandfatherIndex: number | null;
   childIndices: number[];
 }
 
@@ -37,7 +41,13 @@ const PARTY_PROFILES: Record<DiningPartyType, Record<PartySize, readonly DiningP
     2: [
       profile(["saigon-young-mother", "saigon-schoolboy"], 3),
       profile(["saigon-young-mother", "saigon-schoolgirl"], 3),
-      profile(["saigon-older-regular", "saigon-young-mother"], 2),
+      profile(["saigon-young-mother", "saigon-preschooler"], 2),
+      profile(["saigon-young-father", "saigon-young-mother"], 3),
+      profile(["saigon-young-father", "saigon-schoolboy"], 2),
+      profile(["saigon-grandmother", "saigon-schoolboy"], 2),
+      profile(["saigon-grandmother", "saigon-schoolgirl"], 2),
+      profile(["saigon-grandmother", "saigon-preschooler"], 2),
+      profile(["saigon-grandmother", "saigon-older-regular"], 1),
       profile(["saigon-comic-uncle", "saigon-comic-auntie"], 1),
       profile(["saigon-comic-auntie", "saigon-schoolgirl"], 1),
       profile(["saigon-comic-uncle", "saigon-schoolboy"], 1),
@@ -45,8 +55,12 @@ const PARTY_PROFILES: Record<DiningPartyType, Record<PartySize, readonly DiningP
       profile(["saigon-schoolboy", "saigon-schoolgirl"], 2),
     ],
     3: [
-      profile(["saigon-older-regular", "saigon-young-mother", "saigon-schoolboy"], 3),
-      profile(["saigon-older-regular", "saigon-young-mother", "saigon-schoolgirl"], 3),
+      profile(["saigon-young-father", "saigon-young-mother", "saigon-schoolboy"], 3),
+      profile(["saigon-young-father", "saigon-young-mother", "saigon-schoolgirl"], 3),
+      profile(["saigon-young-father", "saigon-young-mother", "saigon-preschooler"], 2),
+      profile(["saigon-grandmother", "saigon-young-mother", "saigon-schoolboy"], 2),
+      profile(["saigon-grandmother", "saigon-young-mother", "saigon-schoolgirl"], 2),
+      profile(["saigon-grandmother", "saigon-young-mother", "saigon-preschooler"], 2),
       profile(["saigon-young-mother", "saigon-schoolboy", "saigon-schoolgirl"], 3),
       profile(["saigon-comic-uncle", "saigon-comic-auntie", "saigon-schoolboy"], 1),
       profile(["saigon-comic-uncle", "saigon-comic-auntie", "saigon-schoolgirl"], 1),
@@ -54,7 +68,9 @@ const PARTY_PROFILES: Record<DiningPartyType, Record<PartySize, readonly DiningP
       profile(["saigon-older-regular", "saigon-comic-auntie", "saigon-schoolgirl"], 1),
     ],
     4: [
-      profile(["saigon-older-regular", "saigon-young-mother", "saigon-schoolboy", "saigon-schoolgirl"], 3),
+      profile(["saigon-young-father", "saigon-young-mother", "saigon-schoolboy", "saigon-schoolgirl"], 3),
+      profile(["saigon-grandmother", "saigon-young-father", "saigon-young-mother", "saigon-schoolboy"], 1),
+      profile(["saigon-grandmother", "saigon-young-father", "saigon-young-mother", "saigon-preschooler"], 1),
       profile(["saigon-comic-uncle", "saigon-comic-auntie", "saigon-schoolboy", "saigon-schoolgirl"], 1),
     ],
   },
@@ -62,6 +78,7 @@ const PARTY_PROFILES: Record<DiningPartyType, Record<PartySize, readonly DiningP
     2: [
       profile(["saigon-genz-nightowl", "saigon-food-reviewer"], 3),
       profile(["saigon-office-woman", "saigon-office-man"], 3),
+      profile(["saigon-primary-teacher", "saigon-office-woman"], 2),
       profile(["saigon-delivery-rider", "saigon-construction-worker"], 2),
       profile(["saigon-comic-uncle", "saigon-comic-foodie"], 1),
       profile(["saigon-comic-uncle", "saigon-comic-auntie"], 1),
@@ -80,10 +97,15 @@ const PARTY_PROFILES: Record<DiningPartyType, Record<PartySize, readonly DiningP
       profile(["saigon-construction-worker", "saigon-ingredient-supplier"], 2),
       profile(["saigon-genz-nightowl", "saigon-backpacker-tourist"], 2),
       profile(["saigon-office-man", "saigon-taphoa-student-boy"], 2),
+      profile(["saigon-motorbike-mechanic", "saigon-traditional-motorbike-taxi-driver"], 2),
+      profile(["saigon-night-shift-nurse", "saigon-taxi-driver"], 2),
+      profile(["saigon-primary-teacher", "saigon-night-shift-nurse"], 1),
+      profile(["saigon-cajon-player", "saigon-food-reviewer"], 1),
     ],
     3: [
       profile(["saigon-genz-nightowl", "saigon-food-reviewer", "saigon-taphoa-college-girl"], 3),
       profile(["saigon-office-woman", "saigon-office-man", "saigon-backpacker-tourist"], 3),
+      profile(["saigon-primary-teacher", "saigon-office-woman", "saigon-office-man"], 2),
       profile(["saigon-comic-uncle", "saigon-comic-foodie", "saigon-food-reviewer"], 1),
       profile(["saigon-delivery-rider", "saigon-construction-worker", "saigon-ingredient-supplier"], 2),
       profile(["saigon-morning-jogger", "saigon-street-sweeper", "saigon-market-shopper"], 2),
@@ -96,6 +118,9 @@ const PARTY_PROFILES: Record<DiningPartyType, Record<PartySize, readonly DiningP
       profile(["saigon-comic-uncle", "saigon-comic-auntie", "saigon-comic-foodie"], 1),
       profile(["saigon-office-man", "saigon-construction-worker", "saigon-ingredient-supplier"], 2),
       profile(["saigon-office-woman", "saigon-genz-nightowl", "saigon-market-shopper"], 2),
+      profile(["saigon-motorbike-mechanic", "saigon-traditional-motorbike-taxi-driver", "saigon-taxi-driver"], 1),
+      profile(["saigon-primary-teacher", "saigon-night-shift-nurse", "saigon-office-woman"], 2),
+      profile(["saigon-cajon-player", "saigon-food-reviewer", "saigon-genz-nightowl"], 1),
     ],
     4: [
       profile(["saigon-genz-nightowl", "saigon-food-reviewer", "saigon-backpacker-tourist", "saigon-market-shopper"], 2),
@@ -279,26 +304,36 @@ export function diningPartyForArrival(state: DiningPartySelectionState): DiningP
 
 export function diningFamilyContext(characterIds: readonly string[]): DiningFamilyContext {
   const motherIndex = characterIds.indexOf("saigon-young-mother");
-  const fatherIndex = characterIds.indexOf("saigon-older-regular");
+  const fatherIndex = characterIds.indexOf("saigon-young-father");
+  const grandmotherIndex = characterIds.indexOf("saigon-grandmother");
+  const grandfatherIndex = characterIds.indexOf("saigon-older-regular");
   const childIndices = characterIds
-    .map((id, index) => id === "saigon-schoolboy" || id === "saigon-schoolgirl" ? index : -1)
+    .map((id, index) => id === "saigon-schoolboy" || id === "saigon-schoolgirl" || id === "saigon-preschooler" ? index : -1)
     .filter((index) => index >= 0);
   const hasMother = motherIndex >= 0;
+  const hasGrandmother = grandmotherIndex >= 0;
+  const hasGrandfather = grandfatherIndex >= 0;
   const hasChild = childIndices.length > 0;
-  // The older regular is used as the dad only when the mother is also present.
-  // The comic uncle is not automatically treated as a father in family dialogue.
+  // The father role belongs only to the young-father character. The older
+  // regular is recognized as a grandfather when he joins a family group.
   return {
-    hasFather: hasMother && fatherIndex >= 0,
+    hasFather: fatherIndex >= 0,
     hasMother,
+    hasGrandmother,
+    hasGrandfather,
     hasChild,
-    fatherIndex: hasMother && fatherIndex >= 0 ? fatherIndex : null,
+    fatherIndex: fatherIndex >= 0 ? fatherIndex : null,
     motherIndex: hasMother ? motherIndex : null,
+    grandmotherIndex: hasGrandmother ? grandmotherIndex : null,
+    grandfatherIndex: hasGrandfather ? grandfatherIndex : null,
     childIndices,
   };
 }
 
 export function diningTravelSeconds(tableId: number): number {
-  return (7 - Math.ceil(tableId / 2)) * 1.25;
+  // Entry and exit now use the actual doorway at the top of the room, so
+  // farther tables need more travel time than the first row.
+  return (Math.floor((tableId - 1) / 2) + 3) * 1.25;
 }
 
 export function diningArrivalSeconds(tableId: number): number {

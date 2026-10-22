@@ -30,6 +30,15 @@ import streetSweeperFrontUrl from "../../assets/characters/saigon-street-sweeper
 import wardInspectorFrontUrl from "../../assets/characters/saigon-ward-inspector-front-customer.png";
 import wardPoliceFrontUrl from "../../assets/characters/saigon-ward-police-officer-front-customer.png";
 import youngMotherFrontUrl from "../../assets/characters/saigon-young-mother-front-customer.png";
+import youngFatherFrontUrl from "../../assets/characters/sprite-gen-dining/saigon-young-father/front-customer.png";
+import grandmotherFrontUrl from "../../assets/characters/sprite-gen-dining/saigon-grandmother/front-customer.png";
+import preschoolerFrontUrl from "../../assets/characters/sprite-gen-dining/saigon-preschooler/front-customer.png";
+import primaryTeacherFrontUrl from "../../assets/characters/sprite-gen-dining/saigon-primary-teacher/front-customer.png";
+import motorbikeMechanicFrontUrl from "../../assets/characters/sprite-gen-dining/saigon-motorbike-mechanic/front-customer.png";
+import traditionalTaxiDriverFrontUrl from "../../assets/characters/sprite-gen-dining/saigon-traditional-motorbike-taxi-driver/front-customer.png";
+import nightShiftNurseFrontUrl from "../../assets/characters/sprite-gen-dining/saigon-night-shift-nurse/front-customer.png";
+import taxiDriverFrontUrl from "../../assets/characters/sprite-gen-dining/saigon-taxi-driver/front-customer.png";
+import cajonPlayerFrontUrl from "../../assets/characters/sprite-gen-dining/saigon-cajon-player/front-customer.png";
 import schoolgirlWalkUrl from "../../assets/characters/sprite-gen-walk/saigon-schoolgirl-walk-16f.png";
 import officeManWalkUrl from "../../assets/characters/sprite-gen-walk/saigon-office-man-walk-16f.png";
 import marketShopperWalkUrl from "../../assets/characters/sprite-gen-walk/saigon-market-shopper-walk-16f.png";
@@ -48,6 +57,15 @@ import streetSweeperWalkUrl from "../../assets/characters/sprite-gen-walk/saigon
 import wardPoliceWalkUrl from "../../assets/characters/sprite-gen-walk/saigon-ward-police-officer-walk-16f.png";
 import wardInspectorWalkUrl from "../../assets/characters/sprite-gen-walk/saigon-ward-inspector-walk-16f.png";
 import youngMotherWalkUrl from "../../assets/characters/sprite-gen-walk/saigon-young-mother-walk-16f.png";
+import youngFatherWalkUrl from "../../assets/characters/sprite-gen-walk/saigon-young-father-walk-16f.png";
+import grandmotherWalkUrl from "../../assets/characters/sprite-gen-walk/saigon-grandmother-walk-16f-v2.png";
+import preschoolerWalkUrl from "../../assets/characters/sprite-gen-walk/saigon-preschooler-walk-16f.png";
+import primaryTeacherWalkUrl from "../../assets/characters/sprite-gen-walk/saigon-primary-teacher-walk-16f.png";
+import motorbikeMechanicWalkUrl from "../../assets/characters/sprite-gen-walk/saigon-motorbike-mechanic-walk-16f.png";
+import traditionalTaxiDriverWalkUrl from "../../assets/characters/sprite-gen-walk/saigon-traditional-motorbike-taxi-driver-walk-16f.png";
+import nightShiftNurseWalkUrl from "../../assets/characters/sprite-gen-walk/saigon-night-shift-nurse-walk-16f.png";
+import taxiDriverWalkUrl from "../../assets/characters/sprite-gen-walk/saigon-taxi-driver-walk-16f.png";
+import cajonPlayerWalkUrl from "../../assets/characters/sprite-gen-walk/saigon-cajon-player-walk-16f.png";
 import streetCatActionsUrl from "../../assets/characters/saigon-street-cat-actions.png";
 import deliveryGreenBikeUrl from "../../assets/vehicles/saigon-delivery-green-scooter.png";
 import deliveryOrangeBikeUrl from "../../assets/vehicles/saigon-delivery-orange-scooter.png";
@@ -93,6 +111,7 @@ import {
   WHOLESALE_MARKET_EXTERIOR_SIZE,
   WHOLESALE_MARKET_EXTERIOR_TEXTURE_KEYS,
   type WholesaleMarketBackgroundMood,
+  type WholesaleMarketLightingState,
 } from "../config/wholesaleMarket";
 import { SHOP_COOKING_STEAM_POINTS, STREET_COOKING_STEAM_POINTS } from "../config/cookingSteam";
 import { setIcon, type UiIconName } from "../ui/icons";
@@ -135,13 +154,19 @@ const CUSTOMER_APPEARANCES: Record<CustomerType, readonly CustomerAppearance[]> 
   student: [
     { key: "customer-schoolgirl-idle", frontUrl: schoolgirlIdleUrl, walkKey: "walk-student", shortName: "Bạn học sinh", idleAnimation: "customer-schoolgirl-idle-loop" },
     { key: "customer-schoolboy", frontUrl: schoolboyFrontUrl, walkKey: "walk-schoolboy", shortName: "Bạn nam sinh" },
+    { key: "customer-preschooler", frontUrl: preschoolerFrontUrl, walkKey: "walk-preschooler", shortName: "Bé đi cùng gia đình" },
+    { key: "customer-night-shift-nurse", frontUrl: nightShiftNurseFrontUrl, walkKey: "walk-night-shift-nurse", shortName: "Cô y tá tan ca" },
   ],
   office: [
     { key: "customer-office-man", frontUrl: officeManFrontUrl, walkKey: "walk-office", shortName: "Anh văn phòng" },
     { key: "customer-office-woman", frontUrl: officeWomanFrontUrl, walkKey: "walk-office-woman", shortName: "Cô văn phòng" },
+    { key: "customer-young-father", frontUrl: youngFatherFrontUrl, walkKey: "walk-young-father", shortName: "Anh tan làm" },
+    { key: "customer-primary-teacher", frontUrl: primaryTeacherFrontUrl, walkKey: "walk-primary-teacher", shortName: "Cô giáo" },
+    { key: "customer-taxi-driver", frontUrl: taxiDriverFrontUrl, walkKey: "walk-taxi-driver", shortName: "Chú tài xế taxi" },
   ],
   shopper: [
     { key: "customer-market-shopper", frontUrl: marketShopperFrontUrl, walkKey: "walk-shopper", shortName: "Cô đi chợ" },
+    { key: "customer-grandmother", frontUrl: grandmotherFrontUrl, walkKey: "walk-grandmother", shortName: "Bà đi dạo" },
     { key: "customer-older-regular", frontUrl: olderRegularFrontUrl, walkKey: "walk-older-regular", shortName: "Khách quen" },
     { key: "customer-young-mother", frontUrl: youngMotherFrontUrl, walkKey: "walk-young-mother", shortName: "Mẹ trẻ" },
     { key: "customer-construction-worker", frontUrl: constructionWorkerFrontUrl, walkKey: "walk-construction-worker", shortName: "Chú công nhân" },
@@ -152,11 +177,14 @@ const CUSTOMER_APPEARANCES: Record<CustomerType, readonly CustomerAppearance[]> 
     { key: "customer-street-sweeper", frontUrl: streetSweeperFrontUrl, walkKey: "walk-street-sweeper", shortName: "Chú quét đường" },
     { key: "customer-ward-inspector", frontUrl: wardInspectorFrontUrl, walkKey: "walk-ward-inspector", shortName: "Cán bộ phường" },
     { key: "customer-ward-police", frontUrl: wardPoliceFrontUrl, walkKey: "walk-ward-police-officer", shortName: "Công an phường" },
+    { key: "customer-motorbike-mechanic", frontUrl: motorbikeMechanicFrontUrl, walkKey: "walk-motorbike-mechanic", shortName: "Chú thợ sửa xe" },
+    { key: "customer-traditional-taxi-driver", frontUrl: traditionalTaxiDriverFrontUrl, walkKey: "walk-traditional-taxi-driver", shortName: "Chú xe ôm" },
   ],
   tourist: [
     { key: "customer-backpacker-tourist", frontUrl: backpackerTouristFrontUrl, walkKey: "walk-tourist", shortName: "Du khách" },
     { key: "customer-food-reviewer", frontUrl: foodReviewerFrontUrl, walkKey: "walk-food-reviewer", shortName: "Food blogger" },
     { key: "customer-genz-nightowl", frontUrl: genzNightowlFrontUrl, walkKey: "walk-genz-nightowl", shortName: "Bạn trẻ" },
+    { key: "customer-cajon-player", frontUrl: cajonPlayerFrontUrl, walkKey: "walk-cajon-player", shortName: "Bạn chơi cajon" },
   ],
 };
 
@@ -181,12 +209,21 @@ const WALKER_TEXTURES = [
   "walk-lottery-vendor",
   "walk-morning-jogger",
   "walk-office-woman",
+  "walk-young-father",
   "walk-older-regular",
+  "walk-grandmother",
+  "walk-preschooler",
   "walk-schoolboy",
   "walk-street-sweeper",
   "walk-ward-police-officer",
   "walk-ward-inspector",
   "walk-young-mother",
+  "walk-primary-teacher",
+  "walk-motorbike-mechanic",
+  "walk-traditional-taxi-driver",
+  "walk-night-shift-nurse",
+  "walk-taxi-driver",
+  "walk-cajon-player",
 ] as const;
 
 const WALKER_FOOTPRINTS: Partial<Record<(typeof WALKER_TEXTURES)[number], {
@@ -224,6 +261,15 @@ const AMBIENT_WALKER_ASSETS = [
   { key: "walk-ward-police-officer", url: wardPoliceWalkUrl },
   { key: "walk-ward-inspector", url: wardInspectorWalkUrl },
   { key: "walk-young-mother", url: youngMotherWalkUrl },
+  { key: "walk-young-father", url: youngFatherWalkUrl },
+  { key: "walk-grandmother", url: grandmotherWalkUrl },
+  { key: "walk-preschooler", url: preschoolerWalkUrl },
+  { key: "walk-primary-teacher", url: primaryTeacherWalkUrl },
+  { key: "walk-motorbike-mechanic", url: motorbikeMechanicWalkUrl },
+  { key: "walk-traditional-taxi-driver", url: traditionalTaxiDriverWalkUrl },
+  { key: "walk-night-shift-nurse", url: nightShiftNurseWalkUrl },
+  { key: "walk-taxi-driver", url: taxiDriverWalkUrl },
+  { key: "walk-cajon-player", url: cajonPlayerWalkUrl },
 ] as const;
 
 const TRAFFIC_BIKE_PROFILES = [
@@ -289,17 +335,26 @@ const OWNER_IDLE_FRAME_SEQUENCE = [
   0, 1, 2, 1, 0, 4, 5, 3,
 ];
 
-function getOwnerDirectionFromVector(x: number, y: number): OwnerDirection {
-  const sector = Math.round(Math.atan2(y, x) / (Math.PI / 4));
-  return OWNER_MOVEMENT_DIRECTION_SECTORS[(sector + OWNER_MOVEMENT_DIRECTION_SECTORS.length) % OWNER_MOVEMENT_DIRECTION_SECTORS.length];
+function getOwnerDirectionFromVector(x: number, y: number, currentDirection?: OwnerDirection): OwnerDirection {
+  const angle = Math.atan2(y, x);
+  const sector = Math.round(angle / (Math.PI / 4));
+  const nextDirection = OWNER_MOVEMENT_DIRECTION_SECTORS[(sector + OWNER_MOVEMENT_DIRECTION_SECTORS.length) % OWNER_MOVEMENT_DIRECTION_SECTORS.length];
+  if (!currentDirection) return nextDirection;
+
+  const currentSector = OWNER_MOVEMENT_DIRECTION_SECTORS.indexOf(currentDirection);
+  const currentAngle = currentSector * (Math.PI / 4);
+  const angleFromCurrent = Math.atan2(Math.sin(angle - currentAngle), Math.cos(angle - currentAngle));
+  const directionChangeThreshold = Math.PI / 8 + Math.PI / 36;
+  return Math.abs(angleFromCurrent) <= directionChangeThreshold ? currentDirection : nextDirection;
 }
 
 const CUSTOMER_DISPLAY_WIDTH = 54;
 const CUSTOMER_DISPLAY_HEIGHT = 86;
 const CHARACTER_TARGET_VISIBLE_HEIGHT = 78;
 const CHARACTER_DISPLAY_SCALE = 1.5;
-const MARKET_CHARACTER_SCALE = 1.28;
+const MARKET_CHARACTER_SCALE = 1.45;
 const WALKER_BASELINE_Y = 374;
+const OWNER_WALK_FRAME_RATE = 9;
 // A relaxed cadence keeps the generated eight-pose walk cycle from feeling hurried.
 const WALK_FRAME_RATE = 6;
 const CORE_WALKER_COUNT = 6;
@@ -308,20 +363,26 @@ const COOKING_STEAM_DEPTH = 3.35;
 const HOME_AMBIENT_WALKER_COUNT = 3;
 const MARKET_AMBIENT_WALKER_COUNT = 9;
 const MAX_ACTIVE_AMBIENT_WALKERS = WALKER_TEXTURES.length + HOME_AMBIENT_WALKER_COUNT + MARKET_AMBIENT_WALKER_COUNT;
-const WALKER_COUNT_BY_CROWD = { quiet: 6, steady: 11, busy: 17 } as const;
+const WALKER_COUNT_BY_CROWD = { quiet: 6, steady: 11, busy: 20 } as const;
 const LATE_NIGHT_WALKER_PRIORITY = [
   "walk-genz-nightowl", "walk-delivery-rider", "walk-street-cat", "walk-food-reviewer",
   "walk-older-regular", "walk-ward-police-officer", "walk-lottery-vendor", "walk-street-sweeper",
-  "walk-ingredient-supplier", "walk-office-woman", "walk-tourist", "walk-shopper",
-  "walk-office", "walk-student", "walk-young-mother", "walk-construction-worker", "walk-schoolboy",
-  "walk-ward-inspector",
+  "walk-ingredient-supplier", "walk-office-woman", "walk-young-father", "walk-tourist", "walk-shopper",
+  "walk-office", "walk-student", "walk-young-mother", "walk-grandmother", "walk-construction-worker", "walk-schoolboy",
+  "walk-ward-inspector", "walk-preschooler",
+  "walk-primary-teacher",
+  "walk-night-shift-nurse", "walk-motorbike-mechanic", "walk-traditional-taxi-driver",
+  "walk-taxi-driver", "walk-cajon-player",
 ] as const;
 const MORNING_WALKER_PRIORITY = [
   "walk-morning-jogger", "walk-street-sweeper", "walk-office-woman", "walk-student",
-  "walk-office", "walk-older-regular", "walk-young-mother", "walk-ingredient-supplier",
+  "walk-office", "walk-older-regular", "walk-grandmother", "walk-young-mother", "walk-young-father", "walk-ingredient-supplier",
   "walk-shopper", "walk-tourist", "walk-delivery-rider", "walk-street-cat",
   "walk-construction-worker", "walk-food-reviewer", "walk-schoolboy", "walk-lottery-vendor",
-  "walk-genz-nightowl", "walk-ward-police-officer", "walk-ward-inspector",
+  "walk-genz-nightowl", "walk-ward-police-officer", "walk-ward-inspector", "walk-preschooler",
+  "walk-primary-teacher",
+  "walk-night-shift-nurse", "walk-motorbike-mechanic", "walk-traditional-taxi-driver",
+  "walk-taxi-driver", "walk-cajon-player",
 ] as const;
 const WIND_MAP_WIDTH = SHOP_BASE_SIZE.width / 4;
 const WIND_MAP_HEIGHT = SHOP_BASE_SIZE.height / 4;
@@ -360,6 +421,16 @@ const WALKER_ART_HEIGHTS: Record<string, number> = {
   "walk-ward-police-officer": 350,
   "walk-ward-inspector": 350,
   "walk-young-mother": 350,
+  "walk-young-father": 322,
+  "walk-grandmother": 322,
+  // Use the larger normalization height to keep the preschooler shorter than adults.
+  "walk-preschooler": 380,
+  "walk-primary-teacher": 322,
+  "walk-motorbike-mechanic": 322,
+  "walk-traditional-taxi-driver": 322,
+  "walk-night-shift-nurse": 322,
+  "walk-taxi-driver": 322,
+  "walk-cajon-player": 322,
   "walk-taphoa-student-boy": 350,
   "walk-taphoa-college-girl": 350,
 };
@@ -372,6 +443,15 @@ const CUSTOMER_ART_HEIGHTS: Record<string, number> = {
   "customer-market-shopper": 346,
   "customer-older-regular": 349,
   "customer-young-mother": 344,
+  "customer-young-father": 322,
+  "customer-grandmother": 322,
+  "customer-preschooler": 380,
+  "customer-primary-teacher": 322,
+  "customer-motorbike-mechanic": 322,
+  "customer-traditional-taxi-driver": 322,
+  "customer-night-shift-nurse": 322,
+  "customer-taxi-driver": 322,
+  "customer-cajon-player": 322,
   "customer-construction-worker": 345,
   "customer-delivery-rider": 345,
   "customer-ingredient-supplier": 353,
@@ -393,6 +473,15 @@ const CUSTOMER_ART_BOTTOMS: Record<string, number> = {
   "customer-market-shopper": 391,
   "customer-older-regular": 393,
   "customer-young-mother": 377,
+  "customer-young-father": 359,
+  "customer-grandmother": 359,
+  "customer-preschooler": 359,
+  "customer-primary-teacher": 359,
+  "customer-motorbike-mechanic": 359,
+  "customer-traditional-taxi-driver": 359,
+  "customer-night-shift-nurse": 359,
+  "customer-taxi-driver": 359,
+  "customer-cajon-player": 359,
   "customer-construction-worker": 390,
   "customer-delivery-rider": 389,
   "customer-ingredient-supplier": 391,
@@ -404,6 +493,18 @@ const CUSTOMER_ART_BOTTOMS: Record<string, number> = {
   "customer-backpacker-tourist": 391,
   "customer-food-reviewer": 391,
   "customer-genz-nightowl": 396,
+};
+
+const WALKER_ART_BOTTOMS: Record<string, number> = {
+  "walk-young-father": 359,
+  "walk-grandmother": 359,
+  "walk-preschooler": 359,
+  "walk-primary-teacher": 359,
+  "walk-motorbike-mechanic": 359,
+  "walk-traditional-taxi-driver": 359,
+  "walk-night-shift-nurse": 359,
+  "walk-taxi-driver": 359,
+  "walk-cajon-player": 359,
 };
 
 const GROCERY_BROWSE_ART_HEIGHTS: Record<string, number> = {
@@ -488,7 +589,7 @@ const SHOP_LIGHTING_GAINS: Record<Exclude<StreetMapMood, "day">, {
 
 function getWalkerOriginY(_textureKey: string): number {
   if (_textureKey === "walk-street-cat") return 1;
-  return WALKER_BASELINE_Y / CUSTOMER_FRAME_HEIGHT;
+  return (WALKER_ART_BOTTOMS[_textureKey] ?? WALKER_BASELINE_Y) / CUSTOMER_FRAME_HEIGHT;
 }
 
 function getWalkerFrameHeight(_textureKey: string): number {
@@ -596,7 +697,6 @@ type StreetCrowdSchedule = "late-night" | "morning" | "day";
 export type StreetCrowdLevel = "quiet" | "steady" | "busy";
 export interface StreetCrowdState {
   level: StreetCrowdLevel;
-  label: string;
   customerArrivalMultiplier: number;
 }
 
@@ -1012,7 +1112,6 @@ export class NeighborhoodScene extends Phaser.Scene {
   private lastEnvironmentUiAt = 0;
   private streetCrowdState: StreetCrowdState = {
     level: "steady",
-    label: "Phố vừa",
     customerArrivalMultiplier: 1,
   };
   private streetCrowdSignature = "";
@@ -1102,6 +1201,26 @@ export class NeighborhoodScene extends Phaser.Scene {
     return "afternoon";
   }
 
+  getWholesaleMarketLightingState(): WholesaleMarketLightingState {
+    const marketMoodByTime: Record<TimeOfDayMap, WholesaleMarketLightingState["from"]> = {
+      dawn: "morning",
+      day: "noon",
+      sunset: "afternoon",
+      night: "night",
+    };
+    const { fromMood, toMood, transition } = this.getTimeOfDayBlend(this.getCurrentDayPhase());
+    const phase = this.getCurrentDayPhase();
+    const sunHeight = Math.cos((phase - 0.5) * Math.PI * 2);
+    const daylight = this.smoothStep(-0.12, 0.18, sunHeight);
+    const rain = this.getWeatherState(this.environmentElapsedMs / 1_000).rain;
+    return {
+      from: marketMoodByTime[fromMood],
+      to: marketMoodByTime[toMood],
+      blend: transition,
+      rain: this.smoothStep(0.08, 0.72, rain) * daylight * 0.95,
+    };
+  }
+
   getStreetCrowdState(): StreetCrowdState {
     return { ...this.streetCrowdState };
   }
@@ -1142,6 +1261,10 @@ export class NeighborhoodScene extends Phaser.Scene {
 
   isHomeZoneActive(): boolean {
     return this.activeZone === "home";
+  }
+
+  getPlayerOwnerGender(): "male" | "female" {
+    return this.ownerGender;
   }
 
   isWholesaleMarketZoneActive(): boolean {
@@ -1334,7 +1457,7 @@ export class NeighborhoodScene extends Phaser.Scene {
       { state: "idle-base", textureKey: "player-owner-male-idle-base", frameCount: 4, frameRate: 4 },
       { state: "idle-glance", textureKey: "player-owner-male-idle-glance", frameCount: 4, frameRate: 4 },
       { state: "idle-apron", textureKey: "player-owner-male-idle-apron", frameCount: 4, frameRate: 4 },
-      { state: "walk", textureKey: "player-owner-male-walk-8dir", frameCount: 8, frameRate: WALK_FRAME_RATE },
+      { state: "walk", textureKey: "player-owner-male-walk-8dir", frameCount: 8, frameRate: OWNER_WALK_FRAME_RATE },
     ] as const;
     for (const animationSet of ownerMaleAnimationSets) {
       OWNER_DIRECTIONS.forEach((direction, directionIndex) => {
@@ -1634,6 +1757,12 @@ export class NeighborhoodScene extends Phaser.Scene {
     bubble.setPosition(speakerX, y);
   }
 
+  private getStreetWalkerSpeechBubbleY(walker: Walker, laneY: number): number {
+    const marketScale = walker.zone === "market" ? MARKET_CHARACTER_SCALE : 1;
+    const characterHeight = CHARACTER_TARGET_VISIBLE_HEIGHT * CHARACTER_DISPLAY_SCALE * marketScale;
+    return laneY - (characterHeight + 18) * this.unit;
+  }
+
   private takeStreetDialogue(walker: Walker): string {
     const contextKey = `${walker.zone}:${walker.textureKey}`;
     let bag = this.streetDialogueBags.get(contextKey);
@@ -1675,28 +1804,28 @@ export class NeighborhoodScene extends Phaser.Scene {
     if (this.trafficDriverDialogueBag.length === 0) {
       this.trafficDriverDialogueBag = Phaser.Utils.Array.Shuffle([...TRAFFIC_DRIVER_DIALOGUES]);
     }
-    return this.trafficDriverDialogueBag.pop() ?? "Đi đứng kiểu gì vậy cha?";
+    return this.trafficDriverDialogueBag.pop() ?? "Bạn đứng giữa lối xe chạy kìa, né vào trong giúp mình.";
   }
 
   private takeTrafficJamArgument(): string {
     if (this.trafficJamArgumentBag.length === 0) {
       this.trafficJamArgumentBag = Phaser.Utils.Array.Shuffle([...TRAFFIC_JAM_ARGUMENTS]);
     }
-    return this.trafficJamArgumentBag.pop() ?? "Ông trước ngủ gật hả, nhích lên coi!";
+    return this.trafficJamArgumentBag.pop() ?? "Xe phía trước đi được chưa? Đèn xanh rồi kìa.";
   }
 
   private takeTrafficJamReply(): string {
     if (this.trafficJamReplyBag.length === 0) {
       this.trafficJamReplyBag = Phaser.Utils.Array.Shuffle([...TRAFFIC_JAM_REPLIES]);
     }
-    return this.trafficJamReplyBag.pop() ?? "Tui cũng đang kẹt, chửi tui chi?";
+    return this.trafficJamReplyBag.pop() ?? "Tôi cũng đang chờ xe phía trước đây.";
   }
 
   private takeTrafficJamStartLine(): string {
     if (this.trafficJamStartBag.length === 0) {
       this.trafficJamStartBag = Phaser.Utils.Array.Shuffle([...TRAFFIC_JAM_START_LINES]);
     }
-    return this.trafficJamStartBag.pop() ?? "Đang chạy ngon tự nhiên khựng ngang!";
+    return this.trafficJamStartBag.pop() ?? "Sao xe dừng lại hết rồi nhỉ?";
   }
 
   private getNearestTrafficBike(
@@ -1746,8 +1875,9 @@ export class NeighborhoodScene extends Phaser.Scene {
 
   private positionTrafficBikeSpeechBubble(bike: TrafficBike, x: number, laneY: number): void {
     const laneRank = this.trafficBikes.filter((candidate) => candidate.lane === bike.lane).indexOf(bike);
-    const lift = 132 + (Math.max(0, laneRank) % 2) * 52;
-    this.positionStreetSpeechBubble(bike.speechBubble, x, laneY - lift * this.unit);
+    const laneLift = 132 + (Math.max(0, laneRank) % 2) * 52;
+    const marketScale = this.activeZone === "market" ? MARKET_CHARACTER_SCALE : 1;
+    this.positionStreetSpeechBubble(bike.speechBubble, x, laneY - laneLift * marketScale * this.unit);
   }
 
   private destroyTrafficBike(bike: TrafficBike): void {
@@ -1983,7 +2113,7 @@ export class NeighborhoodScene extends Phaser.Scene {
       } else {
         this.streetSpeechTimerMs -= dtMs;
         bubble.setScale(this.unit).setDepth(getStreetCharacterDepth(speaker.sprite.y) + 0.0001);
-        this.positionStreetSpeechBubble(bubble, speaker.sprite.x, speaker.sprite.y - 101 * this.unit);
+        this.positionStreetSpeechBubble(bubble, speaker.sprite.x, this.getStreetWalkerSpeechBubbleY(speaker, speaker.sprite.y));
         if (this.streetSpeechTimerMs <= 0) {
           this.streetSpeaker = undefined;
           this.streetSpeechCooldownMs = Phaser.Math.Between(5_500, 9_000);
@@ -2023,7 +2153,7 @@ export class NeighborhoodScene extends Phaser.Scene {
       .setDepth(getStreetCharacterDepth(nextSpeaker.sprite.y) + 0.0001)
       .setAlpha(0)
       .setVisible(true);
-    this.positionStreetSpeechBubble(bubble, nextSpeaker.sprite.x, nextSpeaker.sprite.y - 101 * this.unit);
+    this.positionStreetSpeechBubble(bubble, nextSpeaker.sprite.x, this.getStreetWalkerSpeechBubbleY(nextSpeaker, nextSpeaker.sprite.y));
     this.tweens.add({
       targets: bubble,
       alpha: 1,
@@ -2442,7 +2572,7 @@ export class NeighborhoodScene extends Phaser.Scene {
       this.outdoorDiningGuests.delete(guestId);
     }
 
-    const canShowOutside = snapshot.inShift && snapshot.serviceMode === "street" && this.activeZone === "shop";
+    const canShowOutside = snapshot.inShift && this.activeZone === "shop";
     if (!canShowOutside || this.mapWidth <= 0 || this.characterUnit <= 0) {
       for (const actor of this.outdoorDiningGuests.values()) {
         actor.sprite.setVisible(false);
@@ -2489,13 +2619,32 @@ export class NeighborhoodScene extends Phaser.Scene {
         ? guest.outsideDirection === 1 ? -1 : 1
         : guest.outsideDirection;
       const distance = Math.min(this.mapWidth * 0.28, 360 * this.unit);
-      const doorX = this.cartX;
-      const baseX = guest.status === "approaching"
-        ? doorX - movementDirection * distance + movementDirection * distance * progress
-        : doorX + movementDirection * distance * progress;
       const memberOffset = (guest.partyMemberIndex - (guest.partySize - 1) / 2) * 20 * this.unit;
-      const x = Phaser.Math.Clamp(baseX - movementDirection * memberOffset, 0, this.mapWidth);
-      const y = this.groundY;
+      const doorX = this.cartX - guest.outsideDirection * memberOffset;
+      const entranceLaneY = this.mapTop + this.mapHeight * 0.66;
+      // Keep arrivals on one sidewalk baseline all the way to the doorway;
+      // changing their foot height here made the side-walk animation look airborne.
+      const outwardRoute = [
+        { x: doorX, y: entranceLaneY },
+        { x: doorX + guest.outsideDirection * distance, y: entranceLaneY },
+      ];
+      const route = guest.status === "approaching" ? [...outwardRoute].reverse() : outwardRoute;
+      const segmentLengths = route.slice(1).map((point, index) =>
+        Phaser.Math.Distance.Between(route[index].x, route[index].y, point.x, point.y),
+      );
+      const routeLength = segmentLengths.reduce((sum, length) => sum + length, 0);
+      let distanceAlongRoute = progress * routeLength;
+      let segmentIndex = 0;
+      while (segmentIndex < segmentLengths.length - 1 && distanceAlongRoute > segmentLengths[segmentIndex]) {
+        distanceAlongRoute -= segmentLengths[segmentIndex];
+        segmentIndex += 1;
+      }
+      const segmentLength = segmentLengths[segmentIndex] ?? 0;
+      const segmentProgress = segmentLength > 0 ? Phaser.Math.Clamp(distanceAlongRoute / segmentLength, 0, 1) : 1;
+      const from = route[segmentIndex];
+      const to = route[segmentIndex + 1] ?? from;
+      const x = Phaser.Math.Clamp(Phaser.Math.Linear(from.x, to.x, segmentProgress), 0, this.mapWidth);
+      const y = Phaser.Math.Linear(from.y, to.y, segmentProgress);
       const anchor = manifest.anchors.standingFeet;
       actor.sprite
         .setOrigin(anchor.x / manifest.frame_layout.cellWidth, anchor.y / manifest.frame_layout.cellHeight)
@@ -3008,7 +3157,7 @@ export class NeighborhoodScene extends Phaser.Scene {
     const startedMoving = !this.ownerMoving;
     this.ownerMoving = true;
     const nextFacingDirection = Math.abs(inputX) > 0.18 ? (inputX < 0 ? -1 : 1) : this.ownerFacingDirection;
-    const nextFacing8Direction = getOwnerDirectionFromVector(inputX, inputY);
+    const nextFacing8Direction = getOwnerDirectionFromVector(inputX, inputY, this.ownerFacing8Direction);
     const facingChanged = this.ownerGender === "male"
       ? nextFacing8Direction !== this.ownerFacing8Direction
       : nextFacingDirection !== this.ownerFacingDirection;
@@ -3057,8 +3206,6 @@ export class NeighborhoodScene extends Phaser.Scene {
     this.debugShopStage = Phaser.Math.Clamp(Math.round(stageId), 1, SHOP_STAGES.length);
     this.transitionHomeStage(this.debugShopStage);
     this.transitionShopStage(this.debugShopStage, true);
-    const stageValue = document.querySelector<HTMLElement>("#shop-stage-debug-value");
-    if (stageValue) stageValue.textContent = `${String(this.debugShopStage).padStart(2, "0")} / ${SHOP_STAGES.length}`;
   }
 
   getShopStageForDebug(): number {
@@ -4193,13 +4340,13 @@ export class NeighborhoodScene extends Phaser.Scene {
   }
 
   private updateStreetCrowdState(hour: number, rain: number): void {
-    const lateNight = hour >= 23.5 || hour < 5;
+    const lateNight = hour >= 18.5 || hour < 5;
     const morning = hour >= 5 && hour < 10;
     let level: StreetCrowdLevel;
 
-    if ((hour >= 7 && hour < 9) || (hour >= 11 && hour < 14) || (hour >= 17 && hour < 22)) {
+    if ((hour >= 7 && hour < 9) || (hour >= 11 && hour < 14) || (hour >= 17 && hour < 23.5)) {
       level = "busy";
-    } else if ((hour >= 5 && hour < 7) || (hour >= 9 && hour < 11) || (hour >= 16 && hour < 17) || (hour >= 22 && hour < 23.5)) {
+    } else if ((hour >= 5 && hour < 7) || (hour >= 9 && hour < 11) || (hour >= 14 && hour < 17) || hour >= 23.5 || hour < 1) {
       level = "steady";
     } else {
       level = "quiet";
@@ -4213,8 +4360,7 @@ export class NeighborhoodScene extends Phaser.Scene {
 
     const nextState: StreetCrowdState = {
       level,
-      label: level === "busy" ? "Phố đông" : level === "steady" ? "Phố vừa" : "Phố vắng",
-      customerArrivalMultiplier: level === "busy" ? 1.2 : level === "steady" ? 1 : 0.7,
+      customerArrivalMultiplier: level === "busy" ? 1.25 : level === "steady" ? 1 : 0.7,
     };
     const schedule = lateNight ? "late-night" : morning ? "morning" : "day";
     const signature = `${level}:${schedule}`;
@@ -4651,7 +4797,7 @@ export class NeighborhoodScene extends Phaser.Scene {
         .setVisible(walker.active);
       if (walker.speechBubble) {
         walker.speechBubble.setScale(unit).setDepth(getStreetCharacterDepth(laneY) + 0.0001);
-        this.positionStreetSpeechBubble(walker.speechBubble, walker.sprite.x, laneY - 101 * unit * marketScale);
+        this.positionStreetSpeechBubble(walker.speechBubble, walker.sprite.x, this.getStreetWalkerSpeechBubbleY(walker, laneY));
       }
     });
     this.layoutTrafficBikes();

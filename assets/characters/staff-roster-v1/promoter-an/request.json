@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "kind": "sprite-gen-request",
+  "engine": "component-row",
+  "character": {
+    "id": "promoter-an",
+    "description": "Young Vietnamese woman promoter with a long dark ponytail and red patterned tie, coral-red short jacket, white blouse, dark teal pencil skirt, dark tights and black flats. Preserve her original face, hairstyle, outfit and proportions.",
+    "base_image": "promoter-an.png"
+  },
+  "cell": {
+    "shape": "rect",
+    "width": 160,
+    "height": 300,
+    "safe_margin_x": 15,
+    "safe_margin_y": 15
+  },
+  "chroma_key": {
+    "name": "magenta",
+    "hex": "#FF00FF",
+    "rgb": [
+      255,
+      0,
+      255
+    ],
+    "selection": "manual"
+  },
+  "states": {
+    "work_promoter": {
+      "frames": 4,
+      "fps": 5,
+      "loop": true,
+      "action": "Four-frame welcoming loop at the entrance: hold out one small blank leaflet with a gentle inviting smile, make a short friendly open-hand gesture, then lower her hand and return to the exact opening pose. Preserve long ponytail, red tie, coral jacket, white blouse and teal skirt. Feet remain planted at one ground pivot; restrained motion, no large wave. No legible writing, logo, customer, entrance, map or background. Flat magenta background."
+    },
+    "rest_tired": {
+      "frames": 4,
+      "fps": 3,
+      "loop": true,
+      "action": "A subtle four-frame tired rest loop at a safe standing rest point: shoulders lower, wipe forehead with a small clean towel, exhale, then return close to the relaxed opening pose. Feet planted, stable body scale and ground pivot. No walking or active work. Flat magenta background."
+    },
+    "idle_lazy": {
+      "frames": 4,
+      "fps": 3,
+      "loop": true,
+      "action": "A restrained four-frame idle-only loop used only when no work is waiting: briefly take out a small phone, glance at it and tap once, lower it and return to the opening pose. Mildly bored but charming, feet planted, stable scale and pivot. Never use this pose while an active task is waiting. Flat magenta background."
+    }
+  },
+  "style": "Polished painted 2D chibi game character matching existing Banh Mi Pho NPCs, warm natural shading, expressive face, clean dark outline, rich but restrained colors; never pixel art.",
+  "layout": "taxonomy/v1",
+  "fit": {
+    "align_x": "bbox-center",
+    "align_y": "bottom",
+    "ground_frames": true
+  }
+}

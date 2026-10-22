@@ -1,0 +1,67 @@
+{
+  "kind": "sprite-gen-gen-set-report",
+  "run_dir": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run",
+  "states": [
+    "chop_vegetables",
+    "idle_phone",
+    "idle_wipe_sweat",
+    "idle_look_around"
+  ],
+  "ok": 4,
+  "failed": [],
+  "not_started": [],
+  "items": [
+    {
+      "state": "chop_vegetables",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run\\raw\\chop_vegetables.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run\\reports\\gen-set\\chop_vegetables.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run\\base-source.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run\\references\\layout-guides\\chop_vegetables.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 55.4,
+      "ok": true
+    },
+    {
+      "state": "idle_phone",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run\\raw\\idle_phone.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run\\reports\\gen-set\\idle_phone.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run\\base-source.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run\\references\\layout-guides\\idle_phone.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 59.3,
+      "ok": true
+    },
+    {
+      "state": "idle_wipe_sweat",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run\\raw\\idle_wipe_sweat.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run\\reports\\gen-set\\idle_wipe_sweat.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run\\base-source.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run\\references\\layout-guides\\idle_wipe_sweat.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 59.2,
+      "ok": true
+    },
+    {
+      "state": "idle_look_around",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run\\raw\\idle_look_around.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run\\reports\\gen-set\\idle_look_around.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run\\base-source.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run\\references\\layout-guides\\idle_look_around.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 69.1,
+      "ok": true
+    }
+  ]
+}

@@ -1,0 +1,217 @@
+{
+  "ok": true,
+  "engine": "component-row",
+  "curation_applied": false,
+  "frame_variant": "pixel",
+  "errors": [],
+  "atlas": "sprite-sheet-alpha.png",
+  "manifest": "manifest.json",
+  "cell": {
+    "shape": "rect",
+    "width": 247,
+    "height": 396,
+    "safe_margin_x": 23,
+    "safe_margin_y": 37
+  },
+  "states": [
+    "cook_idle",
+    "turn_to_player",
+    "turn_back_to_stove"
+  ],
+  "cells": [
+    {
+      "state": "cook_idle",
+      "frame": 0,
+      "nontransparent_pixels": 39973,
+      "x": 0,
+      "y": 0,
+      "w": 247,
+      "h": 396
+    },
+    {
+      "state": "cook_idle",
+      "frame": 1,
+      "nontransparent_pixels": 40633,
+      "x": 247,
+      "y": 0,
+      "w": 247,
+      "h": 396
+    },
+    {
+      "state": "cook_idle",
+      "frame": 2,
+      "nontransparent_pixels": 40158,
+      "x": 494,
+      "y": 0,
+      "w": 247,
+      "h": 396
+    },
+    {
+      "state": "cook_idle",
+      "frame": 3,
+      "nontransparent_pixels": 39655,
+      "x": 741,
+      "y": 0,
+      "w": 247,
+      "h": 396
+    },
+    {
+      "state": "turn_to_player",
+      "frame": 0,
+      "nontransparent_pixels": 35113,
+      "x": 0,
+      "y": 396,
+      "w": 247,
+      "h": 396
+    },
+    {
+      "state": "turn_to_player",
+      "frame": 1,
+      "nontransparent_pixels": 35386,
+      "x": 247,
+      "y": 396,
+      "w": 247,
+      "h": 396
+    },
+    {
+      "state": "turn_to_player",
+      "frame": 2,
+      "nontransparent_pixels": 35302,
+      "x": 494,
+      "y": 396,
+      "w": 247,
+      "h": 396
+    },
+    {
+      "state": "turn_to_player",
+      "frame": 3,
+      "nontransparent_pixels": 34240,
+      "x": 741,
+      "y": 396,
+      "w": 247,
+      "h": 396
+    },
+    {
+      "state": "turn_back_to_stove",
+      "frame": 0,
+      "nontransparent_pixels": 38506,
+      "x": 0,
+      "y": 792,
+      "w": 247,
+      "h": 396
+    },
+    {
+      "state": "turn_back_to_stove",
+      "frame": 1,
+      "nontransparent_pixels": 39060,
+      "x": 247,
+      "y": 792,
+      "w": 247,
+      "h": 396
+    },
+    {
+      "state": "turn_back_to_stove",
+      "frame": 2,
+      "nontransparent_pixels": 37233,
+      "x": 494,
+      "y": 792,
+      "w": 247,
+      "h": 396
+    },
+    {
+      "state": "turn_back_to_stove",
+      "frame": 3,
+      "nontransparent_pixels": 35486,
+      "x": 741,
+      "y": 792,
+      "w": 247,
+      "h": 396
+    }
+  ],
+  "frame_layout": {
+    "sheetWidth": 988,
+    "sheetHeight": 1188,
+    "cellWidth": 247,
+    "cellHeight": 396,
+    "rows": {
+      "cook_idle": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 0,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 0,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 0,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "turn_to_player": [
+        {
+          "x": 0,
+          "y": 396,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 396,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 396,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 396,
+          "w": 247,
+          "h": 396
+        }
+      ],
+      "turn_back_to_stove": [
+        {
+          "x": 0,
+          "y": 792,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 247,
+          "y": 792,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 494,
+          "y": 792,
+          "w": 247,
+          "h": 396
+        },
+        {
+          "x": 741,
+          "y": 792,
+          "w": 247,
+          "h": 396
+        }
+      ]
+    }
+  }
+}

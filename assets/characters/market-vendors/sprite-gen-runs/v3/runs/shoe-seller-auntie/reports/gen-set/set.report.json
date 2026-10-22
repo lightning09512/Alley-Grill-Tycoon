@@ -1,0 +1,39 @@
+{
+  "kind": "sprite-gen-gen-set-report",
+  "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\shoe-seller-auntie",
+  "states": [
+    "idle",
+    "work"
+  ],
+  "ok": 2,
+  "failed": [],
+  "not_started": [],
+  "items": [
+    {
+      "state": "idle",
+      "out": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\shoe-seller-auntie\\raw\\idle.png",
+      "report": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\shoe-seller-auntie\\reports\\gen-set\\idle.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\shoe-seller-auntie\\base-source.png",
+        "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\shoe-seller-auntie\\references\\layout-guides\\idle.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 62.5,
+      "ok": true
+    },
+    {
+      "state": "work",
+      "out": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\shoe-seller-auntie\\raw\\work.png",
+      "report": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\shoe-seller-auntie\\reports\\gen-set\\work.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\shoe-seller-auntie\\base-source.png",
+        "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\shoe-seller-auntie\\references\\layout-guides\\work.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 68.8,
+      "ok": true
+    }
+  ]
+}

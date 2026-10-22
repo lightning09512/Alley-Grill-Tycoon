@@ -1,0 +1,53 @@
+{
+  "kind": "sprite-gen-gen-set-report",
+  "run_dir": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\server-mai-linh\\run",
+  "states": [
+    "work_serve",
+    "rest_tired",
+    "idle_lazy"
+  ],
+  "ok": 3,
+  "failed": [],
+  "not_started": [],
+  "items": [
+    {
+      "state": "work_serve",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\server-mai-linh\\run\\raw\\work_serve.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\server-mai-linh\\run\\reports\\gen-set\\work_serve.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\server-mai-linh\\run\\base-source.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\server-mai-linh\\run\\references\\layout-guides\\work_serve.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 100.8,
+      "ok": true
+    },
+    {
+      "state": "rest_tired",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\server-mai-linh\\run\\raw\\rest_tired.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\server-mai-linh\\run\\reports\\gen-set\\rest_tired.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\server-mai-linh\\run\\base-source.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\server-mai-linh\\run\\references\\layout-guides\\rest_tired.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 73.2,
+      "ok": true
+    },
+    {
+      "state": "idle_lazy",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\server-mai-linh\\run\\raw\\idle_lazy.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\server-mai-linh\\run\\reports\\gen-set\\idle_lazy.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\server-mai-linh\\run\\base-source.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\server-mai-linh\\run\\references\\layout-guides\\idle_lazy.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 59.2,
+      "ok": true
+    }
+  ]
+}

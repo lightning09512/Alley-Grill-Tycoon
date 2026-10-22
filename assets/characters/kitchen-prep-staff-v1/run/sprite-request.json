@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "kind": "sprite-gen-request",
+  "engine": "component-row",
+  "character": {
+    "id": "kitchen-prep-staff-v1",
+    "description": "A friendly Vietnamese adult male kitchen prep cook with dark hair under a white chef cap, white short sleeve chef shirt, jade green apron, dark trousers, side view facing left toward the prep counter.",
+    "base_image": "base-source.png"
+  },
+  "cell": {
+    "shape": "rect",
+    "width": 160,
+    "height": 300,
+    "safe_margin_x": 15,
+    "safe_margin_y": 15
+  },
+  "chroma_key": {
+    "name": "magenta",
+    "hex": "#FF00FF",
+    "rgb": [
+      255,
+      0,
+      255
+    ],
+    "selection": "manual"
+  },
+  "states": {
+    "chop_vegetables": {
+      "frames": 4,
+      "fps": 6,
+      "loop": true,
+      "action": "A seamless four-frame preparation loop. Keep the full-body chef in the exact same side-left facing pose, clothing, size and foot position. Lean slightly toward the existing prep counter on his left and rhythmically chop vegetables at waist height with a small kitchen knife: raise hand slightly, chop, rebound, return near the opening pose. Use restrained shoulder, elbow, wrist and apron motion. Feet remain planted and no body drift. Do not add a board, counter, food pile, room, or other person; only a small knife in the chopping hand, matching the supplied game style. Flat magenta background."
+    },
+    "idle_phone": {
+      "frames": 4,
+      "fps": 3,
+      "loop": true,
+      "action": "Seamless subtle idle loop, same exact side-left facing direction, full-body scale, clothes and fixed planted feet. Relax shoulders and glance at a small phone held casually in one hand around chest height; thumb taps once, then returns to the first pose. Mildly lazy but cute expression. No walking, no direction change, no other props or people. Flat magenta background."
+    },
+    "idle_wipe_sweat": {
+      "frames": 4,
+      "fps": 3,
+      "loop": true,
+      "action": "Seamless subtle idle loop, exact same side-left view, identity, clothes, body scale and ground pivot. Lift a small clean towel to wipe the forehead once, lower it to waist, lightly exhale; return close to opening pose. Feet planted, no walking, no direction change, restrained arm and shoulder motion. No background or other people. Flat magenta background."
+    },
+    "idle_look_around": {
+      "frames": 4,
+      "fps": 3,
+      "loop": true,
+      "action": "Seamless quiet idle loop, exact same side-left view, identity, clothing, body size and ground pivot. Keep arms relaxed at waist; turn only the eyes and head slightly to check the room, pause, then return to the opening gaze. Mildly bored but friendly. Feet planted, no walking, no direction change, no props or other people. Flat magenta background."
+    }
+  },
+  "style": "Polished painted 2D chibi game art matching the Banh Mi Pho character sprites; warm natural shading, expressive face, clean outline, not pixel art.",
+  "layout": "taxonomy/v1",
+  "fit": {
+    "align_x": "bbox-center",
+    "align_y": "bottom",
+    "ground_frames": true
+  },
+  "chroma": {
+    "mode": "rgb",
+    "unmix_reach": 4,
+    "spill_max_fraction": 0.005
+  }
+}

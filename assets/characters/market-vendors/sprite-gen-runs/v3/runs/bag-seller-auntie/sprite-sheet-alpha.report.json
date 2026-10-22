@@ -1,0 +1,154 @@
+{
+  "ok": true,
+  "engine": "component-row",
+  "curation_applied": false,
+  "frame_variant": "pixel",
+  "errors": [],
+  "atlas": "sprite-sheet-alpha.png",
+  "manifest": "manifest.json",
+  "cell": {
+    "shape": "rect",
+    "width": 350,
+    "height": 561,
+    "safe_margin_x": 12,
+    "safe_margin_y": 12
+  },
+  "states": [
+    "idle",
+    "work"
+  ],
+  "cells": [
+    {
+      "state": "idle",
+      "frame": 0,
+      "nontransparent_pixels": 83915,
+      "x": 0,
+      "y": 0,
+      "w": 350,
+      "h": 561
+    },
+    {
+      "state": "idle",
+      "frame": 1,
+      "nontransparent_pixels": 84402,
+      "x": 350,
+      "y": 0,
+      "w": 350,
+      "h": 561
+    },
+    {
+      "state": "idle",
+      "frame": 2,
+      "nontransparent_pixels": 84838,
+      "x": 700,
+      "y": 0,
+      "w": 350,
+      "h": 561
+    },
+    {
+      "state": "idle",
+      "frame": 3,
+      "nontransparent_pixels": 82867,
+      "x": 1050,
+      "y": 0,
+      "w": 350,
+      "h": 561
+    },
+    {
+      "state": "work",
+      "frame": 0,
+      "nontransparent_pixels": 84939,
+      "x": 0,
+      "y": 561,
+      "w": 350,
+      "h": 561
+    },
+    {
+      "state": "work",
+      "frame": 1,
+      "nontransparent_pixels": 87956,
+      "x": 350,
+      "y": 561,
+      "w": 350,
+      "h": 561
+    },
+    {
+      "state": "work",
+      "frame": 2,
+      "nontransparent_pixels": 84551,
+      "x": 700,
+      "y": 561,
+      "w": 350,
+      "h": 561
+    },
+    {
+      "state": "work",
+      "frame": 3,
+      "nontransparent_pixels": 85046,
+      "x": 1050,
+      "y": 561,
+      "w": 350,
+      "h": 561
+    }
+  ],
+  "frame_layout": {
+    "sheetWidth": 1400,
+    "sheetHeight": 1122,
+    "cellWidth": 350,
+    "cellHeight": 561,
+    "rows": {
+      "idle": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 350,
+          "h": 561
+        },
+        {
+          "x": 350,
+          "y": 0,
+          "w": 350,
+          "h": 561
+        },
+        {
+          "x": 700,
+          "y": 0,
+          "w": 350,
+          "h": 561
+        },
+        {
+          "x": 1050,
+          "y": 0,
+          "w": 350,
+          "h": 561
+        }
+      ],
+      "work": [
+        {
+          "x": 0,
+          "y": 561,
+          "w": 350,
+          "h": 561
+        },
+        {
+          "x": 350,
+          "y": 561,
+          "w": 350,
+          "h": 561
+        },
+        {
+          "x": 700,
+          "y": 561,
+          "w": 350,
+          "h": 561
+        },
+        {
+          "x": 1050,
+          "y": 561,
+          "w": 350,
+          "h": 561
+        }
+      ]
+    }
+  }
+}

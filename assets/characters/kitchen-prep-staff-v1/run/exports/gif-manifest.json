@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "kind": "sprite-gen-gif-run",
+  "run_dir": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run",
+  "exports": [
+    {
+      "state": "chop_vegetables",
+      "output": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run\\exports\\chop_vegetables.gif",
+      "frames": 4,
+      "fps": 6.0,
+      "loop": true,
+      "gif_report": {
+        "path": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run\\exports\\chop_vegetables.gif",
+        "frames": 4,
+        "delay_ticks": [
+          16,
+          16,
+          16,
+          16
+        ],
+        "loop": 0,
+        "transparent": true,
+        "disposal": [
+          2,
+          2,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "state": "idle_phone",
+      "output": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run\\exports\\idle_phone.gif",
+      "frames": 4,
+      "fps": 3.0,
+      "loop": true,
+      "gif_report": {
+        "path": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run\\exports\\idle_phone.gif",
+        "frames": 4,
+        "delay_ticks": [
+          33,
+          33,
+          33,
+          33
+        ],
+        "loop": 0,
+        "transparent": true,
+        "disposal": [
+          2,
+          2,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "state": "idle_wipe_sweat",
+      "output": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run\\exports\\idle_wipe_sweat.gif",
+      "frames": 4,
+      "fps": 3.0,
+      "loop": true,
+      "gif_report": {
+        "path": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run\\exports\\idle_wipe_sweat.gif",
+        "frames": 4,
+        "delay_ticks": [
+          33,
+          33,
+          33,
+          33
+        ],
+        "loop": 0,
+        "transparent": true,
+        "disposal": [
+          2,
+          2,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "state": "idle_look_around",
+      "output": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run\\exports\\idle_look_around.gif",
+      "frames": 4,
+      "fps": 3.0,
+      "loop": true,
+      "gif_report": {
+        "path": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run\\exports\\idle_look_around.gif",
+        "frames": 4,
+        "delay_ticks": [
+          33,
+          33,
+          33,
+          33
+        ],
+        "loop": 0,
+        "transparent": true,
+        "disposal": [
+          2,
+          2,
+          2,
+          2
+        ]
+      }
+    }
+  ]
+}

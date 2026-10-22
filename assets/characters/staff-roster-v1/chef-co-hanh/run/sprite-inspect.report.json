@@ -1,0 +1,117 @@
+{
+  "ok": true,
+  "engine": "component-row",
+  "kind": "sprite-gen-inspect-report",
+  "run_dir": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\chef-co-hanh\\run",
+  "states": [
+    "work_cook",
+    "rest_tired",
+    "idle_lazy"
+  ],
+  "thresholds": {
+    "histogram_min": 0.0,
+    "dhash_min": 0.55,
+    "motion_min": 0.01
+  },
+  "rows": [
+    {
+      "state": "work_cook",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/work_cook/frame-0.png",
+        "frames/work_cook/frame-1.png",
+        "frames/work_cook/frame-2.png",
+        "frames/work_cook/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9661517700534603,
+          "mean": 0.9689077965712387
+        },
+        "dhash_similarity": {
+          "min": 0.453125,
+          "mean": 0.6536458333333334
+        },
+        "motion_presence": 0.15676812065972223,
+        "centroid_sigma": {
+          "x": 12.243267447138836,
+          "y": 3.933460851529615
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": [
+        "work_cook: dHash silhouette similarity is low (0.453 < 0.550)"
+      ]
+    },
+    {
+      "state": "rest_tired",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/rest_tired/frame-0.png",
+        "frames/rest_tired/frame-1.png",
+        "frames/rest_tired/frame-2.png",
+        "frames/rest_tired/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9676111099066913,
+          "mean": 0.9752282861418049
+        },
+        "dhash_similarity": {
+          "min": 0.71875,
+          "mean": 0.7994791666666666
+        },
+        "motion_presence": 0.1316653582005719,
+        "centroid_sigma": {
+          "x": 4.846260728902263,
+          "y": 2.2007301347924604
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "idle_lazy",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/idle_lazy/frame-0.png",
+        "frames/idle_lazy/frame-1.png",
+        "frames/idle_lazy/frame-2.png",
+        "frames/idle_lazy/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9122845390219299,
+          "mean": 0.9423715730468084
+        },
+        "dhash_similarity": {
+          "min": 0.6875,
+          "mean": 0.78125
+        },
+        "motion_presence": 0.11688064874387255,
+        "centroid_sigma": {
+          "x": 5.892924998617103,
+          "y": 1.6866355638657526
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    }
+  ],
+  "errors": [],
+  "warnings": [
+    "work_cook: dHash silhouette similarity is low (0.453 < 0.550)"
+  ]
+}

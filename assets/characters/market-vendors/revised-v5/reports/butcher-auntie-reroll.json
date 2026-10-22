@@ -1,0 +1,63 @@
+{
+  "kind": "sprite-gen-image-report",
+  "provider": "codex",
+  "prompt": "Create one full-body Vietnamese woman butcher game NPC sprite on a portrait 2:3 canvas. Use the supplied Hàng Rong Mobile game screenshot only as a reference for the simple hand-drawn 2D cartoon language: dark slightly uneven ink contour, readable compact figure, matte flat colors, restrained cel shading, lightly rough edges. Ignore the screenshot's background, interface, props and characters. Do not copy the approved vegetable seller's face or outfit; make a clearly different adult woman.\n\nShe is a stocky Vietnamese butcher in her early 50s with a broad square jaw, short salt-and-pepper wavy hair beneath a small plain dark brown cloth cap (no checked headscarf), low heavy eyelids, thick straight brows, a tiny mole near one cheek, and a tiny dry closed-mouth half-smirk. Mature, capable, a little tired, quietly funny, never bubbly or angry. Wear a dark plum short-sleeve blouse, a worn brick-red canvas butcher apron with simple wide straps, loose dark cropped trousers and rubber sandals. No towel, no knife, no blood and no meat props.\n\nStanding straight facing the viewer, feet naturally apart and both arms relaxed down along the sides, hands open and still. One character only; full figure and feet visible, centered with generous clear margin. Calm neutral idle pose for a very small vertical bob only.\n\nNo oversized sparkling eyes, no blush, no wink, no open-mouth grin, no hands on hips, no selling gesture, no waving, no childish chibi body, no glossy highlights, no photorealism, no 3D, no realistic lighting or studio effects. Plain solid magenta #FF00FF background, evenly filled; no cast shadow beyond the feet.\n\nSeen from the front: the whole body and head turned to face the viewer squarely, the chest, hips and the toes of both feet pointing straight at the viewer and the face centred between both ears, looking straight out of the image, not turned toward either side even when a reference picture shows the character from another angle.",
+  "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\market-vendors\\revised-v5\\butcher-auntie-reroll.png",
+  "raw": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\market-vendors\\revised-v5\\butcher-auntie-reroll.png.raw.png",
+  "raw_bytes": 1602336,
+  "elapsed_seconds": 45.203,
+  "model": null,
+  "session_id": "01a1584d-246f-7ae3-843f-de9311f85cbb",
+  "refs": [
+    "C:\\Users\\light\\AppData\\Local\\Temp\\codex-clipboard-01d2939f-5445-401e-a21e-fd2eef69c04b.png"
+  ],
+  "transparent": true,
+  "alpha": {
+    "strategy": "chroma",
+    "strategy_source": "refs-attached",
+    "key_background": {
+      "injected": false,
+      "key": "magenta"
+    },
+    "raw_alpha": {
+      "mode": "RGB",
+      "has_alpha_band": false,
+      "verdict": "no-alpha",
+      "alpha_zero_pct": 0.0,
+      "border_alpha_zero_pct": 0.0
+    },
+    "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\market-vendors\\revised-v5\\butcher-auntie-reroll.png",
+    "mode": "RGBA",
+    "method": "ycbcr",
+    "size": "1024x1536",
+    "key": "magenta",
+    "keyed_pixels": 1007238,
+    "fringe_pixels": 122,
+    "cleaned_transparent_rgb_pixels": 2751,
+    "alpha_zero_pct": 64.04,
+    "stale_transparent_rgb_pixels": 0
+  },
+  "chroma": {
+    "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\market-vendors\\revised-v5\\butcher-auntie-reroll.png",
+    "mode": "RGBA",
+    "method": "ycbcr",
+    "size": "1024x1536",
+    "key": "magenta",
+    "keyed_pixels": 1007238,
+    "fringe_pixels": 122,
+    "cleaned_transparent_rgb_pixels": 2751,
+    "alpha_zero_pct": 64.04,
+    "stale_transparent_rgb_pixels": 0
+  },
+  "extra": {
+    "inline_results": 1,
+    "rollout_cleaned": true,
+    "transparent_background_reported": false,
+    "view": {
+      "direction": "front",
+      "facing": null,
+      "handed": []
+    }
+  },
+  "provider_resolved_from": "explicit"
+}

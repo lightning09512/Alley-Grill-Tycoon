@@ -1,0 +1,9 @@
+{
+  "ok": true,
+  "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\fruit-uncle",
+  "states": [
+    "idle",
+    "work"
+  ],
+  "generation_plan": false
+}

@@ -1,0 +1,53 @@
+{
+  "kind": "sprite-gen-gen-set-report",
+  "run_dir": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-line-cook-v1\\run",
+  "states": [
+    "cook_stir",
+    "rest_tired",
+    "idle_lazy"
+  ],
+  "ok": 3,
+  "failed": [],
+  "not_started": [],
+  "items": [
+    {
+      "state": "cook_stir",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-line-cook-v1\\run\\raw\\cook_stir.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-line-cook-v1\\run\\reports\\gen-set\\cook_stir.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-line-cook-v1\\run\\base-source.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-line-cook-v1\\run\\references\\layout-guides\\cook_stir.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 61.2,
+      "ok": true
+    },
+    {
+      "state": "rest_tired",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-line-cook-v1\\run\\raw\\rest_tired.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-line-cook-v1\\run\\reports\\gen-set\\rest_tired.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-line-cook-v1\\run\\base-source.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-line-cook-v1\\run\\references\\layout-guides\\rest_tired.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 73.9,
+      "ok": true
+    },
+    {
+      "state": "idle_lazy",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-line-cook-v1\\run\\raw\\idle_lazy.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-line-cook-v1\\run\\reports\\gen-set\\idle_lazy.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-line-cook-v1\\run\\base-source.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-line-cook-v1\\run\\references\\layout-guides\\idle_lazy.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 110.7,
+      "ok": true
+    }
+  ]
+}

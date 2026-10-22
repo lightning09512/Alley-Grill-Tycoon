@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "kind": "sprite-gen-request",
+  "engine": "component-row",
+  "character": {
+    "id": "kitchen-line-cook-v1",
+    "description": "Average-build Vietnamese man in his early forties, friendly slightly weary face, tidy short black hair mostly covered by a dark navy bandana, small round wire-frame glasses, clean-shaven, deep navy short-sleeve cook shirt, sand-colored apron, charcoal trousers and brown kitchen shoes. Distinct from player-owner, prep cook Tấn Huy and Cô Hạnh.",
+    "base_image": "base-source.png"
+  },
+  "cell": {
+    "shape": "rect",
+    "width": 160,
+    "height": 300,
+    "safe_margin_x": 15,
+    "safe_margin_y": 15
+  },
+  "chroma_key": {
+    "name": "magenta",
+    "hex": "#FF00FF",
+    "rgb": [
+      255,
+      0,
+      255
+    ],
+    "selection": "manual"
+  },
+  "states": {
+    "cook_stir": {
+      "frames": 4,
+      "fps": 5,
+      "loop": true,
+      "action": "Four-frame seamless work loop at the kitchen's second existing burner. Show the same cook in a three-quarter back view facing up-screen toward the stove; stir a shallow wok with a long-handled spatula, raise it slightly, turn the wrist, check the food and settle back into the opening pose. Keep his bandana, round glasses when visible, navy cook shirt, sand apron and body proportions consistent. Feet planted at one ground pivot, restrained arm and shoulder motion. No stove, pot, flame, kitchen, counter or other person in the image; the game map supplies the workstation. Flat magenta background."
+    },
+    "rest_tired": {
+      "frames": 4,
+      "fps": 3,
+      "loop": true,
+      "action": "Subtle four-frame tired rest loop at a safe standing rest point: shoulders lower, wipe forehead with a small clean towel, exhale, then return close to the relaxed opening pose. Keep feet planted, body scale and pivot stable. No walking, cooking, phone, extra person or background. Flat magenta background."
+    },
+    "idle_lazy": {
+      "frames": 4,
+      "fps": 3,
+      "loop": true,
+      "action": "Subtle four-frame idle-only loop used when there is no work waiting: take out a small phone, glance at it and tap once, then lower it and return to the opening pose. Friendly mildly bored expression, feet planted, stable body scale and ground pivot. No cooking, no walking, no other person or background. Flat magenta background."
+    }
+  },
+  "style": "Polished painted 2D chibi game art matching the existing Banh Mi Pho NPCs, warm natural shading, clean dark outline, expressive readable face; not pixel art.",
+  "layout": "taxonomy/v1",
+  "fit": {
+    "align_x": "bbox-center",
+    "align_y": "bottom",
+    "ground_frames": true
+  }
+}

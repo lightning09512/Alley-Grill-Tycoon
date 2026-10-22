@@ -38,6 +38,7 @@ export const MENU_INGREDIENTS = {
   lemongrass: { name: "Sả", assetFile: "lemongrass.png" },
   garlic: { name: "Tỏi", assetFile: "garlic.png" },
   waterSpinach: { name: "Rau muống", assetFile: "water-spinach.png" },
+  leafyGreens: { name: "Rau cải", assetFile: "leafy-greens.png" },
   greenMango: { name: "Xoài xanh", assetFile: "green-mango.png" },
   aromaticHerbs: { name: "Rau thơm", assetFile: "aromatic-herbs.png" },
   scallions: { name: "Hành lá", assetFile: "scallions.png" },
@@ -53,7 +54,8 @@ export const MENU_INGREDIENTS = {
   glassNoodles: { name: "Miến", assetFile: "glass-noodles.png" },
   ricePaper: { name: "Bánh tráng", assetFile: "rice-paper.png" },
   peanuts: { name: "Đậu phộng", assetFile: "peanuts.png" },
-  butter: { name: "Bơ", assetFile: "butter.svg" },
+  avocado: { name: "Bơ trái", assetFile: "avocado.png" },
+  butter: { name: "Bơ lạt", assetFile: "butter.svg" },
   honey: { name: "Mật ong", assetFile: "honey.png" },
   vinegar: { name: "Giấm", assetFile: "vinegar.png" },
   tamarind: { name: "Me", assetFile: "tamarind.png" },
@@ -79,6 +81,8 @@ export type MenuDish = {
   estimatedCost: number;
   portion: string;
   currentRecipe?: boolean;
+  /** Exact units consumed by the playable recipe for one portion. */
+  ingredientAmounts?: Partial<Record<MenuIngredientId, number>>;
 };
 
 export const MENU_CATEGORIES: { id: MenuCategory; name: string }[] = [
@@ -90,7 +94,7 @@ export const MENU_CATEGORIES: { id: MenuCategory; name: string }[] = [
 
 const sheetVisual = (sheet: "hotpot-grill" | "snacks-rice", cell: number): MenuDishVisual => ({ type: "sheet", sheet, cell });
 
-export const MENU_DISHES: MenuDish[] = [
+const MENU_DISH_LIST = [
   { id: "thai-seafood-hotpot", name: "Lẩu Thái hải sản", category: "hotpot", visual: sheetVisual("hotpot-grill", 0), ingredients: ["shrimp", "squid", "clams", "thaiHotpotSpice", "lemongrass", "pineapple", "hotpotGreens"], suggestedPrice: 169, estimatedCost: 84, portion: "2–3 người" },
   { id: "chicken-la-e-hotpot", name: "Lẩu gà lá é", category: "hotpot", visual: sheetVisual("hotpot-grill", 1), ingredients: ["chicken", "laE", "mixedMushrooms", "lemongrass", "onion", "hotpotGreens"], suggestedPrice: 159, estimatedCost: 78, portion: "2–3 người" },
   { id: "beef-vinegar-hotpot", name: "Lẩu bò nhúng giấm", category: "hotpot", visual: sheetVisual("hotpot-grill", 2), ingredients: ["beefSlices", "vinegar", "onion", "lemongrass", "pineapple", "hotpotGreens"], suggestedPrice: 169, estimatedCost: 80, portion: "2–3 người" },
@@ -98,7 +102,7 @@ export const MENU_DISHES: MenuDish[] = [
   { id: "goby-sour-leaf-hotpot", name: "Lẩu cá kèo lá giang", category: "hotpot", visual: sheetVisual("hotpot-grill", 4), ingredients: ["goby", "laGiang", "tomato", "lemongrass", "pineapple", "hotpotGreens"], suggestedPrice: 159, estimatedCost: 80, portion: "2–3 người" },
   { id: "mushroom-vegetable-hotpot", name: "Lẩu nấm rau củ", category: "hotpot", visual: sheetVisual("hotpot-grill", 5), ingredients: ["mixedMushrooms", "mixedRoots", "corn", "tofu", "bambooShoots", "hotpotGreens"], suggestedPrice: 139, estimatedCost: 68, portion: "2–3 người" },
 
-  { id: "pork-belly-skewers", name: "Xiên thịt ba chỉ nướng", category: "grill", visual: sheetVisual("hotpot-grill", 6), ingredients: ["porkBelly", "marinade", "lemongrass", "scallions"], suggestedPrice: 30, estimatedCost: 12, portion: "1–2 người", currentRecipe: true },
+  { id: "pork-belly-skewers", name: "Xiên thịt ba chỉ nướng", category: "grill", visual: sheetVisual("hotpot-grill", 6), ingredients: ["porkBelly", "marinade", "lemongrass", "scallions"], ingredientAmounts: { porkBelly: 1, marinade: 1, lemongrass: 1, scallions: 1 }, suggestedPrice: 79, estimatedCost: 33, portion: "1–2 người", currentRecipe: true },
   { id: "beef-betel-leaves", name: "Bò lá lốt", category: "grill", visual: sheetVisual("hotpot-grill", 7), ingredients: ["beefSlices", "laLot", "garlic", "onion", "cookingOil"], suggestedPrice: 55, estimatedCost: 26, portion: "1–2 người" },
   { id: "chili-chicken-wings", name: "Cánh gà nướng muối ớt", category: "grill", visual: sheetVisual("hotpot-grill", 8), ingredients: ["chickenWings", "chiliSalt", "satay", "cookingOil"], suggestedPrice: 69, estimatedCost: 33, portion: "1–2 người" },
   { id: "satay-chicken-feet", name: "Chân gà nướng sa tế", category: "grill", visual: sheetVisual("hotpot-grill", 9), ingredients: ["chickenFeet", "satay", "chiliSalt", "lemongrass", "garlic"], suggestedPrice: 59, estimatedCost: 28, portion: "1–2 người" },
@@ -106,8 +110,8 @@ export const MENU_DISHES: MenuDish[] = [
   { id: "grilled-octopus", name: "Bạch tuộc nướng", category: "grill", visual: sheetVisual("hotpot-grill", 11), ingredients: ["octopus", "satay", "lemongrass", "garlic", "cookingOil"], suggestedPrice: 89, estimatedCost: 45, portion: "1–2 người" },
   { id: "honey-pork-ribs", name: "Sườn non nướng mật ong", category: "grill", visual: sheetVisual("hotpot-grill", 12), ingredients: ["porkRibs", "honey", "marinade", "garlic"], suggestedPrice: 85, estimatedCost: 42, portion: "1–2 người" },
   { id: "scallion-okra", name: "Đậu bắp nướng mỡ hành", category: "grill", visual: sheetVisual("hotpot-grill", 13), ingredients: ["okra", "scallions", "cookingOil", "peanuts"], suggestedPrice: 39, estimatedCost: 17, portion: "1–2 người" },
-  { id: "scallion-grilled-eggs", name: "Trứng nướng mỡ hành", category: "grill", visual: { type: "icon", icon: "egg-grill" }, ingredients: ["chickenEggs", "scallions", "cookingOil", "chiliSalt"], suggestedPrice: 32, estimatedCost: 11, portion: "1–2 người", currentRecipe: true },
-  { id: "special-grill-platter", name: "Mẹt nướng đặc biệt", category: "grill", visual: { type: "image", asset: "mixed-grill" }, ingredients: ["porkBelly", "chickenWings", "squid", "okra", "satay", "sideVegetables"], suggestedPrice: 42, estimatedCost: 15, portion: "2–3 người", currentRecipe: true },
+  { id: "scallion-grilled-eggs", name: "Trứng nướng mỡ hành", category: "grill", visual: { type: "icon", icon: "egg-grill" }, ingredients: ["chickenEggs", "scallions", "cookingOil", "chiliSalt"], ingredientAmounts: { chickenEggs: 1, scallions: 1, cookingOil: 1, chiliSalt: 1 }, suggestedPrice: 59, estimatedCost: 21, portion: "1–2 người", currentRecipe: true },
+  { id: "special-grill-platter", name: "Mẹt nướng đặc biệt", category: "grill", visual: { type: "image", asset: "mixed-grill" }, ingredients: ["porkBelly", "chickenWings", "squid", "okra", "satay", "sideVegetables"], ingredientAmounts: { porkBelly: 1, chickenWings: 1, squid: 1, okra: 1, satay: 1, sideVegetables: 1 }, suggestedPrice: 159, estimatedCost: 69, portion: "2–3 người", currentRecipe: true },
 
   { id: "lemongrass-fried-tofu", name: "Đậu hũ chiên sả", category: "snack", visual: sheetVisual("snacks-rice", 0), ingredients: ["tofu", "lemongrass", "garlic", "cookingOil", "chiliSalt"], suggestedPrice: 35, estimatedCost: 16, portion: "2 người" },
   { id: "salt-chicken-cartilage", name: "Sụn gà rang muối", category: "snack", visual: sheetVisual("snacks-rice", 1), ingredients: ["chickenCartilage", "roastedSalt", "lemongrass", "garlic", "chiliSalt"], suggestedPrice: 49, estimatedCost: 23, portion: "2 người" },
@@ -124,4 +128,7 @@ export const MENU_DISHES: MenuDish[] = [
 
   { id: "seafood-fried-rice", name: "Cơm chiên hải sản", category: "meal", visual: sheetVisual("snacks-rice", 12), ingredients: ["rice", "shrimp", "squid", "clams", "mixedRoots", "scallions"], suggestedPrice: 65, estimatedCost: 31, portion: "1–2 người" },
   { id: "beef-stir-fried-noodles", name: "Mì xào bò", category: "meal", visual: sheetVisual("snacks-rice", 13), ingredients: ["beefSlices", "noodles", "scallions", "garlic", "stirFrySauce", "onion"], suggestedPrice: 69, estimatedCost: 33, portion: "1–2 người" },
-];
+] as const satisfies readonly MenuDish[];
+
+export const MENU_DISHES: readonly MenuDish[] = MENU_DISH_LIST;
+export type MenuDishId = (typeof MENU_DISH_LIST)[number]["id"];

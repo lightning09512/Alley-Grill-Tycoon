@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "kind": "sprite-gen-gif-run",
+  "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\shoe-seller-auntie",
+  "exports": [
+    {
+      "state": "idle",
+      "output": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\shoe-seller-auntie\\previews\\idle.gif",
+      "frames": 4,
+      "fps": 2.0,
+      "loop": true,
+      "gif_report": {
+        "path": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\shoe-seller-auntie\\previews\\idle.gif",
+        "frames": 4,
+        "delay_ticks": [
+          50,
+          50,
+          50,
+          50
+        ],
+        "loop": 0,
+        "transparent": true,
+        "disposal": [
+          2,
+          2,
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "state": "work",
+      "output": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\shoe-seller-auntie\\previews\\work.gif",
+      "frames": 4,
+      "fps": 3.0,
+      "loop": true,
+      "gif_report": {
+        "path": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\shoe-seller-auntie\\previews\\work.gif",
+        "frames": 4,
+        "delay_ticks": [
+          33,
+          33,
+          33,
+          33
+        ],
+        "loop": 0,
+        "transparent": true,
+        "disposal": [
+          2,
+          2,
+          2,
+          2
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "ok": true,
+  "engine": "component-row",
+  "kind": "sprite-gen-inspect-report",
+  "run_dir": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\staff-roster-v1\\cashier-quang-tin\\run",
+  "states": [
+    "work_cashier",
+    "rest_tired",
+    "idle_lazy"
+  ],
+  "thresholds": {
+    "histogram_min": 0.0,
+    "dhash_min": 0.55,
+    "motion_min": 0.01
+  },
+  "rows": [
+    {
+      "state": "work_cashier",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/work_cashier/frame-0.png",
+        "frames/work_cashier/frame-1.png",
+        "frames/work_cashier/frame-2.png",
+        "frames/work_cashier/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9310762637338196,
+          "mean": 0.9545484100940644
+        },
+        "dhash_similarity": {
+          "min": 0.796875,
+          "mean": 0.8932291666666666
+        },
+        "motion_presence": 0.07698288462520425,
+        "centroid_sigma": {
+          "x": 0.49314297291580095,
+          "y": 1.4495843674034734
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "rest_tired",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/rest_tired/frame-0.png",
+        "frames/rest_tired/frame-1.png",
+        "frames/rest_tired/frame-2.png",
+        "frames/rest_tired/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9577667094610081,
+          "mean": 0.9696468920302109
+        },
+        "dhash_similarity": {
+          "min": 0.890625,
+          "mean": 0.9322916666666666
+        },
+        "motion_presence": 0.05525181589562909,
+        "centroid_sigma": {
+          "x": 0.936931733392548,
+          "y": 2.7753026757218233
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "idle_lazy",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/idle_lazy/frame-0.png",
+        "frames/idle_lazy/frame-1.png",
+        "frames/idle_lazy/frame-2.png",
+        "frames/idle_lazy/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.8974164637461308,
+          "mean": 0.9321299351053594
+        },
+        "dhash_similarity": {
+          "min": 0.78125,
+          "mean": 0.84375
+        },
+        "motion_presence": 0.0521166832618464,
+        "centroid_sigma": {
+          "x": 1.2149474256858273,
+          "y": 1.7241245797752303
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}

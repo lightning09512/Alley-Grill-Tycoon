@@ -3,7 +3,7 @@ import type { DiningFamilyContext, DiningPartyType } from "./diningCharacters";
 type DialogueTone = "normal" | "funny" | "grumpy" | "cheerful" | "cute";
 export type DiningConversationPhase = "waiting-order" | "waiting-food" | "eating" | "awaiting-payment";
 
-type DialoguePersona = "child" | "mother" | "father" | "office" | "student" | "worker" | "tourist" | "creator" | "comic" | "local";
+type DialoguePersona = "child" | "preschooler" | "mother" | "father" | "grandmother" | "grandfather" | "office" | "student" | "teacher" | "worker" | "tourist" | "creator" | "comic" | "local" | "mechanic" | "traditional-driver" | "taxi-driver" | "nurse" | "musician";
 
 interface ConversationPair {
   text: string;
@@ -17,8 +17,12 @@ interface ConversationPair {
 const CHARACTER_PERSONAS: Readonly<Record<string, DialoguePersona>> = {
   "saigon-schoolboy": "child",
   "saigon-schoolgirl": "child",
+  "saigon-preschooler": "preschooler",
   "saigon-young-mother": "mother",
-  "saigon-older-regular": "father",
+  "saigon-older-regular": "grandfather",
+  "saigon-young-father": "father",
+  "saigon-grandmother": "grandmother",
+  "saigon-primary-teacher": "teacher",
   "saigon-office-woman": "office",
   "saigon-office-man": "office",
   "saigon-taphoa-college-girl": "student",
@@ -38,6 +42,11 @@ const CHARACTER_PERSONAS: Readonly<Record<string, DialoguePersona>> = {
   "saigon-ward-inspector": "local",
   "saigon-ward-police-officer": "local",
   "saigon-morning-jogger": "local",
+  "saigon-motorbike-mechanic": "mechanic",
+  "saigon-traditional-motorbike-taxi-driver": "traditional-driver",
+  "saigon-taxi-driver": "taxi-driver",
+  "saigon-night-shift-nurse": "nurse",
+  "saigon-cajon-player": "musician",
 };
 
 const ARRIVAL_TONES: readonly DialogueTone[] = ["normal", "funny", "cheerful", "cute", "grumpy"];
@@ -46,21 +55,102 @@ const ARRIVAL_TONES: readonly DialogueTone[] = ["normal", "funny", "cheerful", "
 // This deliberately matches kinship phrases, not the dish name "ba chỉ".
 const FATHER_REFERENCE = /\bba\s+(?:ơi|bảo|nói|con|kể|cũng|duyệt|bao|còn|nghe|gắp|mời|chụp|nhớ|đang|định|chưa|cảm ơn|muốn|tính)\b|\bba mẹ\b/i;
 const MOTHER_REFERENCE = /\bmẹ\b/i;
+const GRANDMOTHER_REFERENCE = /\bbà\b/i;
+const GRANDFATHER_REFERENCE = /\bông\b/i;
+const SPOUSE_REFERENCE = /\b(?:vợ chồng|chồng|vợ)\b/i;
 const CHILD_REFERENCE = /\bcon\b|\btrẻ con\b/i;
+const CHILD_ADDRESS_REFERENCE = /^\s*(?:mẹ|ba|bà|ông)\s+(?:ơi\b|có thấy\b|còn nhớ\b|kể(?: lại)?\b|cứ\b|nghỉ\b|ăn thêm\b|muốn ăn\b|ngồi\b|chọn\b|gắp\b.*\bgiúp con\b)/i;
+const KINSHIP_SELF_REFERENCE = /^\s*(?:mẹ|ba|bà|ông)\s+(?:cũng\b|gọi\b|đồng ý\b|thử\b|thấy\b|để\b|nhớ\b|sẽ\b|thích\b|cảm ơn\b|duyệt\b|bao\b|nghe\b|chụp\b|mời\b|gắp\b|chọn\b)/i;
 const SAFE_FAMILY_LINES = ["Ngồi xuống rồi chọn món nhé.", "Mình cứ thong thả, tối nay không vội."] as const;
+type OlderCoupleMember = "grandmother" | "grandfather";
+
+interface OlderCoupleExchange {
+  speaker: OlderCoupleMember;
+  text: string;
+  reply: string;
+}
+
+const OLDER_COUPLE_ARRIVALS: readonly { speaker: OlderCoupleMember; text: string }[] = [
+  { speaker: "grandmother", text: "Ngồi bàn trong kia đi ông, bên đó đỡ ồn." },
+  { speaker: "grandfather", text: "Ừ, mình ngồi nghỉ một lát rồi gọi món." },
+  { speaker: "grandmother", text: "Ông xem thực đơn đi, món nào cũng được." },
+  { speaker: "grandfather", text: "Đi bộ một đoạn cũng hơi mỏi chân." },
+  { speaker: "grandmother", text: "Mình gọi món quen trước nhé." },
+  { speaker: "grandfather", text: "Bàn này thoáng, ngồi đây đi." },
+];
+
+const OLDER_COUPLE_CONVERSATIONS: Readonly<Record<DiningConversationPhase, readonly OlderCoupleExchange[]>> = {
+  "waiting-order": [
+    { speaker: "grandmother", text: "Ông muốn ăn món nào?", reply: "Món nướng kia được đấy, gọi một phần trước đi." },
+    { speaker: "grandfather", text: "Mình gọi món quen nhé?", reply: "Ừ, gọi một phần trước, thiếu thì gọi thêm." },
+    { speaker: "grandmother", text: "Ông xem có món nào dễ ăn không?", reply: "Có món này, mình gọi thử nhé." },
+  ],
+  "waiting-food": [
+    { speaker: "grandfather", text: "Đường hôm nay đông thật.", reply: "Ừ, giờ nào đi qua cũng đông." },
+    { speaker: "grandmother", text: "Món chắc sắp ra rồi ông nhỉ?", reply: "Chắc vậy, mình đợi thêm chút." },
+    { speaker: "grandfather", text: "Lần trước mình gọi món này cũng vừa miệng.", reply: "Ừ, ăn ở đây mấy lần rồi vẫn ổn." },
+  ],
+  eating: [
+    { speaker: "grandmother", text: "Món này nêm vừa miệng đấy.", reply: "Ừ, lần sau mình gọi nữa." },
+    { speaker: "grandfather", text: "Ăn chậm thôi, còn nóng.", reply: "Biết rồi, ông cứ ăn đi." },
+    { speaker: "grandmother", text: "Ông ăn thêm đi, phần này còn nhiều.", reply: "Ừ, để tôi gắp thêm." },
+  ],
+  "awaiting-payment": [
+    { speaker: "grandfather", text: "No rồi, mình về thôi.", reply: "Ừ, để ông tính tiền rồi mình ra." },
+    { speaker: "grandmother", text: "Ăn xong thấy đỡ mệt hẳn.", reply: "Về nhà nghỉ một lát là được." },
+    { speaker: "grandfather", text: "Mình đi chợ luôn hay về trước?", reply: "Về trước đi, mai đi cũng được." },
+  ],
+};
+
 const DEFAULT_FAMILY_CONTEXT: DiningFamilyContext = {
   hasFather: true,
   hasMother: true,
+  hasGrandmother: false,
+  hasGrandfather: false,
   hasChild: true,
   fatherIndex: 0,
   motherIndex: 1,
+  grandmotherIndex: null,
+  grandfatherIndex: null,
   childIndices: [2],
 };
+
+function isOlderCouple(partyType: DiningPartyType, partySize: number, characterIds: readonly string[]): boolean {
+  return partyType === "family"
+    && partySize === 2
+    && characterIds.length === 2
+    && characterIds.includes("saigon-grandmother")
+    && characterIds.includes("saigon-older-regular");
+}
+
+function olderCoupleIndex(characterIds: readonly string[], member: OlderCoupleMember): number {
+  const characterId = member === "grandmother" ? "saigon-grandmother" : "saigon-older-regular";
+  return characterIds.indexOf(characterId);
+}
+
+function olderCoupleExchange(
+  characterIds: readonly string[],
+  phase: DiningConversationPhase,
+  conversationNumber: number,
+): DiningConversationDialogue {
+  const exchanges = OLDER_COUPLE_CONVERSATIONS[phase];
+  const exchange = exchanges[conversationNumber % exchanges.length]!;
+  const speakerIndex = olderCoupleIndex(characterIds, exchange.speaker);
+  return {
+    text: exchange.text,
+    reply: exchange.reply,
+    speakerIndex,
+    replySpeakerIndex: olderCoupleIndex(characterIds, exchange.speaker === "grandmother" ? "grandfather" : "grandmother"),
+  };
+}
 
 function familyLineMatchesPeople(line: string, family: DiningFamilyContext): boolean {
   return (family.hasFather || !FATHER_REFERENCE.test(line))
     && (family.hasMother || !MOTHER_REFERENCE.test(line))
-    && (family.hasChild || !CHILD_REFERENCE.test(line));
+    && (family.hasGrandmother || !GRANDMOTHER_REFERENCE.test(line))
+    && (family.hasGrandfather || !GRANDFATHER_REFERENCE.test(line))
+    && ((family.hasFather && family.hasMother) || !SPOUSE_REFERENCE.test(line))
+    && (family.hasChild || (!CHILD_REFERENCE.test(line) && !CHILD_ADDRESS_REFERENCE.test(line) && !KINSHIP_SELF_REFERENCE.test(line)));
 }
 
 function dialogueLinesForParty(lines: readonly string[], partyType: DiningPartyType, family: DiningFamilyContext): readonly string[] {
@@ -70,10 +160,13 @@ function dialogueLinesForParty(lines: readonly string[], partyType: DiningPartyT
 }
 
 function familySpeakerHint(line: string, family: DiningFamilyContext): number | null {
-  if (/^\s*(?:mẹ|ba)(?: ơi\b| còn nhớ\b| kể(?: lại)?\b| có thấy\b)|^\s*(?:mẹ|ba) .*\?/i.test(line) && family.childIndices.length > 0) return family.childIndices[0] ?? null;
+  if (CHILD_ADDRESS_REFERENCE.test(line)) return family.childIndices[0] ?? null;
+  if (/^\s*(?:mẹ|ba|bà|ông) .*\?/i.test(line) && family.childIndices.length > 0) return family.childIndices[0] ?? null;
   if (/^\s*mẹ\b/i.test(line) && family.motherIndex !== null) return family.motherIndex;
   if (/^\s*ba\b/i.test(line) && family.fatherIndex !== null) return family.fatherIndex;
-  if (/\b(?:ba ơi|mẹ ơi)\b|^\s*(?:cho con|con (?:kể|muốn|đói|ngồi|nhớ|giữ|vừa|chưa|còn|thích|được|ăn|rửa|hôm|tới))\b/i.test(line) && family.childIndices.length > 0) {
+  if (/^\s*bà\b/i.test(line) && family.grandmotherIndex !== null) return family.grandmotherIndex;
+  if (/^\s*ông\b/i.test(line) && family.grandfatherIndex !== null) return family.grandfatherIndex;
+  if (/\b(?:ba ơi|mẹ ơi|bà ơi|ông ơi)\b|^\s*(?:cho con|cho cháu|con (?:kể|muốn|đói|ngồi|nhớ|giữ|vừa|chưa|còn|thích|được|ăn|rửa|hôm|tới)|cháu (?:kể|muốn|đói|ngồi|nhớ|thích|được|ăn))\b/i.test(line) && family.childIndices.length > 0) {
     return family.childIndices[0] ?? null;
   }
   if (/^\s*mẹ\s+(?:cũng|gọi|đồng ý|thử|thấy|để|nhớ|sẽ|thích|cảm ơn)/i.test(line) && family.motherIndex !== null) {
@@ -81,6 +174,9 @@ function familySpeakerHint(line: string, family: DiningFamilyContext): number | 
   }
   if (/^\s*ba\s+(?:cũng|duyệt|nhớ|gắp|nghe theo|bao|đang|cảm ơn)/i.test(line) && family.fatherIndex !== null) {
     return family.fatherIndex;
+  }
+  if (/^\s*bà\s+(?:cũng|gọi|đồng ý|thử|thấy|để|nhớ|sẽ|thích|cảm ơn)/i.test(line) && family.grandmotherIndex !== null) {
+    return family.grandmotherIndex;
   }
   return null;
 }
@@ -109,111 +205,112 @@ const ARRIVAL_LINES: Record<DiningPartyType, Record<DialogueTone, readonly strin
   family: {
     normal: [
       "Ngồi bàn này nhé, chỗ này nhìn mát mẻ đó.",
-      "Cho con ngồi gần mẹ, con đói quá rồi.",
-      "Vừa đi ngoài phố vào, ngồi xuống thấy dễ chịu hẳn.",
-      "Chọn bàn nhìn ra cửa cho thoáng nha.",
-      "Cả nhà mình cứ ăn thong thả thôi.",
-      "Mùi thơm quá, chắc gọi món nóng trước.",
-      "Đi bộ nãy giờ, ngồi xuống thấy khỏe hẳn.",
-      "Ngồi gần đèn một chút, bên này đẹp ghê.",
+      "Cho con ngồi gần mẹ nha.",
+      "Đi bộ tới đây hơi mỏi chân, ngồi nghỉ chút đã.",
+      "Chọn bàn gần cửa này đi.",
+      "Mình xem thực đơn trước nhé.",
+      "Mùi đồ nướng thơm quá, gọi thử đi.",
+      "Ngồi đây được đó, không chắn lối.",
+      "Ba ngồi đây nha, con ngồi bên mẹ.",
     ],
     funny: [
-      "Con đói tới mức nhìn cái bàn cũng ngon rồi.",
-      "Ba bảo ăn nhẹ thôi mà chọn bàn bốn người!",
-      "Ai rửa chén hả? À, mình đang ở quán mà.",
-      "Con gọi món trước, mọi người cứ tin con!",
-      "Đừng nhìn nồi lẩu nữa, nó chưa biết mình đâu.",
-      "Nghe chữ nướng là bụng con tự ngồi dậy rồi.",
-      "Chụp hình lẹ nha, đồ ăn tới là con mất bình tĩnh.",
-      "Ba nói chỉ ăn một món. Lần này con tin ba.",
+      "Nãy ba nói ăn nhẹ thôi, giờ gọi món gì đây?",
+      "Ai xem thực đơn thì chọn nhanh giúp cả nhà.",
+      "Con đói rồi, gọi món trước đi mẹ.",
+      "Ba nói ăn một món thôi, con nhớ đó nha.",
+      "Đừng nhìn nồi lẩu nữa, xem thực đơn đi con.",
+      "Đừng gọi cay quá, lát lại uống hết nước.",
+      "Chọn món đi, con đói từ lúc trên đường.",
+      "Ba giữ chỗ này rồi, ngồi xuống đi.",
     ],
     cheerful: [
-      "Cuối tuần cả nhà ăn cùng nhau vui quá!",
-      "Đèn vàng đẹp ghê, con thích quán này rồi!",
-      "Ăn cùng mọi người thì món gì cũng ngon.",
-      "Cả nhà đông đủ rồi, gọi món thôi nào!",
-      "Ngồi kể chuyện tới tối cũng được đó nha.",
-      "Ngửi mùi thơm là tự nhiên vui lên rồi.",
-      "Kết thúc chuyến đi bằng bữa này là chuẩn!",
-      "Hôm nay được ăn cùng nhà mình là vui nhất.",
+      "Cuối tuần cả nhà mới đi ăn được.",
+      "Lâu rồi cả nhà mới có dịp ra ngoài.",
+      "Gọi món đi, con đói rồi.",
+      "Ba mẹ chọn đi, con ăn món nào cũng được.",
+      "Món nướng thơm quá.",
+      "Hôm nay đông đủ rồi, mình gọi món nhé.",
+      "Con thích ngồi bàn này.",
+      "Ăn xong mình về cùng nhau nha.",
     ],
     cute: [
       "Mẹ ơi, cho con ngồi cạnh mẹ nha.",
-      "Con chừa chỗ này cho ba đó!",
-      "Đèn lồng sáng như mấy chú đom đóm kìa.",
-      "Con đói xíu thôi… xíu cỡ ba tô á.",
-      "Ngồi sát nhau cho ấm nha cả nhà.",
-      "Con ăn rau nếu được gọi món ngon nha!",
-      "Ba ơi, nồi đang sủi bọt như biết cười kìa.",
-      "Chụp con với cả nhà trước khi ăn nha!",
+      "Ba giữ chỗ này cho con phải không?",
+      "Đèn lồng sáng đẹp quá mẹ ha.",
+      "Con ngồi đây được không?",
+      "Con kể mẹ nghe chuyện ở lớp nha.",
+      "Ba gọi món con thích nhé?",
+      "Con tự chọn món được không?",
+      "Con đói rồi mẹ ơi.",
+      "Để con ngồi gần mọi người.",
     ],
     grumpy: [
-      "Vào rồi mà chưa ai chỉ bàn hả?",
-      "Đông thế này chắc chờ món hơi lâu nhỉ?",
-      "Quạt quay kiểu này chắc chỉ mát cho cái quạt.",
-      "Bàn sạch chút nha, đừng để khách phải nhắc.",
-      "Ngồi một lúc rồi mà chưa thấy thực đơn đâu.",
-      "Mau lên chút nha, trẻ con đói rồi đó.",
-      "Đèn hơi tối, xem thực đơn phải nheo mắt luôn.",
-      "Đông thật, hy vọng không phải chờ dài cổ.",
+      "Mình vào rồi, bàn nào còn trống vậy?",
+      "Đông thế này chắc món ra chậm một chút nhỉ?",
+      "Quạt bên này chưa mát lắm.",
+      "Bàn này còn dính chút nước, lau giúp mình nhé.",
+      "Cho mình xin thực đơn với.",
+      "Con đói rồi, mình gọi món sớm nha.",
+      "Đèn hơi tối, cho mình xem thực đơn gần hơn chút.",
+      "Đông thật, mình chờ thêm một lát vậy.",
     ],
   },
   friends: {
     normal: [
-      "Ngồi bàn này nha, nhìn bếp thấy vui ghê.",
-      "Để túi xuống rồi cả nhóm xem thực đơn nhé.",
-      "Quán đông mà không khí vẫn dễ chịu ha.",
-      "Đi đường hơi mệt, ăn món nóng trước đi.",
-      "Chừa chỗ cho mọi người rồi gọi món nha.",
-      "Ngồi trong này nói chuyện thoải mái hơn.",
-      "Đi một vòng mới kiếm được quán vừa ý.",
-      "Mọi người chọn món đi, tối nay không vội.",
+      "Tới đủ rồi, chọn món đi.",
+      "Đường tới đây kẹt xe thật.",
+      "Để túi xuống rồi xem thực đơn nha.",
+      "Mọi người gọi trước đi, mình coi thêm.",
+      "Bàn này còn chỗ, ngồi đây đi.",
+      "Lâu rồi mới hẹn được đông đủ.",
+      "Món nướng thơm quá.",
+      "Ngồi trong này nói chuyện đỡ ồn hơn.",
     ],
     funny: [
-      "Đi ăn thôi mà nhóm mình họp chiến lược lâu ghê.",
-      "Ai bảo không đói? Người hỏi thực đơn là cậu.",
-      "Chụp ảnh lẹ, bụng mình sắp đăng story riêng rồi.",
-      "Nhìn nồi lẩu kìa, nó gọi nhóm mình trước rồi.",
-      "Đứa nào gọi ăn nhẹ thì tự chịu trách nhiệm nha.",
-      "Đi với nhóm này nhớ đặt thêm ghế trước luôn.",
-      "Mình không tham ăn, mình đang kiểm tra chất lượng.",
-      "Tới quán rồi mới nhớ chưa thống nhất món gì.",
+      "Đi ăn thôi mà chọn món lâu ghê.",
+      "Nãy bảo ăn nhẹ, giờ gọi mấy món đây?",
+      "Chụp tấm hình nhanh đi, đồ ăn sắp nguội rồi.",
+      "Nồi lẩu sôi rồi, gọi món đi mọi người.",
+      "Nãy ai bảo chỉ gọi một món ấy nhỉ?",
+      "Ai chọn quán vậy, chỉ chỗ gửi xe luôn đi.",
+      "Mình gọi thêm món này để mọi người thử nhé.",
+      "Chưa chọn được à, gọi món quen trước đi.",
     ],
     cheerful: [
-      "Cuối cùng cũng đủ mặt, gọi món thôi mọi người!",
-      "Mùi đồ nướng bay tới là biết chọn đúng quán rồi.",
-      "Đêm nay cứ vui đi, chuyện mai tính sau!",
-      "Lâu rồi nhóm mình mới ăn đông đủ thế này.",
-      "Chỗ này lên hình đẹp, đồ ăn chắc cũng ngon.",
-      "Đói muốn xỉu mà thấy mọi người là tỉnh liền.",
-      "Đèn lồng nhìn chill ghê, ngồi lâu chút nha.",
-      "Ngồi tám chuyện tới lúc quán đóng cửa luôn!",
+      "Cuối cùng cũng đủ mặt, gọi món thôi.",
+      "Mùi đồ nướng thơm thật.",
+      "Tối nay ngồi thêm chút rồi về nha.",
+      "Lâu rồi nhóm mình mới gặp đủ đông thế này.",
+      "Chỗ này nhìn cũng ổn, mọi người chọn đi.",
+      "Đường đông mà mọi người vẫn tới đủ ha.",
+      "Đèn lồng đẹp đó.",
+      "Ăn xong ngồi nói chuyện thêm chút nhé.",
     ],
     cute: [
       "Tớ giữ chỗ này cho cậu đó, mau ngồi đi.",
-      "Đi đông mới vui, thiếu cậu là thiếu món ngon.",
+      "Tớ chừa chỗ cho cậu rồi, ngồi đây đi.",
       "Tớ chọn món chính, cậu chọn món tráng miệng nha.",
       "Ngồi sát vào, chừa chỗ cho người tới sau nữa.",
       "Đừng gọi cay nha, lần trước cậu khóc rồi đó.",
       "Thấy đèn lồng là nhớ chuyến đi hôm trước ghê.",
       "Chụp tấm hình nhóm rồi hẵng gọi món nha.",
-      "Nhường cậu miếng ngon đầu tiên, nhớ ghi công tớ!",
+      "Cậu ăn thử trước đi, rồi nói tớ biết ngon không.",
     ],
     grumpy: [
-      "Quán đông mà chẳng ai ra đón, tự do ghê ha.",
-      "Thực đơn đâu rồi, phải đoán món bằng mùi à?",
-      "Ngồi được chưa hay đứng đây làm khách trưng bày?",
-      "Bàn hơi chật nha, nhóm mình cũng trả tiền mà.",
-      "Hy vọng đồ ăn ra nhanh hơn lúc xếp chỗ.",
-      "Nhạc nghe rõ hơn tiếng gọi nhân viên luôn đó.",
-      "Đông quá, chắc lát nữa nhân viên quên nhóm mình.",
-      "Đèn đẹp mà xem thực đơn phải dí sát mặt mới thấy.",
+      "Quán đông quá, mình tự tìm bàn nhé?",
+      "Cho mình xin thực đơn với, nãy giờ chưa thấy.",
+      "Mình đứng hơi lâu rồi, bàn nào còn trống vậy?",
+      "Bàn này hơi chật, có bàn khác không?",
+      "Hy vọng món ra sớm, tụi mình đang đói.",
+      "Nhạc hơi lớn, nói chuyện khó nghe quá.",
+      "Mình gọi món rồi mà chưa biết ai nhận, hỏi giúp nhé.",
+      "Đèn hơi tối, cho mình xem thực đơn với.",
     ],
   },
 };
 
-// After the authored one-liners, combine context-neutral sentences. Each tone
-// has 12 × 12 combinations, while family variants filter out friend-only speech.
+// After the authored one-liners, use short, self-contained thoughts so each
+// arrival bubble stays readable.
 const ARRIVAL_VARIANTS: Record<DialogueTone, { openings: readonly string[]; followups: readonly string[] }> = {
   normal: {
     openings: [
@@ -235,12 +332,12 @@ const ARRIVAL_VARIANTS: Record<DialogueTone, { openings: readonly string[]; foll
   },
   funny: {
     openings: [
-      "Mình tới trễ có một chút thôi, đừng nhìn đồng hồ.", "Tìm chỗ gửi xe xong mình cũng tìm thấy nhân sinh.",
-      "Mình đi đúng đường, chỉ là đường hơi vòng.", "Cái chân báo nghỉ rồi, cả người mới nhận tin.",
-      "Ai bảo hẻm này dễ tìm? Có, là mình đó.", "Mình nhắn ‘đang tới’ từ lúc còn ở nhà.",
-      "Đi sát nhau nha, kẻo lại lạc thành hai nhóm.", "Tới đông đủ rồi, điểm danh xong cho nghỉ nha.",
-      "Mình chọn chỗ này bằng trực giác, hy vọng đúng.", "Mới ngồi xuống mà cái túi đã chiếm ghế rồi.",
-      "Mình nhớ mang chìa khóa, thành tựu đáng ghi nhận.", "Mọi người tới trước, mình tới đúng lúc câu chuyện hay.",
+      "Mình tới trễ có một chút thôi, đừng nhìn đồng hồ.", "Tìm chỗ gửi xe lâu hơn mình tưởng.",
+      "Mình đi đúng đường, chỉ là đường hơi vòng.", "Đi bộ hơi xa, cho mình ngồi nghỉ chút.",
+      "Hẻm này hơi khó tìm, may là tới rồi.", "Mình nhắn ‘đang tới’ từ lúc còn ở nhà.",
+      "Đi sát nhau nha, đoạn này hơi đông.", "Mọi người tới đủ rồi, chọn bàn đi.",
+      "Mình chọn chỗ này vì gần cửa.", "Mới ngồi xuống mà cái túi đã chiếm ghế rồi.",
+      "May là hôm nay không quên chìa khóa.", "Mọi người tới trước, mình tới đúng lúc.",
     ],
     followups: [
       "Tạm cho cái đồng hồ nghỉ, nó gây áp lực quá.", "Lần sau gửi ghim vị trí ngay từ đầu nha.",
@@ -272,29 +369,29 @@ const ARRIVAL_VARIANTS: Record<DialogueTone, { openings: readonly string[]; foll
   cheerful: {
     openings: [
       "Được gặp mọi người ngoài đời vui hơn nhắn tin nhiều.", "Hôm nay cả nhóm tới gần như cùng lúc luôn.",
-      "Vừa bước vào đã nghe tiếng cười rộn ràng rồi.", "Lâu rồi mới ngồi chung đủ mặt thế này.",
-      "Mình mong buổi gặp này từ đầu tuần tới giờ.", "Góc này sáng lên nhìn dễ chịu ghê.",
-      "Đi một vòng phố rồi, giờ ngồi kể chuyện thôi.", "Ai cũng tới được là vui nhất rồi.",
-      "Mình có chuyện vui muốn kể cho mọi người nghe.", "Hôm nay trông ai cũng có vẻ thư thả hơn.",
-      "Không khí ở đây làm mình thấy thoải mái ghê.", "Cả nhóm ngồi cạnh nhau nhìn vui thật.",
+      "Mọi người tới đủ rồi, gọi món thôi.", "Lâu rồi mới ngồi chung đủ mặt thế này.",
+      "Mấy hôm rồi mới có dịp gặp nhau.", "Góc này sáng, ngồi cũng dễ chịu.",
+      "Đi một vòng phố rồi, giờ ngồi nghỉ chút.", "Mọi người chọn bàn đi, chỗ nào cũng được.",
+      "Mình có chuyện muốn kể cho mọi người nghe.", "Hôm nay tan làm sớm nên ghé được.",
+      "Ở trong này đỡ ồn hơn ngoài phố.", "Để túi xuống rồi mình gọi món nhé.",
     ],
     followups: [
       "Cứ kể đi, mọi người đang nghe đây.", "Mình ngồi thêm chút cũng được mà.",
       "Lát nữa chụp tấm hình chung nha.", "Ai tới trễ thì lát kể chuyện bù đó nha.",
       "Hôm nay không cần ai phải vội về đâu.", "Ngồi đây nói chuyện tới lúc nào cũng được.",
-      "Có mọi người ở đây là đủ vui rồi.", "Lát về nhắn nhau một tiếng nha.",
+      "Ngồi thêm một lát rồi về nha.", "Lát về nhắn nhau một tiếng nha.",
       "Chuyện vui kể trước, chuyện buồn để mai tính.", "Mình kéo ghế sát lại cho đủ chỗ nhé.",
       "Tớ muốn nghe tiếp chuyện chuyến đi hôm trước.", "Mỗi người kể một chuyện, bắt đầu từ người tới trễ nha.",
     ],
   },
   cute: {
     openings: [
-      "Mình chừa chỗ này cho mọi người nè.", "Ngồi gần nhau nói chuyện vui hơn nha.",
-      "Tớ giữ chỗ cạnh mình cho cậu đó.", "Mọi người tới rồi, tự nhiên thấy vui ghê.",
+      "Mình chừa chỗ này cho mọi người nè.", "Ngồi gần nhau cho dễ nói chuyện nha.",
+      "Tớ giữ chỗ cạnh cửa cho cậu.", "Mọi người tới rồi, ngồi thôi.",
       "Mình kéo ghế sát vào cho đủ chỗ nha.", "Cậu đi đường có mệt không, ngồi nghỉ chút nhé.",
-      "Chụp tấm hình nhóm rồi cất điện thoại nha.", "Tớ có chuyện nhỏ muốn kể cho cậu nghe.",
-      "Mình ngồi chỗ này cho dễ nhìn thấy nhau nha.", "Cậu tới rồi là tớ yên tâm rồi.",
-      "Ngồi thêm một lúc cũng được mà.", "Tớ đợi đủ mặt rồi mới thấy buổi tối bắt đầu.",
+      "Chụp tấm hình nhóm rồi cất điện thoại nha.", "Tớ có chuyện muốn kể cho cậu nghe.",
+      "Mình ngồi chỗ này cho dễ nói chuyện nha.", "Cậu tới rồi, ngồi nghỉ chút đi.",
+      "Ngồi thêm một lúc cũng được mà.", "Tớ đợi mọi người nãy giờ.",
     ],
     followups: [
       "Tớ ngồi cạnh cậu nhé, có chuyện muốn hỏi nè.", "Để tớ cất túi giúp cho gọn nha.",
@@ -309,35 +406,62 @@ const ARRIVAL_VARIANTS: Record<DialogueTone, { openings: readonly string[]; foll
 
 const ARRIVAL_PERSONA_LINES: Partial<Record<DialoguePersona, readonly string[]>> = {
   child: ["Con kể chuyện ở lớp cho mọi người nghe nha?", "Con ngồi xuống nghỉ chân một chút đã.", "Hôm nay tan học xong được đi cùng cả nhà vui ghê."],
+  preschooler: ["Con ngồi cạnh mẹ nha, con có chuyện mới muốn kể!", "Con vừa vẽ một bức tranh thật to đó!", "Con tới quán rồi, lát con kể chuyện ở lớp mầm non nha."],
+  grandmother: ["Bà ngồi nghỉ một chút rồi nghe mấy đứa kể chuyện nha.", "Đi bộ tới đây cũng vui, giờ ngồi thong thả thôi.", "Lâu rồi nhà mình mới có dịp ngồi đông đủ thế này."],
+  grandfather: ["Tới nơi rồi, ngồi xuống kể chuyện khu phố cho vui.", "Đường hôm nay đông, cả nhà đi cùng nhau là yên tâm.", "Lâu rồi mới có bữa ngồi đủ mặt thế này."],
   office: ["Tan làm giờ này, đường đông hơn mình tưởng.", "Hôm nay họp hơi dài, ngồi nghỉ một chút đã.", "Mai còn phải dậy sớm, tối nay mình về vừa giờ nha."],
+  teacher: ["Tan học xong ghé gặp bạn một chút, mai lại lên lớp sớm rồi.", "Hôm nay mấy bé trong lớp kể chuyện suốt, giờ mình kể chuyện người lớn nha.", "Sổ điểm cất rồi, tối nay cho đầu óc nghỉ một buổi."],
   student: ["Học xong tụi mình ghé đây luôn, ngồi nghỉ chút nha.", "Mai có tiết sớm, tối nay đừng về trễ quá đó.", "Bài nhóm xong rồi, giờ mới được thảnh thơi."],
   worker: ["Xong ca rồi, ngồi nghỉ chân một chút đã.", "Chạy ngoài đường cả buổi, giờ mới được ngồi yên.", "Hôm nay làm xong sớm hơn dự tính, tranh thủ gặp mọi người."],
   tourist: ["Đi dọc con phố này vui thật, mình nghỉ chân một lát nhé.", "Mình muốn ngắm phố thêm sau khi ngồi nghỉ.", "Khu này nhộn nhịp hơn mình nghĩ."],
   creator: ["Góc này có ánh đèn đẹp, lát mình chụp một tấm nha.", "Tối nay mình tạm cất điện thoại, ngồi nói chuyện đã.", "Mình lưu địa chỉ chỗ này để lần sau quay lại."],
   comic: ["Tui đi bộ có một đoạn mà đôi chân tưởng hết ca rồi.", "Tui tới đúng giờ nha, chỉ là đồng hồ hơi hiểu lầm thôi.", "Ngồi xuống cái là hết muốn làm người bận rộn liền."],
   local: ["Hôm nay quanh đây đông hơn mọi hôm ha.", "Đi một vòng khu phố rồi, ngồi nghỉ chút cho khỏe.", "Lâu rồi mới gặp nhau ở gần nhà thế này."],
+  mechanic: ["Xưởng vừa khóa cửa, ghé gặp bạn rồi về nghỉ thôi.", "Chú rửa tay mấy lần mới hết mùi dầu đó.", "Tan ca rồi, tối nay chú không nhận thêm xe nữa."],
+  "traditional-driver": ["Chạy cuốc cuối xong, chú ghé ngồi nghỉ chân.", "Nãy chú gặp đường đang sửa nên vòng qua hẻm bên.", "Để nón gọn bên cạnh, ngồi nói chuyện chút đã."],
+  "taxi-driver": ["Tan ca rồi, chú trả xe xong mới ghé qua đây.", "Ngoài đường đông mà ngồi xuống thấy yên hẳn.", "Chú vừa đưa khách cuối tới nơi rồi mới tới."],
+  nurse: ["Ca trực vừa bàn giao, cuối cùng cũng ngồi xuống.", "Hôm nay bệnh viện đông, giờ cô mới được nghỉ một chút.", "Cô tranh thủ gặp bạn trước khi về ngủ bù."],
+  musician: ["Tối nay không có buổi diễn, tụi mình gặp nhau nói chuyện thôi.", "Hôm nay cây cajon được nghỉ, còn người chơi thì cần ăn tối.", "Chú ý, tối nay mình kể chuyện chứ không cần giữ nhịp nha."],
 };
 
 const ORDER_PERSONA_LINES: Partial<Record<DialoguePersona, readonly string[]>> = {
   child: ["Con muốn thử {dish}, mình chia nhau nha.", "Cho con gọi {dish} nhé, con sẽ ăn gọn phần mình.", "Món {dish} này con chưa thử bao giờ."],
+  preschooler: ["Con muốn gọi {dish} để cả nhà chia nhau ạ.", "Cho con chọn {dish} nha, con sẽ ăn cùng mọi người.", "Món {dish} nhìn lạ quá, con muốn thử một chút."],
+  grandmother: ["Cho bà xin {dish} nha, món này hợp ngồi ăn chung.", "Mình gọi {dish} trước đi, bà muốn thử xem sao.", "Thêm {dish} vào bàn nhé, bà nghĩ cả nhà sẽ thích."],
+  grandfather: ["Cho cả bàn thử {dish} nha, lâu rồi tôi chưa ăn món này.", "Gọi {dish} đi, món này dễ chia cho mọi người.", "Tôi chọn {dish} nhé, hôm nay ngồi lâu một chút."],
   office: ["Cho nhóm mình {dish} trước nhé, hôm nay tan làm muộn quá.", "Mình gọi {dish} nha, ăn xong còn kịp chuyến xe.", "Thêm {dish} vào bàn nhé, nãy giờ mọi người chưa ăn gì."],
+  teacher: ["Cho nhóm mình {dish} nhé, mai cô còn phải dậy sớm.", "Mình gọi {dish} nha, hôm nay nói chuyện lớp học đủ rồi.", "Thêm {dish} vào bàn đi, ngồi với bạn cũ phải tranh thủ kể chuyện nữa."],
   student: ["Cho tụi mình một phần {dish} nha, chia đều là vừa.", "Mình gọi {dish} trước nhé, lát còn phải về làm bài.", "Tụi mình thử {dish} đi, phần này vừa túi tiền."],
   worker: ["Cho một phần {dish} trước nha, tụi mình vừa xong ca.", "Gọi {dish} đi, ăn xong còn nghỉ lấy sức.", "Cho nhóm mình {dish} nhé, chia nhau ăn cho tiện."],
   tourist: ["Món {dish} này là món quen ở đây hả? Cho mình thử nhé.", "Cho tụi mình {dish} nha, mình muốn thử món địa phương.", "Mình chưa ăn {dish} bao giờ, gọi một phần để chia nhé."],
   creator: ["Cho mình gọi {dish} nha, món này trông đáng thử đó.", "Mình gọi {dish} nhé, lát nếm xong kể mọi người nghe.", "Thêm {dish} vào bàn đi, món này hợp ăn chung."],
-  comic: ["Cho tui {dish} nha, bụng tui đã họp và biểu quyết rồi.", "Gọi {dish} đi, tui hứa chỉ ăn phần của mình thôi.", "Cho một phần {dish}; tui sẽ kiểm tra chất lượng bằng miệng."],
+  comic: ["Cho tui {dish} nha, đói từ nãy tới giờ rồi.", "Gọi {dish} đi, tui ăn chung với mọi người.", "Cho một phần {dish} nhé, món này nhìn ngon đó."],
   local: ["Cho nhóm mình {dish} nhé, món này dễ chia.", "Mình gọi {dish} trước nha, ăn xong còn đi tiếp.", "Thử {dish} đi, lâu rồi mình chưa ăn món này."],
+  mechanic: ["Cho nhóm mình {dish} nhé, vừa xong ca sửa xe.", "Gọi {dish} nha, hôm nay chú đứng cả buổi rồi.", "Chọn {dish} đi, ăn xong chú kể chuyện cái xe khó sửa nhất."],
+  "traditional-driver": ["Cho chú gọi {dish} nhé, chạy ngoài đường nãy giờ đói rồi.", "Thêm {dish} đi, mình ăn xong rồi tính đường về.", "Gọi {dish} nha, món này chia nhau ăn tiện."],
+  "taxi-driver": ["Cho nhóm mình {dish} trước nhé, chú vừa hết ca.", "Gọi {dish} nha, ăn xong chú còn tranh thủ về nghỉ.", "Thêm {dish} đi, chú đưa khách cả ngày chưa kịp ăn tử tế."],
+  nurse: ["Cho cô gọi {dish} nhé, ca tối nay dài quá rồi.", "Thêm {dish} cho nhóm mình nha, ăn xong cô về ngủ bù.", "Mình gọi {dish} đi, cô vừa bàn giao ca trực xong."],
+  musician: ["Cho tụi mình {dish} nha, chơi nhạc xong đói quá rồi.", "Gọi {dish} đi, tối nay không phải canh giờ diễn.", "Thêm {dish} nhé, ăn xong tụi mình đi bộ về."],
 };
 
 const ORDER_REPLY_PERSONA_LINES: Partial<Record<DialoguePersona, readonly string[]>> = {
   child: ["Được, nhưng ăn chậm thôi nha.", "Ừ, con chọn đi rồi cả nhà chia nhau.", "Nhớ để dành một miếng cho mọi người đó."],
+  preschooler: ["Dạ, con sẽ chờ mọi người ngồi đủ rồi ăn chung.", "Con chọn phần nhỏ thôi, còn chừa bụng ăn món khác.", "Dạ, con ngồi ngoan chờ món nha."],
+  grandmother: ["Ừ, gọi thêm đi, bà ăn chung với cả nhà.", "Bà đồng ý, món này nghe hợp đó.", "Cứ gọi vừa đủ thôi, mình còn ngồi trò chuyện nữa."],
+  grandfather: ["Ừ, gọi đi, lâu lâu cả nhà mới ngồi đông đủ.", "Được, món này dễ chia mà.", "Tôi đồng ý, gọi thêm một phần nhé."],
   office: ["Ừ, ăn xong mình về nghỉ sớm nhé.", "Được, hôm nay ai cũng cần nạp năng lượng.", "Chốt nha, điện thoại công việc để yên một lúc đi."],
+  teacher: ["Ừ, gọi vừa đủ thôi, mai cô vẫn phải lên lớp sớm.", "Được, tối nay mình kể chuyện vui thôi, đừng nhắc sổ điểm nữa nha.", "Chốt, lâu rồi hai đứa mình mới ngồi lâu vậy."],
   student: ["Chốt, lát chia tiền đều nha.", "Được, ăn xong mình về ôn bài cùng nhau.", "Ừ, gọi vừa đủ thôi để còn kịp chuyến xe."],
   worker: ["Ừ, ăn xong mình nghỉ một lát rồi về.", "Chốt, hôm nay ai cũng làm cả ngày rồi.", "Được, ngồi thư giãn chút rồi tính tiếp."],
   tourist: ["Được, mình cũng muốn thử món này.", "Chốt nhé, cảm ơn đã chọn giúp mình.", "Ừ, mình gọi món địa phương là đúng rồi."],
   creator: ["Được, nhưng mình cất máy rồi ăn cho nóng nha.", "Chốt, nếm xong mình nói cảm nhận sau.", "Ừ, để mọi người ăn trước, ảnh chụp sau cũng được."],
-  comic: ["Tui đồng ý, quyết định này rất hợp cái bụng.", "Chốt! Tui sẽ không ăn vụng trước đâu.", "Được, lát ai ăn nhanh thì tự nhận là có luyện tập."],
+  comic: ["Tui đồng ý, món này nghe được đó.", "Ừ, gọi đi, tui cũng muốn ăn.", "Được, lát chia nhau nhé."],
   local: ["Ừ, vừa ăn vừa kể chuyện khu mình nhé.", "Chốt nha, lát mình đi bộ về cho thoáng.", "Được, gặp nhau thế này vui hơn ngồi nhà."],
+  mechanic: ["Được, tối nay chú không còn phải vội về xưởng.", "Chốt nhé, chú rửa tay xong rồi mới gắp.", "Ừ, gọi vừa đủ rồi mình ngồi nghỉ thêm chút."],
+  "traditional-driver": ["Ừ, chú dựng nón gọn rồi, cứ gọi đi.", "Được, ăn xong chú đi cùng cậu ra đầu phố.", "Chốt nha, mai chạy xe thì tối nay phải nghỉ sớm."],
+  "taxi-driver": ["Ừ, chú tắt bộ đàm rồi, tối nay nói chuyện thôi.", "Được, gọi đi rồi chú ngồi nghỉ một lát.", "Chốt nhé, hết ca rồi không cần nhìn đồng hồ nữa."],
+  nurse: ["Ừ, gọi đi, cô đã bàn giao xong ca rồi.", "Được, tối nay mình không nhắc chuyện công việc nữa nha.", "Chốt nhé, ăn xong cô về ngủ cho đủ giấc."],
+  musician: ["Ừ, gọi đi. Hôm nay không phải canh giờ diễn.", "Được, ăn xong rồi tính chuyện buổi diễn sau.", "Ừ, tối nay để cajon nghỉ, mình cứ ngồi lâu chút."],
 };
 
 const WAITING_ORDER_PAIRS: Record<DiningPartyType, readonly ConversationPair[]> = {
@@ -439,10 +563,34 @@ const PERSONA_CONVERSATION_PAIRS: Partial<Record<DialoguePersona, Partial<Record
     "waiting-food": [{ text: "Con vừa được cô dán sao bé ngoan.", reply: "Giỏi quá, lát về con kể thêm cho mẹ nghe.", speakerPersona: "child", replyPersona: "mother" }],
     eating: [{ text: "Hôm nay con vui vì được đi cùng cả nhà.", reply: "Ba mẹ cũng vui, lần sau mình lại đi nhé.", speakerPersona: "child", replyPersona: "mother" }],
   },
+  preschooler: {
+    "waiting-order": [{ text: "Con ngồi cạnh mẹ để kể chuyện nha?", reply: "Ừ, mẹ nghe con kể đây.", speakerPersona: "preschooler", replyPersona: "mother" }],
+    "waiting-food": [{ text: "Hôm nay cô cho con dán hình ngôi sao đó!", reply: "Giỏi quá, lát về con kể ba nghe nữa nhé.", speakerPersona: "preschooler", replyPersona: "father" }],
+    eating: [{ text: "Con ăn miếng nhỏ thôi để còn nghe mọi người kể chuyện.", reply: "Cứ ăn từ từ nha, cả nhà đang ngồi cùng con mà.", speakerPersona: "preschooler", replyPersona: "mother" }],
+    "awaiting-payment": [{ text: "Con ăn xong rồi, mình về cùng nhau nha?", reply: "Ừ, cả nhà mình đi chậm thôi.", speakerPersona: "preschooler", replyPersona: "mother" }],
+  },
+  grandmother: {
+    "waiting-order": [{ text: "Đi bộ tới đây, tôi muốn ngồi nghỉ chân một chút.", reply: "Nghỉ đi, mình không vội.", speakerPersona: "grandmother", replyPersona: "child" }],
+    "waiting-food": [{ text: "Khu này thay đổi nhiều mà vẫn còn mấy hàng quen.", reply: "Lần sau mình ghé quán nước kia nhé.", speakerPersona: "grandmother", replyPersona: "child" }],
+    eating: [{ text: "Món này ngày trước gần nhà mình cũng có bán.", reply: "Bà kể thêm đi, tụi con đang nghe.", speakerPersona: "grandmother", replyPersona: "child" }],
+    "awaiting-payment": [{ text: "Ăn xong rồi, mình về thôi.", reply: "Dạ, để con đi cùng bà ra cửa.", speakerPersona: "grandmother", replyPersona: "child" }],
+  },
+  grandfather: {
+    "waiting-order": [{ text: "Ngồi xuống rồi mới thấy chân mỏi thật.", reply: "Nghỉ một lát rồi mình gọi món nha.", speakerPersona: "grandfather", replyPersona: "child" }],
+    "waiting-food": [{ text: "Đường trước hẻm mới sửa, đi êm hơn hẳn.", reply: "Vậy mai mình đi đường bên kia cho đỡ bụi.", speakerPersona: "grandfather", replyPersona: "child" }],
+    eating: [{ text: "Nói chuyện một hồi mà quên cả giờ.", reply: "Lâu rồi nhà mình mới có buổi tối thong thả vậy.", speakerPersona: "grandfather", replyPersona: "child" }],
+    "awaiting-payment": [{ text: "Ăn no rồi, mình về thôi.", reply: "Ừ, ra đầu hẻm rồi mình gọi xe nhé.", speakerPersona: "grandfather", replyPersona: "child" }],
+  },
   office: {
     "waiting-order": [{ text: "Hôm nay lịch họp kín tới tận chiều.", reply: "Mai nhớ để trống giờ nghỉ trưa một chút nha.", speakerPersona: "office", replyPersona: "office" }],
     "waiting-food": [{ text: "Tớ vừa gửi xong bản báo cáo cuối ngày.", reply: "Thế thì tối nay khỏi nghĩ tới công việc nữa.", speakerPersona: "office", replyPersona: "office" }],
     eating: [{ text: "Sếp vừa nhắn, nhưng mai trả lời cũng được.", reply: "Đúng, giờ này mình đang nghỉ rồi.", speakerPersona: "office", replyPersona: "office" }],
+  },
+  teacher: {
+    "waiting-order": [{ text: "Hôm nay mấy bé trong lớp làm cô cười cả buổi.", reply: "Nghe kể thôi đã thấy vui rồi, mai cô kể tiếp nha.", speakerPersona: "teacher", replyPersona: "office" }],
+    "waiting-food": [{ text: "Cô mới cất sổ điểm vào túi, tối nay không chấm bài nữa.", reply: "Đúng rồi, bữa tối là giờ nghỉ của cô mà.", speakerPersona: "teacher", replyPersona: "office" }],
+    eating: [{ text: "Cả ngày nói chuyện với học trò, giờ cô muốn nghe chuyện của cậu.", reply: "Vậy để tớ kể chuyện chuyến xe buýt sáng nay nhé.", speakerPersona: "teacher", replyPersona: "office" }],
+    "awaiting-payment": [{ text: "Mai cô có tiết đầu giờ, mình về sớm một chút nha.", reply: "Ừ, để tớ đi cùng cô ra đầu phố.", speakerPersona: "teacher", replyPersona: "office" }],
   },
   student: {
     "waiting-order": [{ text: "Nhóm bài tập của mình đã chia việc chưa?", reply: "Rồi, tớ nhận phần thuyết trình nhé.", speakerPersona: "student", replyPersona: "student" }],
@@ -465,14 +613,37 @@ const PERSONA_CONVERSATION_PAIRS: Partial<Record<DialoguePersona, Partial<Record
     eating: [{ text: "Thôi tớ cất máy, ăn nóng với mọi người đã.", reply: "Hay đó, câu chuyện ngoài đời vui hơn màn hình.", speakerPersona: "creator" }],
   },
   comic: {
-    "waiting-order": [{ text: "Tui ngồi xuống rồi mà cái bụng vẫn đứng xếp hàng.", reply: "Vậy cho cái bụng ngồi cạnh luôn đi.", speakerPersona: "comic" }],
-    "waiting-food": [{ text: "Tui đang kiên nhẫn, chỉ có chân tui là sốt ruột.", reply: "Chân ngồi yên đi, lát còn phải đưa chủ về.", speakerPersona: "comic" }],
-    eating: [{ text: "Tui định kể chuyện ngắn, ai dè kể tới tập ba.", reply: "Tập này có đoạn kết không đó?", speakerPersona: "comic" }],
+    "waiting-order": [{ text: "Tui đói rồi, chọn món nhanh giúp tui nha.", reply: "Ừ, để coi món nào ra nhanh.", speakerPersona: "comic" }],
+    "waiting-food": [{ text: "Chưa ra món nữa hả? Tui bắt đầu đói lại rồi.", reply: "Nãy giờ ông nói đói mấy lần rồi đó.", speakerPersona: "comic" }],
+    eating: [{ text: "Tui đang kể chuyện này tự nhiên nhớ chuyện khác.", reply: "Ừ, ông kể tiếp đi, tui đang nghe.", speakerPersona: "comic" }],
   },
   local: {
     "waiting-order": [{ text: "Tiệm sửa đường đầu hẻm mở lại chưa nhỉ?", reply: "Sáng nay tớ đi ngang thấy họ dọn máy rồi.", speakerPersona: "local", replyPersona: "local" }],
     "waiting-food": [{ text: "Sáng mai chợ họp sớm, cậu có đi không?", reply: "Có, tớ định ghé trước giờ đông.", speakerPersona: "local", replyPersona: "local" }],
     eating: [{ text: "Dạo này hàng cây đầu phố xanh lên rồi ha.", reply: "Ừ, chiều đi ngang thấy mát hơn hẳn.", speakerPersona: "local", replyPersona: "local" }],
+  },
+  mechanic: {
+    "waiting-order": [{ text: "Cái xe khó sửa nhất hôm nay cuối cùng cũng nổ máy.", reply: "Vậy là về xưởng yên tâm rồi, mai tính tiếp.", speakerPersona: "mechanic", replyPersona: "traditional-driver" }],
+    "waiting-food": [{ text: "Tay chú còn mùi dầu không vậy?", reply: "Rửa kỹ rồi, giờ chỉ còn mùi đồ nướng thôi.", speakerPersona: "mechanic", replyPersona: "traditional-driver" }],
+    eating: [{ text: "Mai xe chú thay nhớt rồi, chạy chắc êm hơn.", reply: "Ừ, để mai chú ghé xưởng kiểm tra nha.", speakerPersona: "mechanic", replyPersona: "traditional-driver" }],
+    "awaiting-payment": [{ text: "Ngồi nghỉ một chút thấy khỏe lại rồi.", reply: "Ừ, mai mình lại gặp ngoài phố nha.", speakerPersona: "mechanic", replyPersona: "traditional-driver" }],
+  },
+  nurse: {
+    "waiting-order": [{ text: "Cô vừa bàn giao xong ca, đầu óc vẫn còn nghĩ tới lịch trực.", reply: "Ăn tối xong rồi hãy tính, tối nay nghỉ một chút đi.", speakerPersona: "nurse", replyPersona: "taxi-driver" }],
+    "waiting-food": [{ text: "Ngày mai chú chạy ca sáng nên tối nay phải ngủ sớm.", reply: "Vậy ăn thong thả chút rồi chú về nghỉ nha.", speakerPersona: "taxi-driver", replyPersona: "nurse" }],
+    eating: [{ text: "Cô ngủ bù xong sẽ nhắn chú, rồi mình hẹn mọi người lần nữa.", reply: "Ừ, hết ca chú cũng rảnh hơn một chút.", speakerPersona: "nurse", replyPersona: "taxi-driver" }],
+    "awaiting-payment": [{ text: "Cảm ơn đã chờ cô tan ca mới hẹn được.", reply: "Bạn bè mà, khi nào rảnh mình lại gặp.", speakerPersona: "nurse", replyPersona: "taxi-driver" }],
+  },
+  "taxi-driver": {
+    "waiting-order": [{ text: "Hôm nay chú đi mấy vòng quanh phố, vẫn chưa thử con hẻm bên kia.", reply: "Mai cô rảnh thì mình đi bộ qua đó xem nha.", speakerPersona: "taxi-driver", replyPersona: "nurse" }],
+    "waiting-food": [{ text: "Đường ngoài kia đông, may mà giờ mình ngồi yên được rồi.", reply: "Ừ, ca trực cũng xong, tối nay mình nghỉ thôi.", speakerPersona: "taxi-driver", replyPersona: "nurse" }],
+    eating: [{ text: "Chú cất điện thoại công việc rồi, tối nay không nhận thêm cuốc nữa.", reply: "Vậy tốt, mình cứ nói chuyện thoải mái đi.", speakerPersona: "taxi-driver", replyPersona: "nurse" }],
+  },
+  musician: {
+    "waiting-order": [{ text: "Tối nay nghỉ diễn, tự nhiên không biết nên bắt đầu câu chuyện từ đâu.", reply: "Bắt đầu bằng chuyện hôm qua cậu vào nhịp trễ đi.", speakerPersona: "musician", replyPersona: "creator" }],
+    "waiting-food": [{ text: "Mai mình tập bài mới ở góc phố cũ nha?", reply: "Được, tớ ghé nghe thử rồi quay một đoạn ngắn.", speakerPersona: "musician", replyPersona: "creator" }],
+    eating: [{ text: "Lần sau cậu giữ nhịp chậm hơn chút, đoạn cuối hơi nhanh đó.", reply: "Tớ tưởng cậu đánh cajon nhanh lên mới đúng nhịp mà.", speakerPersona: "musician", replyPersona: "creator" }],
+    "awaiting-payment": [{ text: "Bữa nay ngồi kể chuyện còn lâu hơn buổi diễn.", reply: "Vậy lần sau mình hẹn sớm hơn nha.", speakerPersona: "musician", replyPersona: "creator" }],
   },
 };
 
@@ -494,8 +665,8 @@ const ORDER_CALL_LINES: Record<DiningPartyType, readonly string[]> = {
     "Nhìn {dish} là biết phải gọi món đó rồi.", "Thêm {dish} vào đi, hôm nay chơi lớn.",
     "Tớ lấy {dish} nha, mọi người ăn chung không?", "Gọi {dish} đi, món này hợp bàn mình.",
     "Để tớ gọi {dish}, ai không ăn thì báo sớm.", "Cho nhóm mình một phần {dish} nhé!",
-    "Tớ đang nghiêng về {dish}; biểu quyết nhanh nào.", "Món {dish} nghe ổn áp đó, gọi đi.",
-    "Gọi {dish} trước nha, bụng tớ hết kiên nhẫn rồi.", "Thêm {dish} nữa nhé, chia đều cho công bằng.",
+    "Tớ đang phân vân {dish} với món kia, mọi người chọn đi.", "Món {dish} nghe được đó, gọi đi.",
+    "Gọi {dish} trước nha, tớ đói rồi.", "Thêm {dish} nữa nhé, chia đều cho công bằng.",
   ],
 };
 
@@ -518,14 +689,14 @@ const ORDER_REPLY_LINES: Record<DiningPartyType, readonly string[]> = {
     "Chuẩn bài, món đó ăn chung mới vui.", "Ủa, nãy bảo ăn nhẹ mà giờ gọi thêm hả?",
     "Cho vào danh sách đi, nhóm mình xử lý được.", "Được nha, nhưng lát nhớ chụp hình món đó.",
     "Tớ duyệt. Ai trả tiền thì chọn món tiếp theo.", "Gọi thêm phần đi, tớ ăn phụ cho.",
-    "Nghe ngon đó, lần này tớ tin cậu.", "Rồi, chốt đơn trước khi bụng biểu tình nữa.",
+    "Nghe ngon đó, lần này tớ tin cậu.", "Rồi, gọi đi kẻo lát lại đổi ý.",
   ],
 };
 
 const CONVERSATION_OPENINGS: Record<DiningPartyType, readonly string[]> = {
   family: [
     "Ngồi ăn đủ mặt thế này mới vui.", "Món này thơm y như hồi cả nhà đi chơi.",
-    "Ba ơi, lần trước ba kể chuyện quán này hay lắm.", "Đèn lồng làm quán trông ấm cúng ghê.",
+    "Ba ơi, lần trước ba kể chuyện quán này hay lắm.", "Đèn lồng đẹp đó ba ha.",
     "Cuối tuần sau mình lại đi ăn chung nha.", "Ba kể lại chuyện hồi nhỏ đi.",
     "Con đói từ lúc còn ở nhà rồi đó.", "Hôm nay con phụ mẹ dọn bàn nha.",
     "Ngồi gần nhau nói chuyện dễ hơn ở nhà ha.", "Ừ, góc này sáng với dễ chịu thật.",
@@ -535,10 +706,10 @@ const CONVERSATION_OPENINGS: Record<DiningPartyType, readonly string[]> = {
     "Mẹ ơi, nước chấm này có cay không?", "Con kể chuyện ở lớp hôm nay nha.",
     "Ba ơi, con chưa no đâu, gắp thêm giúp con với.", "Hôm nay con thích món này nhất.",
     "Mai mình đi chợ cùng nhau nha.", "Con muốn ngồi thêm chút nữa.",
-    "Mẹ có thấy quán ấm cúng không?", "Ba ơi, con mời ba miếng này.",
+    "Mẹ thấy quán này dễ chịu không?", "Ba ơi, con mời ba miếng này.",
     "Lần sau con muốn rủ ông bà.", "Con no rồi, nhưng món này ngon quá.",
     "Hôm nay cả nhà chụp tấm hình nha.", "Con phụ dọn chén sau nhé.",
-    "Ngồi bên nhau thế này thấy ấm cúng ghê.", "Ba kể chuyện cũ mà sao lần nào cũng khác vậy?",
+    "Ngồi gần nhau nói chuyện dễ hơn ở nhà ha.", "Ba kể chuyện cũ mà sao lần nào cũng khác vậy?",
     "Con nhường miếng ngon cuối cho mẹ đó.", "Mẹ ơi, tối nay vui ghê.",
     "Con còn nhớ lần mình đi sở thú không?", "Mai con có bài tập nhóm, mẹ xem giúp con nhé.",
     "Mẹ ơi, cuối tuần mình ghé thăm bà nha?", "Ba ơi, lúc nhỏ ba thích môn gì nhất?",
@@ -572,9 +743,9 @@ const CONVERSATION_OPENINGS: Record<DiningPartyType, readonly string[]> = {
 const CONVERSATION_REPLIES: Record<DiningPartyType, readonly string[]> = {
   family: [
     "Ừ, hôm nay cả nhà mình cứ thong thả nha.", "Mẹ cũng thấy vậy, ăn nóng mới ngon.",
-    "Ba nhớ chuyện đó mà, để ba kể tiếp.", "Ừ, ánh đèn vàng nhìn ấm cúng thật.",
+    "Ba nhớ chuyện đó mà, để ba kể tiếp.", "Ừ, ánh đèn vàng nhìn đẹp thật.",
     "Được chứ, cuối tuần mình sắp xếp nhé.", "Được, để ba kể đoạn vui nhất nha.",
-    "Ăn từ từ thôi nha, không ai giành đâu.", "Nhìn con vui là mẹ cũng vui rồi.",
+    "Ăn từ từ thôi nha, không ai giành đâu.", "Ừ, con thích món này thì lần sau mẹ gọi nữa.",
     "Ừ, có gì cả nhà cứ kể cho nhau nghe nha.", "Mẹ cũng thích ngồi góc này.",
     "Nhất trí, lần sau mình đi sớm hơn nha.", "Con chọn chỗ giỏi quá, ngồi đây thoải mái ghê.",
     "Ừ, con ăn thêm đi, món còn nóng nè.", "Ừ, lần sau mình gọi ông bà đi cùng.",
@@ -593,18 +764,18 @@ const CONVERSATION_REPLIES: Record<DiningPartyType, readonly string[]> = {
     "Ừ, con chọn đường con thích đi.", "Nhất trí, về nhà sớm cho con ngủ ngon.",
   ],
   friends: [
-    "Chuẩn, có hội mình là câu chuyện không hết.", "Chuẩn, ngồi ăn mới tám chuyện đã.",
+    "Gặp nhau rồi mới kể hết chuyện được.", "Ừ, vừa ăn vừa nói chuyện dễ hơn.",
     "Lần sau nhớ báo sớm để tớ giữ lịch.", "Tớ cũng đói lại rồi, gọi thêm món nhé?",
-    "Đi chứ, ăn xong đi thêm một vòng.", "Ừ, ánh đèn nhìn chill thật.",
+    "Đi chứ, ăn xong đi thêm một vòng.", "Ừ, ánh đèn nhìn đẹp thật.",
     "Gửi tớ tấm đó nha, đừng đăng hình dìm.", "Bữa này vui hơn ngồi ở nhà nhiều.",
     "Công nhận, ở nhà đâu có vui thế này.", "Thôi đừng nhìn bàn bên nữa, gọi phần mình đi.",
     "Đúng rồi, món đó ngon nên tụi mình gọi nữa đi.", "Tớ đồng ý, nhưng ai về trễ tự bắt xe nha.",
     "Có cậu chu đáo ghê, tớ đang khát đây.", "Thế mình gọi thêm món nóng đi.",
     "Tớ cũng thấy vậy, lần sau phải đi tiếp.", "Được, tớ sẽ chặn lịch để khỏi ai bùng.",
-    "Tớ chứ, bụng tớ nãy giờ họp khẩn.", "Đi, miễn đừng bắt tớ dậy lúc sáu giờ.",
+    "Tớ chứ, nãy giờ tớ đói rồi.", "Đi, miễn đừng bắt tớ dậy lúc sáu giờ.",
     "Ba món bàn mình chia, tớ có ăn hết đâu.", "Kể đi, hôm nay tớ ngồi đây tới khuya.",
     "Tớ chọn đó, nhớ khen đúng người nha.", "Uống nước đi, đừng sĩ diện nữa.",
-    "Cảm động ghê, lát miếng ngon đầu tớ nhường cậu.", "Chốt lịch đi, đừng nói rồi để đó nha.",
+    "Ừ, lát miếng ngon đầu tớ nhường cậu.", "Chốt lịch đi, đừng nói rồi để đó nha.",
     "Tớ trả trước, mai chuyển khoản đủ đó.", "Ok, nhưng ai gọi xe thì đặt trước nha.",
     "Gọi đi, tớ ăn phụ được, đừng hỏi nhiều.", "Có, mà tớ nghe bụng mình rõ hơn.",
     "Phải chụp hình lưu niệm trước khi ai chạy mất.", "Tớ nói rồi, lần này tin chuyên gia chọn món đi.",
@@ -632,13 +803,38 @@ export function diningOrderDialogue(
   characterIds: readonly string[] = [],
 ): DiningOrderDialogue {
   const safeNumber = Math.max(0, Math.trunc(dialogueNumber));
+  if (isOlderCouple(partyType, partySize, characterIds)) {
+    const speakerPersona = CHARACTER_PERSONAS[characterIds[speakerIndex] ?? ""];
+    const calls = speakerPersona === "grandmother"
+      ? ["Ông gọi {dish} trước nhé, thiếu thì mình gọi thêm.", "Mình thử {dish} đi ông, lâu rồi chưa ăn.", "Cho một phần {dish} nhé, mình ăn chung."]
+      : ["Mình gọi một phần {dish} trước nhé.", "Bà muốn ăn {dish} không? Mình gọi thử nhé.", "Gọi {dish} đi, ăn xong mình tính tiếp."];
+    const replies = speakerPersona === "grandmother"
+      ? ["Ừ, gọi một phần trước đi.", "Được, món này ăn chung tiện đấy.", "Ừ, thiếu thì mình gọi thêm."]
+      : ["Ừ, gọi đi ông.", "Được, mình gọi một phần trước nhé.", "Ừ, món này tôi cũng muốn ăn."];
+    const replySpeakerIndex = (speakerIndex + 1) % partySize;
+    return {
+      text: calls[safeNumber % calls.length]!.replaceAll("{dish}", dishName),
+      reply: replies[safeNumber % replies.length]!,
+      replySpeakerIndex,
+    };
+  }
   const lines = ORDER_CALL_LINES[partyType];
   const replies = ORDER_REPLY_LINES[partyType];
   const replySpeakerIndex = (speakerIndex + 1) % Math.max(1, partySize);
   const speakerPersona = CHARACTER_PERSONAS[characterIds[speakerIndex] ?? ""];
   const replyPersona = CHARACTER_PERSONAS[characterIds[replySpeakerIndex] ?? ""];
-  const personaCalls = partyType === "friends" && speakerPersona ? ORDER_PERSONA_LINES[speakerPersona] : undefined;
-  const personaReplies = partyType === "friends" && replyPersona ? ORDER_REPLY_PERSONA_LINES[replyPersona] : undefined;
+  const familyGrandparent = (persona: DialoguePersona | undefined) => partyType === "family"
+    && (persona === "grandmother" || persona === "grandfather");
+  const familyPreschooler = (persona: DialoguePersona | undefined, memberIndex: number) => partyType === "family"
+    && persona === "preschooler" && characterIds[memberIndex] === "saigon-preschooler";
+  const rawPersonaCalls = speakerPersona && (partyType === "friends" || familyGrandparent(speakerPersona) || familyPreschooler(speakerPersona, speakerIndex))
+    ? ORDER_PERSONA_LINES[speakerPersona]
+    : undefined;
+  const rawPersonaReplies = replyPersona && (partyType === "friends" || familyGrandparent(replyPersona) || familyPreschooler(replyPersona, replySpeakerIndex))
+    ? ORDER_REPLY_PERSONA_LINES[replyPersona]
+    : undefined;
+  const personaCalls = rawPersonaCalls ? dialogueLinesForParty(rawPersonaCalls, partyType, family) : undefined;
+  const personaReplies = rawPersonaReplies ? dialogueLinesForParty(rawPersonaReplies, partyType, family) : undefined;
   const availableCalls = partyType === "family" ? dialogueLinesForFamilySpeaker(lines, family, speakerIndex) : lines;
   const availableReplies = partyType === "family" ? dialogueLinesForFamilySpeaker(replies, family, replySpeakerIndex) : replies;
   const usePersonaCall = personaCalls && safeNumber % 3 !== 0;
@@ -668,6 +864,9 @@ export function diningConversationDialogue(
   characterIds: readonly string[] = [],
 ): DiningConversationDialogue {
   const safeNumber = Math.max(0, Math.trunc(conversationNumber));
+  if (isOlderCouple(partyType, partySize, characterIds)) {
+    return olderCoupleExchange(characterIds, phase, safeNumber);
+  }
   const basePairs: readonly ConversationPair[] = phase === "waiting-order" || phase === "waiting-food"
     ? (phase === "waiting-order" ? WAITING_ORDER_PAIRS[partyType] : WAITING_FOOD_PAIRS[partyType])
     : phase === "awaiting-payment"
@@ -684,11 +883,14 @@ export function diningConversationDialogue(
   });
   const pair: ConversationPair = pairs[safeNumber % Math.max(1, pairs.length)] ?? { text: SAFE_FAMILY_LINES[0], reply: SAFE_FAMILY_LINES[1] };
   const defaultSpeakerIndex = safeNumber % Math.max(1, partySize);
-  const familyDefaultSpeaker = family.motherIndex ?? family.fatherIndex ?? family.childIndices[0] ?? defaultSpeakerIndex;
+  const familyDefaultSpeaker = family.motherIndex ?? family.fatherIndex ?? family.grandmotherIndex
+    ?? family.grandfatherIndex ?? family.childIndices[0] ?? defaultSpeakerIndex;
   const indexForPersona = (persona: DialoguePersona | undefined, exceptIndex = -1): number | null => {
     if (!persona) return null;
     if (persona === "mother" && partyType === "family") return family.motherIndex;
     if (persona === "father" && partyType === "family") return family.fatherIndex;
+    if (persona === "grandmother" && partyType === "family") return family.grandmotherIndex;
+    if (persona === "grandfather" && partyType === "family") return family.grandfatherIndex;
     const index = characterIds.findIndex((id, memberIndex) => memberIndex !== exceptIndex && CHARACTER_PERSONAS[id] === persona);
     return index >= 0 ? index : null;
   };
@@ -725,12 +927,21 @@ export function diningArrivalDialogue(
   characterIds: readonly string[] = [],
 ): DiningArrivalDialogue {
   const safeArrival = Math.max(1, Math.trunc(arrivalNumber));
+  if (isOlderCouple(partyType, partySize, characterIds)) {
+    const arrival = OLDER_COUPLE_ARRIVALS[(safeArrival - 1) % OLDER_COUPLE_ARRIVALS.length]!;
+    return { text: arrival.text, speakerIndex: olderCoupleIndex(characterIds, arrival.speaker) };
+  }
   const tone = ARRIVAL_TONES[(safeArrival - 1) % ARRIVAL_TONES.length];
   const lines = dialogueLinesForParty(ARRIVAL_LINES[partyType][tone], partyType, family);
   const toneVisit = Math.floor((safeArrival - 1) / ARRIVAL_TONES.length);
   const defaultSpeakerIndex = safeArrival % Math.max(1, partySize);
   const speakerPersona = CHARACTER_PERSONAS[characterIds[defaultSpeakerIndex] ?? ""];
-  const personaArrivalLines = partyType === "friends" && speakerPersona ? ARRIVAL_PERSONA_LINES[speakerPersona] : undefined;
+  const canUseFamilyGrandparentVoice = speakerPersona === "grandmother" || speakerPersona === "grandfather";
+  const canUsePreschoolerVoice = speakerPersona === "preschooler" && characterIds[defaultSpeakerIndex] === "saigon-preschooler";
+  const rawPersonaArrivalLines = speakerPersona && (partyType === "friends" || (partyType === "family" && (canUseFamilyGrandparentVoice || canUsePreschoolerVoice)))
+    ? ARRIVAL_PERSONA_LINES[speakerPersona]
+    : undefined;
+  const personaArrivalLines = rawPersonaArrivalLines ? dialogueLinesForParty(rawPersonaArrivalLines, partyType, family) : undefined;
   let text: string;
   if (personaArrivalLines && safeArrival % 3 === 0) {
     text = personaArrivalLines[Math.floor(safeArrival / 3) % personaArrivalLines.length] ?? SAFE_FAMILY_LINES[0];
@@ -739,16 +950,19 @@ export function diningArrivalDialogue(
     text = lines[toneVisit];
   } else {
     const variants = ARRIVAL_VARIANTS[tone];
-    const combinedLines = variants.openings.flatMap((opening) => variants.followups.map((followup) => `${opening} ${followup}`));
+    // Keep each arrival to one complete thought. Combining unrelated opening
+    // and follow-up lines produced long, mismatched speech bubbles.
+    const completeLines = variants.openings;
     const partyCompatibleVariants = partyType === "family"
-      ? combinedLines.filter((line) => !/\b(?:tớ|cậu)\b/i.test(line))
-      : combinedLines;
+      ? completeLines.filter((line) => !/\b(?:tớ|cậu)\b/i.test(line))
+      : completeLines;
     const availableVariants = dialogueLinesForParty(partyCompatibleVariants, partyType, family);
     text = availableVariants[(toneVisit - lines.length) % availableVariants.length] ?? SAFE_FAMILY_LINES[0];
   }
   // A child says child-centric family lines when one is present; otherwise an
   // adult family member speaks. Friends continue taking turns.
-  const defaultFamilySpeaker = family.motherIndex ?? family.fatherIndex ?? family.childIndices[0] ?? 0;
+  const defaultFamilySpeaker = family.motherIndex ?? family.fatherIndex ?? family.grandmotherIndex
+    ?? family.grandfatherIndex ?? family.childIndices[0] ?? 0;
   const speakerIndex = partyType === "family"
     ? familySpeakerHint(text, family) ?? defaultFamilySpeaker
     : defaultSpeakerIndex;

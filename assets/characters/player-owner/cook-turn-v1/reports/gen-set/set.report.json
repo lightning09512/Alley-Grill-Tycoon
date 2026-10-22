@@ -1,0 +1,53 @@
+{
+  "kind": "sprite-gen-gen-set-report",
+  "run_dir": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\cook-turn-v1",
+  "states": [
+    "cook_idle",
+    "turn_to_player",
+    "turn_back_to_stove"
+  ],
+  "ok": 3,
+  "failed": [],
+  "not_started": [],
+  "items": [
+    {
+      "state": "cook_idle",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\cook-turn-v1\\raw\\cook_idle.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\cook-turn-v1\\reports\\gen-set\\cook_idle.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\cook-turn-v1\\base-source.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\cook-turn-v1\\references\\layout-guides\\cook_idle.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 57.0,
+      "ok": true
+    },
+    {
+      "state": "turn_to_player",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\cook-turn-v1\\raw\\turn_to_player.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\cook-turn-v1\\reports\\gen-set\\turn_to_player.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\cook-turn-v1\\base-source.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\cook-turn-v1\\references\\layout-guides\\turn_to_player.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 49.6,
+      "ok": true
+    },
+    {
+      "state": "turn_back_to_stove",
+      "out": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\cook-turn-v1\\raw\\turn_back_to_stove.png",
+      "report": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\cook-turn-v1\\reports\\gen-set\\turn_back_to_stove.json",
+      "refs": [
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\cook-turn-v1\\base-source.png",
+        "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\player-owner\\cook-turn-v1\\references\\layout-guides\\turn_back_to_stove.png"
+      ],
+      "provider": "codex",
+      "provider_resolved_from": "explicit",
+      "elapsed_seconds": 53.5,
+      "ok": true
+    }
+  ]
+}

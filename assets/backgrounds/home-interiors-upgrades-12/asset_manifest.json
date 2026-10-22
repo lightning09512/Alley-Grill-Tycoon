@@ -1,0 +1,27 @@
+{
+  "formatVersion": 1,
+  "assetType": "residential-interior-map-backgrounds",
+  "aspectRatio": "9:16",
+  "camera": "near-overhead 2.5D interior game-map view",
+  "navigationArt": {
+    "floorContinuesToImageEdges": true,
+    "visibleFrontEntrance": false,
+    "stairsBeginAtLevel": 6,
+    "upperFloorsAreSeparateMaps": true,
+    "note": "These PNGs are visual backgrounds. Add collision, spawn and transition data in the game."
+  },
+  "levels": [
+    { "level": 1, "name": "Improvised shelter", "file": "home-interior-level-01.png", "width": 941, "height": 1672 },
+    { "level": 2, "name": "Patched wooden hut", "file": "home-interior-level-02.png", "width": 941, "height": 1672 },
+    { "level": 3, "name": "Old tin-roof home", "file": "home-interior-level-03.png", "width": 941, "height": 1672 },
+    { "level": 4, "name": "Small basic home", "file": "home-interior-level-04.png", "width": 941, "height": 1672 },
+    { "level": 5, "name": "Tidy starter home", "file": "home-interior-level-05.png", "width": 941, "height": 1672 },
+    { "level": 6, "name": "First two-storey townhouse", "file": "home-interior-level-06.png", "width": 941, "height": 1672 },
+    { "level": 7, "name": "Improved tube house", "file": "home-interior-level-07.png", "width": 941, "height": 1672 },
+    { "level": 8, "name": "Comfortable family townhouse", "file": "home-interior-level-08.png", "width": 941, "height": 1672 },
+    { "level": 9, "name": "Renovated city townhouse", "file": "home-interior-level-09.png", "width": 941, "height": 1672 },
+    { "level": 10, "name": "Modern townhouse", "file": "home-interior-level-10.png", "width": 940, "height": 1672 },
+    { "level": 11, "name": "Upscale urban villa", "file": "home-interior-level-11.png", "width": 940, "height": 1672 },
+    { "level": 12, "name": "Contemporary villa", "file": "home-interior-level-12.png", "width": 941, "height": 1672 }
+  ]
+}

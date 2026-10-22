@@ -1,0 +1,4 @@
+| state | provider | resolved from | seconds | status |
+|---|---|---|---|---|
+| idle | codex | explicit | 62.5 | OK |
+| work | codex | explicit | 68.8 | OK |

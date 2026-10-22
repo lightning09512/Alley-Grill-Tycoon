@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "kind": "sprite-gen-request",
+  "engine": "component-row",
+  "character": {
+    "id": "player-owner-cook-turn-v1",
+    "description": "Young chibi Vietnamese restaurant owner and cook, preserving the supplied base identity: tousled black hair, teal-blue shirt, dark olive apron with brass straps, dark trousers and light sneakers.",
+    "base_image": "base-source.png"
+  },
+  "cell": {
+    "shape": "rect",
+    "width": 247,
+    "height": 396,
+    "safe_margin_x": 23,
+    "safe_margin_y": 37
+  },
+  "chroma_key": {
+    "name": "cyan",
+    "hex": "#00FFFF",
+    "rgb": [
+      0,
+      255,
+      255
+    ],
+    "selection": "auto",
+    "score": 236.71,
+    "min_subject_distance": 214.9,
+    "background": {
+      "mode": "transparent",
+      "opaque_border_fraction": 0.0,
+      "subject_pixels": 16543
+    },
+    "candidates": [
+      {
+        "name": "magenta",
+        "hex": "#FF00FF",
+        "score": 218.06,
+        "min_subject_distance": 201.69,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "green",
+        "hex": "#00FF00",
+        "score": 201.94,
+        "min_subject_distance": 199.77,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "cyan",
+        "hex": "#00FFFF",
+        "score": 236.71,
+        "min_subject_distance": 214.9,
+        "clears_erase_radius": true
+      },
+      {
+        "name": "blue",
+        "hex": "#004DFF",
+        "score": 171.97,
+        "min_subject_distance": 162.46,
+        "clears_erase_radius": true
+      }
+    ],
+    "selection_reason": "highest 1st-percentile subject distance among the 4 candidate(s) clearing the 96 erase radius"
+  },
+  "states": {
+    "cook_idle": {
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "action": "Full-body chibi Vietnamese restaurant owner in the same polished painted game style, turned away from the viewer toward a compact stove. He gently stirs a small pan with one hand and steadies its handle with the other. A small bright orange-golden flame flickers beneath the pan throughout all frames. Keep pan, burner and flame fixed in position, size and perspective. Animate only subtle stirring, shoulder and apron movement, and breathing. Feet stay planted on the same ground pivot; do not step or turn. Seamless idle loop. Preserve the base identity exactly: tousled black hair, warm skin, teal-blue shirt, dark olive apron with brass straps, dark trousers and light sneakers. Show only a tiny burner and pan directly in front of him. Transparent background, no room, UI, labels, or other people."
+    },
+    "turn_to_player": {
+      "frames": 4,
+      "fps": 5,
+      "loop": false,
+      "action": "Four-frame smooth in-place turn from the back-facing cooking pose toward the viewer. Frame 1 matches cook idle; frame 2 glances over one shoulder; frame 3 turns head and shoulders farther; frame 4 faces the viewer with the owner's friendly, recognizable face. Feet stay planted with a fixed pivot; no steps or drift. Keep the same compact burner, pan, flame, position, scale and perspective; flame continues flickering gently. Preserve the exact hair, outfit, proportions, and game style. Transparent background, no room, UI, text, or other characters."
+    },
+    "turn_back_to_stove": {
+      "frames": 4,
+      "fps": 5,
+      "loop": false,
+      "action": "Four-frame smooth in-place turn from the front-facing pose back toward the stove. Frame 1 matches the end of turn_to_player; frame 2 turns head and shoulders toward the stove; frame 3 rotates into the back-facing cooking pose; frame 4 matches the opening cook idle pose, gently stirring. Feet stay planted with fixed pivot; no steps or drift. Keep the same compact burner, pan and flickering orange-golden flame in exactly the same position, scale and perspective. Preserve identity, hair, teal-blue shirt, olive apron, trousers, light sneakers, proportions and painted chibi game style. Transparent background, no room, UI, text, or other characters."
+    }
+  },
+  "style": "Polished painted 2D chibi game art matching existing owner sprite; warm natural shading, clear silhouette, not pixel art.",
+  "layout": "taxonomy/v1",
+  "fit": {
+    "align_y": "bottom",
+    "ground_frames": true
+  },
+  "chroma": {
+    "mode": "rgb",
+    "unmix_reach": 4,
+    "spill_max_fraction": 0.005
+  }
+}

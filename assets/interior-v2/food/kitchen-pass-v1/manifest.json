@@ -1,0 +1,244 @@
+{
+  "version": 1,
+  "purpose": "static images shown on the kitchen pass counter and serving tray",
+  "format": "RGBA PNG; crops retain the source transparent padding",
+  "recipes": {
+    "thai-seafood-hotpot": {
+      "name": "Lẩu Thái hải sản",
+      "asset": "thai-seafood-hotpot.png",
+      "source": "assets/interior-v2/food/food-spritesheet-hotpot-grill.png#cell-0",
+      "gridCell": 0,
+      "sheet": "hotpot-grill",
+      "generated": false
+    },
+    "chicken-la-e-hotpot": {
+      "name": "Lẩu gà lá é",
+      "asset": "chicken-la-e-hotpot.png",
+      "source": "assets/interior-v2/food/food-spritesheet-hotpot-grill.png#cell-1",
+      "gridCell": 1,
+      "sheet": "hotpot-grill",
+      "generated": false
+    },
+    "beef-vinegar-hotpot": {
+      "name": "Lẩu bò nhúng giấm",
+      "asset": "beef-vinegar-hotpot.png",
+      "source": "assets/interior-v2/food/food-spritesheet-hotpot-grill.png#cell-2",
+      "gridCell": 2,
+      "sheet": "hotpot-grill",
+      "generated": false
+    },
+    "crab-beef-hotpot": {
+      "name": "Lẩu riêu cua bắp bò",
+      "asset": "crab-beef-hotpot.png",
+      "source": "assets/interior-v2/food/food-spritesheet-hotpot-grill.png#cell-3",
+      "gridCell": 3,
+      "sheet": "hotpot-grill",
+      "generated": false
+    },
+    "goby-sour-leaf-hotpot": {
+      "name": "Lẩu cá kèo lá giang",
+      "asset": "goby-sour-leaf-hotpot.png",
+      "source": "assets/interior-v2/food/food-spritesheet-hotpot-grill.png#cell-4",
+      "gridCell": 4,
+      "sheet": "hotpot-grill",
+      "generated": false
+    },
+    "mushroom-vegetable-hotpot": {
+      "name": "Lẩu nấm rau củ",
+      "asset": "mushroom-vegetable-hotpot.png",
+      "source": "assets/interior-v2/food/food-spritesheet-hotpot-grill.png#cell-5",
+      "gridCell": 5,
+      "sheet": "hotpot-grill",
+      "generated": false
+    },
+    "pork-belly-skewers": {
+      "name": "Xiên thịt ba chỉ nướng",
+      "asset": "pork-belly-skewers.png",
+      "source": "assets/interior-v2/food/food-spritesheet-hotpot-grill.png#cell-6",
+      "gridCell": 6,
+      "sheet": "hotpot-grill",
+      "generated": false
+    },
+    "beef-betel-leaves": {
+      "name": "Bò lá lốt",
+      "asset": "beef-betel-leaves.png",
+      "source": "assets/interior-v2/food/food-spritesheet-hotpot-grill.png#cell-7",
+      "gridCell": 7,
+      "sheet": "hotpot-grill",
+      "generated": false
+    },
+    "chili-chicken-wings": {
+      "name": "Cánh gà nướng muối ớt",
+      "asset": "chili-chicken-wings.png",
+      "source": "assets/interior-v2/food/food-spritesheet-hotpot-grill.png#cell-8",
+      "gridCell": 8,
+      "sheet": "hotpot-grill",
+      "generated": false
+    },
+    "satay-chicken-feet": {
+      "name": "Chân gà nướng sa tế",
+      "asset": "satay-chicken-feet.png",
+      "source": "assets/interior-v2/food/food-spritesheet-hotpot-grill.png#cell-9",
+      "gridCell": 9,
+      "sheet": "hotpot-grill",
+      "generated": false
+    },
+    "satay-squid": {
+      "name": "Mực nướng sa tế",
+      "asset": "satay-squid.png",
+      "source": "assets/interior-v2/food/food-spritesheet-hotpot-grill.png#cell-10",
+      "gridCell": 10,
+      "sheet": "hotpot-grill",
+      "generated": false
+    },
+    "grilled-octopus": {
+      "name": "Bạch tuộc nướng",
+      "asset": "grilled-octopus.png",
+      "source": "assets/interior-v2/food/food-spritesheet-hotpot-grill.png#cell-11",
+      "gridCell": 11,
+      "sheet": "hotpot-grill",
+      "generated": false
+    },
+    "honey-pork-ribs": {
+      "name": "Sườn non nướng mật ong",
+      "asset": "honey-pork-ribs.png",
+      "source": "assets/interior-v2/food/food-spritesheet-hotpot-grill.png#cell-12",
+      "gridCell": 12,
+      "sheet": "hotpot-grill",
+      "generated": false
+    },
+    "scallion-okra": {
+      "name": "Đậu bắp nướng mỡ hành",
+      "asset": "scallion-okra.png",
+      "source": "assets/interior-v2/food/food-spritesheet-hotpot-grill.png#cell-13",
+      "gridCell": 13,
+      "sheet": "hotpot-grill",
+      "generated": false
+    },
+    "lemongrass-fried-tofu": {
+      "name": "Đậu hũ chiên sả",
+      "asset": "lemongrass-fried-tofu.png",
+      "source": "assets/interior-v2/food/food-spritesheet-snacks-rice.png#cell-0",
+      "gridCell": 0,
+      "sheet": "snacks-rice",
+      "generated": false
+    },
+    "salt-chicken-cartilage": {
+      "name": "Sụn gà rang muối",
+      "asset": "salt-chicken-cartilage.png",
+      "source": "assets/interior-v2/food/food-spritesheet-snacks-rice.png#cell-1",
+      "gridCell": 1,
+      "sheet": "snacks-rice",
+      "generated": false
+    },
+    "french-fries": {
+      "name": "Khoai tây chiên",
+      "asset": "french-fries.png",
+      "source": "assets/interior-v2/food/food-spritesheet-snacks-rice.png#cell-2",
+      "gridCell": 2,
+      "sheet": "snacks-rice",
+      "generated": false
+    },
+    "spring-rolls": {
+      "name": "Chả giò",
+      "asset": "spring-rolls.png",
+      "source": "assets/interior-v2/food/food-spritesheet-snacks-rice.png#cell-3",
+      "gridCell": 3,
+      "sheet": "snacks-rice",
+      "generated": false
+    },
+    "butter-garlic-snails": {
+      "name": "Ốc hương xào bơ tỏi",
+      "asset": "butter-garlic-snails.png",
+      "source": "assets/interior-v2/food/food-spritesheet-snacks-rice.png#cell-4",
+      "gridCell": 4,
+      "sheet": "snacks-rice",
+      "generated": false
+    },
+    "lemongrass-clams": {
+      "name": "Nghêu hấp sả",
+      "asset": "lemongrass-clams.png",
+      "source": "assets/interior-v2/food/food-spritesheet-snacks-rice.png#cell-5",
+      "gridCell": 5,
+      "sheet": "snacks-rice",
+      "generated": false
+    },
+    "garlic-water-spinach": {
+      "name": "Rau muống xào tỏi",
+      "asset": "garlic-water-spinach.png",
+      "source": "assets/interior-v2/food/food-spritesheet-snacks-rice.png#cell-6",
+      "gridCell": 6,
+      "sheet": "snacks-rice",
+      "generated": false
+    },
+    "mango-dried-beef-salad": {
+      "name": "Gỏi xoài khô bò",
+      "asset": "mango-dried-beef-salad.png",
+      "source": "assets/interior-v2/food/food-spritesheet-snacks-rice.png#cell-7",
+      "gridCell": 7,
+      "sheet": "snacks-rice",
+      "generated": false
+    },
+    "boneless-chicken-feet-salad": {
+      "name": "Gỏi chân gà rút xương",
+      "asset": "boneless-chicken-feet-salad.png",
+      "source": "assets/interior-v2/food/food-spritesheet-snacks-rice.png#cell-8",
+      "gridCell": 8,
+      "sheet": "snacks-rice",
+      "generated": false
+    },
+    "butter-corn": {
+      "name": "Bắp xào bơ",
+      "asset": "butter-corn.png",
+      "source": "assets/interior-v2/food/food-spritesheet-snacks-rice.png#cell-9",
+      "gridCell": 9,
+      "sheet": "snacks-rice",
+      "generated": false
+    },
+    "tamarind-quail-eggs": {
+      "name": "Trứng cút lộn xào me",
+      "asset": "tamarind-quail-eggs.png",
+      "source": "assets/interior-v2/food/food-spritesheet-snacks-rice.png#cell-10",
+      "gridCell": 10,
+      "sheet": "snacks-rice",
+      "generated": false
+    },
+    "roasted-peanuts": {
+      "name": "Đậu phộng rang",
+      "asset": "roasted-peanuts.png",
+      "source": "assets/interior-v2/food/food-spritesheet-snacks-rice.png#cell-11",
+      "gridCell": 11,
+      "sheet": "snacks-rice",
+      "generated": false
+    },
+    "seafood-fried-rice": {
+      "name": "Cơm chiên hải sản",
+      "asset": "seafood-fried-rice.png",
+      "source": "assets/interior-v2/food/food-spritesheet-snacks-rice.png#cell-12",
+      "gridCell": 12,
+      "sheet": "snacks-rice",
+      "generated": false
+    },
+    "beef-stir-fried-noodles": {
+      "name": "Mì xào bò",
+      "asset": "beef-stir-fried-noodles.png",
+      "source": "assets/interior-v2/food/food-spritesheet-snacks-rice.png#cell-13",
+      "gridCell": 13,
+      "sheet": "snacks-rice",
+      "generated": false
+    },
+    "special-grill-platter": {
+      "name": "Mẹt nướng đặc biệt",
+      "asset": "special-grill-platter.png",
+      "source": "assets/interior-v2/food/mixed_grill_platter.png",
+      "generated": false
+    },
+    "scallion-grilled-eggs": {
+      "name": "Trứng nướng mỡ hành",
+      "asset": "scallion-grilled-eggs.png",
+      "source": "Codex image generation; see prompts/scallion-grilled-eggs.txt",
+      "generated": true,
+      "status": "generated"
+    }
+  }
+}

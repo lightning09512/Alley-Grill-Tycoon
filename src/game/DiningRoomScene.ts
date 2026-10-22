@@ -6,11 +6,8 @@ import tableUrl from "../../assets/interior-v2/modular-pack-v2/dining_set_table_
 import counterUrl from "../../assets/interior-v2/modular-pack-v1/reception_counter_clean.png?url";
 import registerUrl from "../../assets/interior-v2/modular-pack-v1/cash_register_compact.png?url";
 import ledgerUrl from "../../assets/interior-v2/modular-pack-v1/order_ledger.png?url";
-import hotpotGrillSheetUrl from "../../assets/interior-v2/food/food-spritesheet-hotpot-grill.png?url";
-import snacksRiceSheetUrl from "../../assets/interior-v2/food/food-spritesheet-snacks-rice.png?url";
-import mixedGrillPlatterUrl from "../../assets/interior-v2/food/mixed_grill_platter.png?url";
-import { MENU_DISHES } from "./menuCatalog";
-import { CUSTOMER_TYPES, type CustomerType, type RecipeId } from "./data";
+import { DISH_ART_URLS } from "./dishArt";
+import { CUSTOMER_TYPES, PLAYABLE_RECIPE_IDS, RECIPES, type CustomerType, type RecipeId } from "./data";
 import { GameStore, getDiningTableCapacity, type DiningDialogueEvent, type DiningGuest, type DiningOrder, type GameSnapshot } from "./GameStore";
 import { diningArrivalSeconds, diningTravelSeconds } from "./diningCharacters";
 
@@ -30,15 +27,23 @@ type RoomPart = {
 
 const ROOM_WIDTH = 576;
 const ROOM_HEIGHT = 1280;
+const SERVICE_COUNTER_TOP_Y = 1000;
+const GUEST_COUNTER_CLEARANCE = 40;
 // Threshold of the open doorway at the top of tavern_room_shell_base.png.
 const ROOM_ENTRY_DOOR = { x: ROOM_WIDTH / 2, y: 232 } as const;
 const DINING_WALK_FPS = 3;
+const DINING_EAT_ANIMATION_TIME_SCALE = 0.55;
 const TABLE_ART_SCALE = 0.17;
+// Keep guests close to the atlas's intended proportions relative to the table art.
+const GUEST_VISUAL_SCALE = 1.15;
 const TABLE_CENTER = { x: 109.1, y: 93.5 } as const;
 // Origins for the six tables in the dining-room art.
 const TABLE_ORIGINS = [{ x: 24, y: 313 }, { x: 260, y: 313 }, { x: 24, y: 550 }, { x: 260, y: 550 }, { x: 24, y: 787 }, { x: 260, y: 787 }] as const;
 // Seating anchors measured from the full four-stool table art.
 const SEAT_OFFSETS = [{ x: 109.3, y: 28.9 }, { x: 181.1, y: 99.5 }, { x: 109.1, y: 157.3 }, { x: 37.4, y: 99.5 }] as const;
+const SERVICE_TABLE_STOP_Y = 205;
+const SERVICE_TABLE_STOP_X_OFFSET = 34;
+const SERVICE_COUNTER_CLEARANCE = 32;
 const ROOM_TEXTURES: Record<RoomTexture, string> = {
   shell: roomShellUrl,
   shelf: shelfUrl,
@@ -48,6 +53,10 @@ const ROOM_TEXTURES: Record<RoomTexture, string> = {
   register: registerUrl,
   ledger: ledgerUrl,
 };
+const DINING_FOOD_TEXTURES = Object.fromEntries(PLAYABLE_RECIPE_IDS.map((id) => [id, {
+  key: `dining-food-${id}`,
+  url: DISH_ART_URLS[id],
+}])) as Record<RecipeId, { key: string; url: string }>;
 // Keep one fixed starter room until matching upgrade art is ready.
 const ROOM_PARTS: RoomPart[] = [
   { slot: "shell", x: 0, y: 0, depth: 0, texture: "shell" },
@@ -87,10 +96,13 @@ export class DiningRoomScene extends Phaser.Scene {
   private guestArt?: Phaser.GameObjects.Graphics;
   private guestSprites = new Map<string, Phaser.GameObjects.Sprite>();
   private diningFood = new Map<string, Phaser.GameObjects.Image | Phaser.GameObjects.Graphics>();
+  private tableTaskLabels = new Map<number, Phaser.GameObjects.Text>();
+  private tableTaskBackgrounds = new Map<number, Phaser.GameObjects.Graphics>();
   private guestMotion = new Map<string, GuestMotion>();
   private guestEntryBubbles = new Map<string, Phaser.GameObjects.Container>();
   private diningDialogueBubble?: Phaser.GameObjects.Container;
   private diningDialogueBubbleId: number | null = null;
+  private shiftPausedAt: number | null = null;
   private requestedCharacters = new Set<string>();
   private tableZones: Phaser.GameObjects.Zone[] = [];
   private seatZones: Phaser.GameObjects.Zone[] = [];
@@ -124,9 +136,7 @@ export class DiningRoomScene extends Phaser.Scene {
 
   preload(): void {
     for (const [key, url] of Object.entries(ROOM_TEXTURES)) this.load.image(`dining-${key}`, url);
-    this.load.image("dining-food-hotpot-grill", hotpotGrillSheetUrl);
-    this.load.image("dining-food-snacks-rice", snacksRiceSheetUrl);
-    this.load.image("dining-food-special-platter", mixedGrillPlatterUrl);
+    for (const { key, url } of Object.values(DINING_FOOD_TEXTURES)) this.load.image(key, url);
   }
 
   create(): void {
@@ -154,6 +164,10 @@ export class DiningRoomScene extends Phaser.Scene {
       this.guestSprites.clear();
       this.diningFood.forEach((sprite) => sprite.destroy());
       this.diningFood.clear();
+      this.tableTaskLabels.forEach((label) => label.destroy());
+      this.tableTaskLabels.clear();
+      this.tableTaskBackgrounds.forEach((background) => background.destroy());
+      this.tableTaskBackgrounds.clear();
       this.guestEntryBubbles.forEach((bubble) => bubble.destroy());
       this.guestEntryBubbles.clear();
       this.diningDialogueBubble?.destroy();
@@ -239,9 +253,62 @@ export class DiningRoomScene extends Phaser.Scene {
 
   getTableScreenPoint(tableId: number): { x: number; y: number } | null {
     const point = this.tablePoints[Math.trunc(tableId) - 1];
+    return point ? this.worldToFramePoint(point) : null;
+  }
+
+  getServiceCounterScreenPoint(): { x: number; y: number } | null {
+    const roomScale = this.roomMapWidth / ROOM_WIDTH;
+    return this.worldToFramePoint({
+      x: this.roomMapLeft + 150 * roomScale,
+      y: 1032 * roomScale,
+    });
+  }
+
+  getServiceCounterStaffScreenPoint(): { x: number; y: number } | null {
+    const roomScale = this.roomMapWidth / ROOM_WIDTH;
+    return this.worldToFramePoint({
+      // One home anchor for both the waiting sprite and every service trip.
+      x: this.roomMapLeft + 240 * roomScale,
+      y: 960 * roomScale,
+    });
+  }
+
+  getServiceTableApproachScreenPoint(tableId: number): { x: number; y: number } | null {
+    const route = this.getServiceTableRouteScreenPoints(tableId);
+    return route?.[route.length - 1] ?? null;
+  }
+
+  getServiceTableRouteScreenPoints(tableId: number): { x: number; y: number }[] | null {
+    const origin = TABLE_ORIGINS[Math.trunc(tableId) - 1];
+    if (!origin) return null;
+    const roomScale = this.roomMapWidth / ROOM_WIDTH;
+    const home = { x: 240, y: 960 };
+    // Use the open center aisle for the long part of the trip, then branch below
+    // the table. Stopping below and slightly toward the aisle keeps Mai Linh's
+    // feet off the tabletop and clear of every occupied stool.
+    const leftTableRightSeatX = TABLE_ORIGINS[0].x + SEAT_OFFSETS[1].x;
+    const rightTableLeftSeatX = TABLE_ORIGINS[1].x + SEAT_OFFSETS[3].x;
+    const aisleX = (leftTableRightSeatX + rightTableLeftSeatX) / 2;
+    const isLeftColumn = Math.trunc(tableId) % 2 === 1;
+    const stopX = aisleX + (isLeftColumn ? -SERVICE_TABLE_STOP_X_OFFSET : SERVICE_TABLE_STOP_X_OFFSET);
+    const stopY = Math.min(origin.y + SERVICE_TABLE_STOP_Y, SERVICE_COUNTER_TOP_Y - SERVICE_COUNTER_CLEARANCE);
+    const logicalRoute = [
+      home,
+      { x: aisleX, y: home.y },
+      { x: aisleX, y: stopY },
+      { x: stopX, y: stopY },
+    ];
+    const route = logicalRoute.map((point) => this.worldToFramePoint({
+      x: this.roomMapLeft + point.x * roomScale,
+      y: point.y * roomScale,
+    }));
+    return route.every((point): point is { x: number; y: number } => Boolean(point)) ? route : null;
+  }
+
+  private worldToFramePoint(point: { x: number; y: number }): { x: number; y: number } | null {
     const canvas = this.game.canvas;
     const frame = canvas?.closest<HTMLElement>(".game-frame");
-    if (!point || !canvas || !frame || !this.sys.isActive()) return null;
+    if (!canvas || !frame || !this.sys.isActive()) return null;
 
     const canvasBounds = canvas.getBoundingClientRect();
     const frameBounds = frame.getBoundingClientRect();
@@ -271,18 +338,22 @@ export class DiningRoomScene extends Phaser.Scene {
         if (Math.hypot(pointer.x - pointer.downX, pointer.y - pointer.downY) > 16 * this.devicePixelRatio) return;
         this.store.selectDiningTable(index + 1);
         this.focusDiningTable(index + 1);
-        document.dispatchEvent(new Event("dining-table-selected"));
       });
       this.tableZones.push(zone);
       point.seats.forEach((seat, seatIndex) => {
         const seatZone = this.add.zone(seat.x, seat.y - 38 * roomScale, 58 * roomScale, 84 * roomScale).setDepth(9);
         if (unlocked) seatZone.setInteractive();
         else seatZone.setVisible(false);
-        seatZone.on(Phaser.Input.Events.POINTER_UP, (pointer: Phaser.Input.Pointer) => {
+        seatZone.on(Phaser.Input.Events.POINTER_UP, (
+          pointer: Phaser.Input.Pointer,
+          _localX: number,
+          _localY: number,
+          event: Phaser.Types.Input.EventData,
+        ) => {
           if (Math.hypot(pointer.x - pointer.downX, pointer.y - pointer.downY) > 16 * this.devicePixelRatio) return;
-          this.store.selectDiningSeat(index + 1, seatIndex);
-          this.focusDiningTable(index + 1);
-          document.dispatchEvent(new Event("dining-table-selected"));
+          // Chairs are visual seating targets, not controls. Keep an invisible
+          // input zone so a chair tap cannot fall through to the table target.
+          event.stopPropagation();
         });
         this.seatZones.push(seatZone);
       });
@@ -345,6 +416,26 @@ export class DiningRoomScene extends Phaser.Scene {
     const snapshot = this.snapshot;
     if (!snapshot) return;
     const roomScale = this.roomMapWidth / ROOM_WIDTH;
+    for (const [tableId, label] of this.tableTaskLabels) {
+      const background = this.tableTaskBackgrounds.get(tableId);
+      const baseY = label.getData("orderHintBaseY") as number | undefined;
+      const isOrderHint = label.getData("orderHintActive") === true && baseY !== undefined;
+      const bouncePhase = (time % 2_200) / 2_200 * Math.PI * 2;
+      const bounceOffset = isOrderHint ? Math.max(0, Math.sin(bouncePhase)) * 1.5 * roomScale : 0;
+      if (baseY !== undefined) label.setY(baseY - bounceOffset);
+      background?.setY(-bounceOffset);
+    }
+    const hasGuestExitMotion = snapshot.dining.guests.some((guest) => guest.status === "entering" || guest.status === "leaving");
+    if (!snapshot.inShift && !hasGuestExitMotion) {
+      this.shiftPausedAt ??= time;
+      return;
+    }
+    if (this.shiftPausedAt !== null) {
+      for (const motion of this.guestMotion.values()) {
+        motion.startedAt += Math.max(0, time - Math.max(this.shiftPausedAt, motion.startedAt));
+      }
+      this.shiftPausedAt = null;
+    }
     const door = {
       x: this.roomMapLeft + ROOM_ENTRY_DOOR.x * roomScale,
       y: ROOM_ENTRY_DOOR.y * roomScale,
@@ -436,7 +527,12 @@ export class DiningRoomScene extends Phaser.Scene {
   private guestPath(guest: DiningGuest, seat: { x: number; y: number }, door: { x: number; y: number }, scale: number): { x: number; y: number }[] {
     const table = TABLE_ORIGINS[guest.tableId - 1];
     const isOuter = (guest.tableId % 2 === 1 && guest.seatIndex === 3) || (guest.tableId % 2 === 0 && guest.seatIndex === 1);
-    const routeY = table.y + (guest.seatIndex === 0 || isOuter ? 45 : guest.seatIndex === 2 ? 224 : 165);
+    const tableApproachY = table.y + (guest.seatIndex === 0 || isOuter ? 45 : guest.seatIndex === 2 ? 224 : 165);
+    // The lower tables' south seats used to route at y=1011, through the counter at y=1000.
+    // Keep their approach in the clear aisle above the counter instead.
+    const routeY = guest.tableId > 4 && guest.seatIndex === 2
+      ? Math.min(tableApproachY, SERVICE_COUNTER_TOP_Y - GUEST_COUNTER_CLEARANCE)
+      : tableApproachY;
     return [door, { x: door.x, y: routeY * scale }, { x: seat.x, y: routeY * scale }, { x: seat.x, y: seat.y + 32 * scale }];
   }
 
@@ -472,6 +568,7 @@ export class DiningRoomScene extends Phaser.Scene {
   private playGuestAnimation(sprite: Phaser.GameObjects.Sprite, characterId: string, state: string): void {
     const key = `dining-npc-${characterId}-${state}`;
     if (this.anims.exists(key) && sprite.anims.currentAnim?.key !== key) sprite.play(key);
+    sprite.anims.timeScale = state.endsWith("_eat") ? DINING_EAT_ANIMATION_TIME_SCALE : 1;
   }
 
   private renderGuests(): void {
@@ -506,6 +603,8 @@ export class DiningRoomScene extends Phaser.Scene {
         const guest = seat.guestId ? snapshot.dining.guests.find((entry) => entry.id === seat.guestId) : undefined;
         if (!guest) return;
         livingGuestIds.add(guest.id);
+        // Load the matching atlas during the walk outside so it is ready at the doorway.
+        this.requestGuestAtlas(guest.characterId);
         if (guest.status === "approaching" || guest.status === "departing") {
           this.guestSprites.get(guest.id)?.setVisible(false);
           this.removeGuestEntryBubble(guest.id);
@@ -513,9 +612,9 @@ export class DiningRoomScene extends Phaser.Scene {
         }
         if (guest.status === "entering" && guest.arrivalDialogue) this.ensureGuestEntryBubble(guest);
         else this.removeGuestEntryBubble(guest.id);
-        this.requestGuestAtlas(guest.characterId);
         if (!this.drawGuestSprite(seatPoint, guest)) this.drawGuest(graphics, seatPoint, guest);
-        if (selected && guest.status === "waiting-order") {
+        const orderStillNeedsWaiter = snapshot.dining.orders.some((order) => order.guestId === guest.id && order.status === "called");
+        if (selected && guest.status === "waiting-order" && orderStillNeedsWaiter) {
           const bubbleX = seatPoint.x + this.roomMapWidth * 0.018;
           const bubbleY = seatPoint.y - this.roomMapWidth * 0.105;
           graphics.fillStyle(0xffe7b4, 0.96).fillCircle(bubbleX, bubbleY, 6);
@@ -524,6 +623,7 @@ export class DiningRoomScene extends Phaser.Scene {
       });
     });
     this.renderDiningFood(snapshot);
+    this.renderTableTasks(snapshot);
     for (const [guestId, sprite] of this.guestSprites) {
       if (livingGuestIds.has(guestId)) continue;
       sprite.destroy();
@@ -582,7 +682,7 @@ export class DiningRoomScene extends Phaser.Scene {
       const slot = slots[dishIndex % slots.length];
       sprite.setPosition(tablePoint.x + slot.x * roomScale, tablePoint.y + slot.y * roomScale).setDepth(5.2);
       if (sprite instanceof Phaser.GameObjects.Image) {
-        sprite.setDisplaySize(32 * roomScale, 28 * roomScale).setVisible(true);
+        sprite.setDisplaySize(42 * roomScale, 36 * roomScale).setVisible(true);
       } else {
         sprite.setScale(roomScale).setVisible(true).clear();
         sprite.fillStyle(0x3c2518, 0.32).fillEllipse(1, 5, 34, 20);
@@ -602,31 +702,94 @@ export class DiningRoomScene extends Phaser.Scene {
     }
   }
 
+  private renderTableTasks(snapshot: GameSnapshot): void {
+    const roomScale = this.roomMapWidth / ROOM_WIDTH;
+    const capacity = getDiningTableCapacity();
+    for (const table of snapshot.dining.tables) {
+      const point = this.tablePoints[table.id - 1];
+      const tableGuests = snapshot.dining.guests.filter((guest) => guest.tableId === table.id && !["approaching", "departing", "leaving"].includes(guest.status));
+      const taskAction = tableGuests.some((guest) => guest.status === "awaiting-payment")
+        ? "collect-payment"
+        : table.cleanliness === "dirty" && tableGuests.length === 0 ? "clean-table" : "";
+      const task = taskAction === "collect-payment" ? "Thu tiền" : taskAction === "clean-table" ? "Dọn bàn" : "";
+      let label = this.tableTaskLabels.get(table.id);
+      let background = this.tableTaskBackgrounds.get(table.id);
+      if (!point || table.id > capacity || !taskAction) {
+        label?.setVisible(false);
+        label?.setData("orderHintActive", false);
+        label?.setData("taskAction", "");
+        background?.setVisible(false);
+        background?.setY(0);
+        continue;
+      }
+      if (!label) {
+        background = this.add.graphics().setDepth(9.8);
+        this.tableTaskBackgrounds.set(table.id, background);
+        label = this.add.text(0, 0, "", {
+          fontFamily: "Arial, sans-serif", fontSize: `${Math.max(10, 12 * roomScale)}px`,
+          fontStyle: "bold", color: "#fff4d8", backgroundColor: "transparent",
+          padding: { x: Math.max(5, 7 * roomScale), y: Math.max(3, 4 * roomScale) },
+        }).setOrigin(0.5, 1).setDepth(10).setResolution(this.devicePixelRatio);
+        const taskLabel = label;
+        taskLabel.on(Phaser.Input.Events.POINTER_UP, (
+          pointer: Phaser.Input.Pointer,
+          _localX: number,
+          _localY: number,
+          event: Phaser.Types.Input.EventData,
+        ) => {
+          if (Math.hypot(pointer.x - pointer.downX, pointer.y - pointer.downY) > 16 * this.devicePixelRatio) return;
+          event.stopPropagation();
+          const action = taskLabel.getData("taskAction");
+          if (action === "collect-payment") this.store.collectDiningPaymentForTable(table.id);
+          else if (action === "clean-table") this.store.cleanDiningTable(table.id);
+        });
+        this.tableTaskLabels.set(table.id, label);
+      }
+      label.setStyle({
+        fontSize: `${Math.max(11, 12 * roomScale)}px`,
+        color: "#fff4d8",
+        backgroundColor: "transparent",
+        padding: { x: Math.max(8, 9 * roomScale), y: Math.max(6, 7 * roomScale) },
+      });
+      label.setShadow(0, 1.5 * roomScale, "#352317", 0.6, true, true);
+      const seatedHeadY = tableGuests.length > 0
+        ? Math.min(...tableGuests.map((guest) => point.seats[guest.seatIndex].y - 136 * GUEST_VISUAL_SCALE * roomScale))
+        : point.y - 88 * roomScale;
+      const labelY = Math.max(12 * roomScale, seatedHeadY - 8 * roomScale);
+      label.setText(task)
+        .setPosition(point.x, labelY)
+        .setVisible(true);
+      label.setData("orderHintActive", true);
+      label.setData("taskAction", taskAction);
+      label.setData("orderHintBaseY", labelY);
+      // The label is created empty, so Phaser initially gives it a zero-sized
+      // input hit area. Enable input after the first real label is measured,
+      // then resize the hit area whenever the label text changes.
+      if (!label.input) label.setInteractive({ useHandCursor: true });
+      const hitArea = label.input?.hitArea;
+      if (hitArea instanceof Phaser.Geom.Rectangle) {
+        hitArea.setTo(0, 0, label.width, label.height);
+      }
+      if (background) {
+        background.setPosition(0, 0).setY(0);
+        const left = label.x - label.width / 2;
+        const top = label.y - label.height;
+        const inset = Math.max(1, 1.5 * roomScale);
+        const width = label.width + inset * 2;
+        const height = label.height + inset * 2;
+        const radius = Math.min(height / 2, 8 * roomScale);
+        background.clear().setVisible(true);
+        background.fillStyle(0x26180f, 0.16).fillRoundedRect(left - inset, top - inset + 2 * roomScale, width, height, radius);
+        background.fillStyle(0x214b3e, 0.48)
+          .fillRoundedRect(left - inset, top - inset, width, height, radius);
+        background.lineStyle(Math.max(1, 1.2 * roomScale), 0xffdda0, 0.62)
+          .strokeRoundedRect(left - inset, top - inset, width, height, radius);
+      }
+    }
+  }
+
   private createDiningFood(recipeId: RecipeId): Phaser.GameObjects.Image | Phaser.GameObjects.Graphics {
-    const dishId: Record<RecipeId, string> = {
-      cha: "pork-belly-skewers",
-      egg: "scallion-grilled-eggs",
-      special: "special-grill-platter",
-    };
-    const dish = MENU_DISHES.find((entry) => entry.id === dishId[recipeId]);
-    if (dish?.visual.type === "sheet") {
-      const textureKey = dish.visual.sheet === "hotpot-grill" ? "dining-food-hotpot-grill" : "dining-food-snacks-rice";
-      const texture = this.textures.get(textureKey);
-      const source = texture.getSourceImage() as HTMLImageElement;
-      const cellWidth = source.width / 4;
-      const cellHeight = source.height / 4;
-      const column = dish.visual.cell % 4;
-      const row = Math.floor(dish.visual.cell / 4);
-      const frame = `dish-${dish.visual.cell}`;
-      if (!texture.has(frame)) texture.add(frame, 0, column * cellWidth, row * cellHeight, cellWidth, cellHeight);
-      return this.add.image(0, 0, textureKey, frame).setOrigin(0.5).setDepth(5.2);
-    }
-    if (dish?.visual.type === "image") {
-      return this.add.image(0, 0, "dining-food-special-platter").setOrigin(0.5).setDepth(5.2);
-    }
-    const plate = this.add.graphics().setPosition(0, 0).setDepth(5.2);
-    plate.setData("recipeId", recipeId);
-    return plate;
+    return this.add.image(0, 0, DINING_FOOD_TEXTURES[recipeId].key).setOrigin(0.5).setDepth(5.2);
   }
 
   private ensureGuestEntryBubble(guest: DiningGuest): void {
@@ -723,10 +886,13 @@ export class DiningRoomScene extends Phaser.Scene {
         sprite.setTexture(atlasKey, "down_idle-0");
       }
       // Show the back-facing guest's torso and seated pants while keeping feet tucked under the table.
-      const seatDepth = guest.seatIndex === 2 ? 5.5 : 4.5;
+      // The table's near-edge redraw is depth 5. Side-seat guests share that
+      // edge in the room perspective; keep them above it so the tabletop art
+      // cannot cover their entire sprite. The far seat stays behind the table.
+      const seatDepth = guest.seatIndex === 0 ? 4.5 : 5.5;
       const roomScale = this.roomMapWidth / ROOM_WIDTH;
       sprite.setDepth(seatDepth)
-        .setDisplaySize(84 * roomScale, 136 * roomScale)
+        .setDisplaySize(84 * roomScale * GUEST_VISUAL_SCALE, 136 * roomScale * GUEST_VISUAL_SCALE)
         .setVisible(true);
       this.syncGuestMotion(guest);
       return true;
@@ -753,7 +919,7 @@ export class DiningRoomScene extends Phaser.Scene {
     const scale = this.roomMapWidth / ROOM_WIDTH;
     sprite.setTexture(key, frame)
       .setOrigin(0.5, 1)
-      .setDisplaySize(58 * scale, 74 * scale)
+      .setDisplaySize(84 * scale * GUEST_VISUAL_SCALE, 136 * scale * GUEST_VISUAL_SCALE)
       .setPosition(point.x, guestBaseY)
       .setVisible(true);
     this.syncGuestMotion(guest);
@@ -771,25 +937,29 @@ export class DiningRoomScene extends Phaser.Scene {
 
   private drawGuest(graphics: Phaser.GameObjects.Graphics, point: { x: number; y: number }, guest: DiningGuest): void {
     const colors = GUEST_COLORS[guest.type];
-    const scale = this.logicalWidth < 520 ? 0.88 : 1;
+    const roomScale = this.roomMapWidth / ROOM_WIDTH;
+    const scaleX = 1.25 * roomScale * GUEST_VISUAL_SCALE;
+    const scaleY = 2.45 * roomScale * GUEST_VISUAL_SCALE;
+    const lineScale = Math.min(scaleX, scaleY);
     const x = point.x;
     const guestBaseY = point.y;
-    const headY = guestBaseY - 30 * scale;
+    const headY = guestBaseY - 30 * scaleY;
     const outline = 0x30251f;
-    graphics.fillStyle(0x30251f, 0.58).fillEllipse(x, guestBaseY + 2, 44 * scale, 8 * scale);
-    graphics.fillStyle(colors.shirt, 1).fillRoundedRect(x - 16 * scale, guestBaseY - 31 * scale, 32 * scale, 31 * scale, 8 * scale);
-    graphics.lineStyle(2, outline, 1).strokeRoundedRect(x - 16 * scale, guestBaseY - 31 * scale, 32 * scale, 31 * scale, 8 * scale);
-    graphics.fillStyle(0xdba47c, 1).fillCircle(x, headY, 17 * scale);
-    graphics.lineStyle(2, outline, 1).strokeCircle(x, headY, 17 * scale);
-    graphics.fillStyle(colors.hair, 1).fillEllipse(x, headY - 8 * scale, 34 * scale, 18 * scale);
-    graphics.fillStyle(0x38271f, 1).fillCircle(x - 5 * scale, headY + 1 * scale, 1.8 * scale);
-    graphics.fillStyle(0x38271f, 1).fillCircle(x + 5 * scale, headY + 1 * scale, 1.8 * scale);
-    graphics.lineStyle(1.4 * scale, 0x8e4e3f, 1).lineBetween(x - 3 * scale, headY + 7 * scale, x + 3 * scale, headY + 7 * scale);
-    graphics.lineStyle(3 * scale, 0xdba47c, 1).lineBetween(x - 13 * scale, guestBaseY - 22 * scale, x - 22 * scale, guestBaseY - 10 * scale);
-    graphics.lineStyle(3 * scale, 0xdba47c, 1).lineBetween(x + 13 * scale, guestBaseY - 22 * scale, x + 22 * scale, guestBaseY - 10 * scale);
-    if (guest.status === "waiting-order") {
-      graphics.fillStyle(0xfff2cd, 1).fillRoundedRect(x + 22 * scale, headY - 22 * scale, 12 * scale, 17 * scale, 5);
-      graphics.fillStyle(0xa45e35, 1).fillCircle(x + 28 * scale, headY - 14 * scale, 2 * scale);
+    graphics.fillStyle(0x30251f, 0.58).fillEllipse(x, guestBaseY + 2 * scaleY, 44 * scaleX, 8 * scaleY);
+    graphics.fillStyle(colors.shirt, 1).fillRoundedRect(x - 16 * scaleX, guestBaseY - 31 * scaleY, 32 * scaleX, 31 * scaleY, 8 * lineScale);
+    graphics.lineStyle(2 * lineScale, outline, 1).strokeRoundedRect(x - 16 * scaleX, guestBaseY - 31 * scaleY, 32 * scaleX, 31 * scaleY, 8 * lineScale);
+    graphics.fillStyle(0xdba47c, 1).fillEllipse(x, headY, 17 * scaleX, 17 * scaleY);
+    graphics.lineStyle(2 * lineScale, outline, 1).strokeEllipse(x, headY, 17 * scaleX, 17 * scaleY);
+    graphics.fillStyle(colors.hair, 1).fillEllipse(x, headY - 8 * scaleY, 34 * scaleX, 18 * scaleY);
+    graphics.fillStyle(0x38271f, 1).fillCircle(x - 5 * scaleX, headY + 1 * scaleY, 1.8 * lineScale);
+    graphics.fillStyle(0x38271f, 1).fillCircle(x + 5 * scaleX, headY + 1 * scaleY, 1.8 * lineScale);
+    graphics.lineStyle(1.4 * lineScale, 0x8e4e3f, 1).lineBetween(x - 3 * scaleX, headY + 7 * scaleY, x + 3 * scaleX, headY + 7 * scaleY);
+    graphics.lineStyle(3 * lineScale, 0xdba47c, 1).lineBetween(x - 13 * scaleX, guestBaseY - 22 * scaleY, x - 22 * scaleX, guestBaseY - 10 * scaleY);
+    graphics.lineStyle(3 * lineScale, 0xdba47c, 1).lineBetween(x + 13 * scaleX, guestBaseY - 22 * scaleY, x + 22 * scaleX, guestBaseY - 10 * scaleY);
+    const orderStillNeedsWaiter = this.snapshot?.dining.orders.some((order) => order.guestId === guest.id && order.status === "called");
+    if (guest.status === "waiting-order" && orderStillNeedsWaiter) {
+      graphics.fillStyle(0xfff2cd, 1).fillRoundedRect(x + 22 * scaleX, headY - 22 * scaleY, 12 * scaleX, 17 * scaleY, 5 * lineScale);
+      graphics.fillStyle(0xa45e35, 1).fillCircle(x + 28 * scaleX, headY - 14 * scaleY, 2 * lineScale);
     }
   }
 }

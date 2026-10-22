@@ -1,0 +1,3 @@
+| state | provider | resolved from | seconds | status |
+|---|---|---|---|---|
+| work | codex | explicit | 57.0 | OK |

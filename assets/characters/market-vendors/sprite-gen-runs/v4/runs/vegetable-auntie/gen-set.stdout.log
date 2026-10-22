@@ -1,0 +1,7 @@
+{"state": "work", "ok": true}
+{"state": "idle", "ok": true}
+| state | provider | resolved from | seconds | status |
+|---|---|---|---|---|
+| idle | codex | explicit | 80.0 | OK |
+| work | codex | explicit | 60.4 | OK |
+

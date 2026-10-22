@@ -1,0 +1,77 @@
+#market-interface .market-stall-signs > button.market-stall-board {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: clamp(62px, 18vw, 74px);
+  min-height: 38px;
+  padding: 5px 6px;
+  overflow: visible;
+  border: 2px solid rgba(208, 162, 102, .96);
+  border-radius: 3px;
+  color: #fff0cf;
+  background: linear-gradient(180deg, #795535, #563d29);
+  box-shadow: 0 1px 2px rgba(18, 16, 13, .34), inset 0 0 0 1px rgba(255,255,255,.08);
+  font-family: inherit;
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#market-interface .market-stall-signs > button.market-stall-board::after {
+  position: absolute;
+  z-index: 1;
+  bottom: -9px;
+  left: calc(50% - 2px);
+  width: 4px;
+  height: 9px;
+  border-radius: 0 0 1px 1px;
+  background: #604326;
+  box-shadow: inset 1px 0 rgba(255,255,255,.14), 1px 0 rgba(35,25,18,.25);
+  content: "";
+  pointer-events: none;
+}
+
+#market-interface .market-stall-signs > button.market-stall-board[hidden] {
+  display: none !important;
+}
+
+.market-stall-board-name,
+.market-stall-board-action {
+  position: relative;
+  z-index: 2;
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.market-stall-board-name {
+  color: #ffe5a3;
+  font-size: 10px;
+  font-weight: 950;
+  line-height: 1.05;
+  text-shadow: 0 1px 2px rgba(0,0,0,.5);
+}
+
+.market-stall-board-action {
+  color: #f6ebcf;
+  font-size: 7px;
+  font-weight: 750;
+  line-height: 1;
+}
+
+#market-interface .market-stall-signs > button.market-stall-board:active {
+  filter: brightness(1.08);
+}
+
+#market-interface .market-stall-signs > button.market-stall-board:focus-visible {
+  outline: 0;
+  box-shadow: 0 0 0 2px #fff0bd, 0 2px 0 rgba(26, 35, 28, .7), 0 4px 11px rgba(18, 27, 20, .34);
+}

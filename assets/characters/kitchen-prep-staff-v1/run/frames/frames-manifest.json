@@ -1,0 +1,280 @@
+{
+  "ok": true,
+  "engine": "component-row",
+  "engine_revision": "f334728e53f8",
+  "extract_args": {},
+  "run_dir": "C:\\Users\\light\\AppData\\Local\\Temp\\kitchen-prep-staff-v1-extract",
+  "cell": {
+    "shape": "rect",
+    "width": 160,
+    "height": 300,
+    "safe_margin_x": 15,
+    "safe_margin_y": 15
+  },
+  "chroma_key": {
+    "name": "magenta",
+    "hex": "#FF00FF",
+    "rgb": [
+      255,
+      0,
+      255
+    ],
+    "selection": "manual"
+  },
+  "rows": [
+    {
+      "state": "chop_vegetables",
+      "frames": 4,
+      "method": "components",
+      "files": [
+        "frames/chop_vegetables/frame-0.png",
+        "frames/chop_vegetables/frame-1.png",
+        "frames/chop_vegetables/frame-2.png",
+        "frames/chop_vegetables/frame-3.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 18035,
+          "bbox": [
+            15,
+            27,
+            145,
+            285
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 19688,
+          "bbox": [
+            17,
+            15,
+            143,
+            285
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 17910,
+          "bbox": [
+            15,
+            32,
+            145,
+            285
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 18279,
+          "bbox": [
+            15,
+            24,
+            145,
+            285
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "engine_revision": "f334728e53f8"
+    },
+    {
+      "state": "idle_phone",
+      "frames": 4,
+      "method": "components",
+      "files": [
+        "frames/idle_phone/frame-0.png",
+        "frames/idle_phone/frame-1.png",
+        "frames/idle_phone/frame-2.png",
+        "frames/idle_phone/frame-3.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 17804,
+          "bbox": [
+            27,
+            15,
+            133,
+            285
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 17931,
+          "bbox": [
+            27,
+            15,
+            132,
+            285
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 17916,
+          "bbox": [
+            24,
+            15,
+            136,
+            285
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 18122,
+          "bbox": [
+            26,
+            15,
+            133,
+            285
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "engine_revision": "f334728e53f8"
+    },
+    {
+      "state": "idle_wipe_sweat",
+      "frames": 4,
+      "method": "components",
+      "files": [
+        "frames/idle_wipe_sweat/frame-0.png",
+        "frames/idle_wipe_sweat/frame-1.png",
+        "frames/idle_wipe_sweat/frame-2.png",
+        "frames/idle_wipe_sweat/frame-3.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 17544,
+          "bbox": [
+            30,
+            15,
+            129,
+            285
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 18608,
+          "bbox": [
+            23,
+            15,
+            136,
+            285
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 17635,
+          "bbox": [
+            30,
+            15,
+            130,
+            285
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 17666,
+          "bbox": [
+            29,
+            15,
+            130,
+            285
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "engine_revision": "f334728e53f8"
+    },
+    {
+      "state": "idle_look_around",
+      "frames": 4,
+      "method": "components",
+      "files": [
+        "frames/idle_look_around/frame-0.png",
+        "frames/idle_look_around/frame-1.png",
+        "frames/idle_look_around/frame-2.png",
+        "frames/idle_look_around/frame-3.png"
+      ],
+      "frame_records": [
+        {
+          "index": 0,
+          "nontransparent_pixels": 17298,
+          "bbox": [
+            31,
+            15,
+            128,
+            285
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 1,
+          "nontransparent_pixels": 17322,
+          "bbox": [
+            32,
+            15,
+            128,
+            285
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 2,
+          "nontransparent_pixels": 17857,
+          "bbox": [
+            29,
+            15,
+            130,
+            285
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        },
+        {
+          "index": 3,
+          "nontransparent_pixels": 17137,
+          "bbox": [
+            32,
+            15,
+            128,
+            285
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 0
+        }
+      ],
+      "ok": true,
+      "engine_revision": "f334728e53f8"
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}

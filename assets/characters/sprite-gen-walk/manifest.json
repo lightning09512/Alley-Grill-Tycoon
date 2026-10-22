@@ -1391,6 +1391,735 @@
           373
         ]
       ]
+    },
+    {
+      "id": "saigon-young-father",
+      "file": "saigon-young-father-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-new-customer-roster-v1\\runs\\saigon-young-father\\base-source.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-new-customer-roster-v1\\runs\\saigon-young-father",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "right_frames": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          51,
+          37,
+          196,
+          359
+        ],
+        [
+          59,
+          37,
+          199,
+          359
+        ],
+        [
+          57,
+          37,
+          204,
+          359
+        ],
+        [
+          54,
+          37,
+          203,
+          359
+        ],
+        [
+          50,
+          37,
+          196,
+          359
+        ],
+        [
+          58,
+          37,
+          198,
+          359
+        ],
+        [
+          57,
+          37,
+          204,
+          359
+        ],
+        [
+          54,
+          37,
+          203,
+          359
+        ]
+      ]
+    },
+    {
+      "id": "saigon-grandmother",
+      "file": "saigon-grandmother-walk-16f-v2.png",
+      "source_image": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-new-customer-roster-v1\\runs\\saigon-grandmother\\base-source.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-new-customer-roster-v1\\runs\\saigon-grandmother",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "right_frames": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          54,
+          37,
+          191,
+          359
+        ],
+        [
+          52,
+          37,
+          195,
+          359
+        ],
+        [
+          54,
+          37,
+          197,
+          359
+        ],
+        [
+          52,
+          37,
+          190,
+          359
+        ],
+        [
+          52,
+          37,
+          192,
+          359
+        ],
+        [
+          51,
+          37,
+          193,
+          359
+        ],
+        [
+          54,
+          37,
+          194,
+          359
+        ],
+        [
+          58,
+          37,
+          191,
+          359
+        ]
+      ]
+    },
+    {
+      "id": "saigon-preschooler",
+      "file": "saigon-preschooler-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-new-customer-roster-v1\\runs\\saigon-preschooler\\base-source.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-new-customer-roster-v1\\runs\\saigon-preschooler",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "right_frames": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          55,
+          37,
+          202,
+          359
+        ],
+        [
+          56,
+          37,
+          202,
+          359
+        ],
+        [
+          59,
+          37,
+          204,
+          359
+        ],
+        [
+          66,
+          37,
+          206,
+          359
+        ],
+        [
+          55,
+          37,
+          204,
+          359
+        ],
+        [
+          59,
+          37,
+          205,
+          359
+        ],
+        [
+          56,
+          37,
+          204,
+          359
+        ],
+        [
+          58,
+          37,
+          202,
+          359
+        ]
+      ]
+    },
+    {
+      "id": "saigon-primary-teacher",
+      "file": "saigon-primary-teacher-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-new-customer-roster-v1\\runs\\saigon-primary-teacher\\base-source.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-new-customer-roster-v1\\runs\\saigon-primary-teacher",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "right_frames": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          47,
+          37,
+          188,
+          359
+        ],
+        [
+          51,
+          37,
+          191,
+          359
+        ],
+        [
+          50,
+          37,
+          187,
+          359
+        ],
+        [
+          50,
+          37,
+          191,
+          359
+        ],
+        [
+          49,
+          37,
+          187,
+          359
+        ],
+        [
+          51,
+          37,
+          195,
+          359
+        ],
+        [
+          50,
+          37,
+          188,
+          359
+        ],
+        [
+          51,
+          37,
+          189,
+          359
+        ]
+      ]
+    },
+    {
+      "id": "saigon-motorbike-mechanic",
+      "file": "saigon-motorbike-mechanic-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-new-customer-roster-v1\\runs\\saigon-motorbike-mechanic\\base-source.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-new-customer-roster-v1\\runs\\saigon-motorbike-mechanic",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "right_frames": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          64,
+          37,
+          190,
+          359
+        ],
+        [
+          66,
+          37,
+          189,
+          359
+        ],
+        [
+          69,
+          37,
+          189,
+          359
+        ],
+        [
+          66,
+          37,
+          190,
+          359
+        ],
+        [
+          64,
+          37,
+          186,
+          359
+        ],
+        [
+          63,
+          37,
+          186,
+          359
+        ],
+        [
+          69,
+          37,
+          186,
+          359
+        ],
+        [
+          65,
+          37,
+          192,
+          359
+        ]
+      ]
+    },
+    {
+      "id": "saigon-night-shift-nurse",
+      "file": "saigon-night-shift-nurse-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-new-customer-roster-v1\\runs\\saigon-night-shift-nurse\\base-source.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-new-customer-roster-v1\\runs\\saigon-night-shift-nurse",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "right_frames": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          50,
+          37,
+          195,
+          359
+        ],
+        [
+          58,
+          37,
+          196,
+          359
+        ],
+        [
+          59,
+          37,
+          193,
+          359
+        ],
+        [
+          57,
+          37,
+          196,
+          359
+        ],
+        [
+          54,
+          37,
+          195,
+          359
+        ],
+        [
+          61,
+          37,
+          186,
+          359
+        ],
+        [
+          53,
+          37,
+          190,
+          359
+        ],
+        [
+          51,
+          37,
+          197,
+          359
+        ]
+      ]
+    },
+    {
+      "id": "saigon-taxi-driver",
+      "file": "saigon-taxi-driver-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-new-customer-roster-v1\\runs\\saigon-taxi-driver\\base-source.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-new-customer-roster-v1\\runs\\saigon-taxi-driver",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "right_frames": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          65,
+          37,
+          185,
+          359
+        ],
+        [
+          66,
+          37,
+          191,
+          359
+        ],
+        [
+          63,
+          37,
+          192,
+          359
+        ],
+        [
+          66,
+          37,
+          184,
+          359
+        ],
+        [
+          65,
+          37,
+          184,
+          359
+        ],
+        [
+          65,
+          37,
+          191,
+          359
+        ],
+        [
+          63,
+          37,
+          192,
+          359
+        ],
+        [
+          66,
+          37,
+          184,
+          359
+        ]
+      ]
+    },
+    {
+      "id": "saigon-traditional-motorbike-taxi-driver",
+      "file": "saigon-traditional-motorbike-taxi-driver-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-new-customer-roster-v1\\runs\\saigon-traditional-motorbike-taxi-driver\\base-source.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-new-customer-roster-v1\\runs\\saigon-traditional-motorbike-taxi-driver",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "right_frames": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          61,
+          37,
+          198,
+          359
+        ],
+        [
+          73,
+          37,
+          202,
+          359
+        ],
+        [
+          56,
+          37,
+          198,
+          359
+        ],
+        [
+          73,
+          37,
+          199,
+          359
+        ],
+        [
+          58,
+          37,
+          195,
+          359
+        ],
+        [
+          69,
+          37,
+          192,
+          359
+        ],
+        [
+          54,
+          37,
+          199,
+          359
+        ],
+        [
+          67,
+          37,
+          196,
+          359
+        ]
+      ]
+    },
+    {
+      "id": "saigon-cajon-player",
+      "file": "saigon-cajon-player-walk-16f.png",
+      "source_image": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-new-customer-roster-v1\\runs\\saigon-cajon-player\\base-source.png",
+      "run_dir": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\alley-grill-new-customer-roster-v1\\runs\\saigon-cajon-player",
+      "frame_size": [
+        247,
+        396
+      ],
+      "left_frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "right_frames": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "fps": 5,
+      "alpha_bounds": [
+        [
+          52,
+          37,
+          196,
+          359
+        ],
+        [
+          55,
+          37,
+          196,
+          359
+        ],
+        [
+          54,
+          37,
+          195,
+          359
+        ],
+        [
+          49,
+          37,
+          198,
+          359
+        ],
+        [
+          54,
+          37,
+          198,
+          359
+        ],
+        [
+          53,
+          37,
+          193,
+          359
+        ],
+        [
+          53,
+          37,
+          197,
+          359
+        ],
+        [
+          55,
+          37,
+          194,
+          359
+        ]
+      ]
     }
   ]
 }

@@ -1,0 +1,220 @@
+{
+  "character": "Mai Linh",
+  "version": 2,
+  "format": "transparent PNG frames and animated GIFs; walk motions have 8 directions",
+  "frameSource": "isolated full-body poses redrawn as individual animation frames",
+  "frameSize": {
+    "width": 192,
+    "height": 224
+  },
+  "motions": [
+    {
+      "id": "walk-empty",
+      "directional": true,
+      "directions": [
+        {
+          "index": 0,
+          "direction": "south",
+          "source": "sheets/walk-empty-south-8f.png",
+          "mirroredFrom": null,
+          "frames": 8,
+          "gif": "gif/walk-empty/dir-0.gif",
+          "pngFrames": "frames/walk-empty/dir-0/"
+        },
+        {
+          "index": 1,
+          "direction": "southwest",
+          "source": "sheets/walk-empty-8dir-8f.png",
+          "mirroredFrom": 7,
+          "frames": 8,
+          "gif": "gif/walk-empty/dir-1.gif",
+          "pngFrames": "frames/walk-empty/dir-1/"
+        },
+        {
+          "index": 2,
+          "direction": "west",
+          "source": "sheets/walk-empty-east-8f.png",
+          "mirroredFrom": 6,
+          "frames": 8,
+          "gif": "gif/walk-empty/dir-2.gif",
+          "pngFrames": "frames/walk-empty/dir-2/"
+        },
+        {
+          "index": 3,
+          "direction": "northwest",
+          "source": "sheets/walk-empty-northeast-8f.png",
+          "mirroredFrom": 5,
+          "frames": 8,
+          "gif": "gif/walk-empty/dir-3.gif",
+          "pngFrames": "frames/walk-empty/dir-3/"
+        },
+        {
+          "index": 4,
+          "direction": "north",
+          "source": "sheets/walk-empty-north-8f.png",
+          "mirroredFrom": null,
+          "frames": 8,
+          "gif": "gif/walk-empty/dir-4.gif",
+          "pngFrames": "frames/walk-empty/dir-4/"
+        },
+        {
+          "index": 5,
+          "direction": "northeast",
+          "source": "sheets/walk-empty-northeast-8f.png",
+          "mirroredFrom": null,
+          "frames": 8,
+          "gif": "gif/walk-empty/dir-5.gif",
+          "pngFrames": "frames/walk-empty/dir-5/"
+        },
+        {
+          "index": 6,
+          "direction": "east",
+          "source": "sheets/walk-empty-east-8f.png",
+          "mirroredFrom": null,
+          "frames": 8,
+          "gif": "gif/walk-empty/dir-6.gif",
+          "pngFrames": "frames/walk-empty/dir-6/"
+        },
+        {
+          "index": 7,
+          "direction": "southeast",
+          "source": "sheets/walk-empty-8dir-8f.png",
+          "mirroredFrom": null,
+          "frames": 8,
+          "gif": "gif/walk-empty/dir-7.gif",
+          "pngFrames": "frames/walk-empty/dir-7/"
+        }
+      ],
+      "fps": 8,
+      "fallbackGif": "gif/walk-empty.gif"
+    },
+    {
+      "id": "walk-tray",
+      "directional": true,
+      "directions": [
+        {
+          "index": 0,
+          "direction": "south",
+          "source": "sheets/walk-tray-south-8f.png",
+          "mirroredFrom": null,
+          "frames": 8,
+          "gif": "gif/walk-tray/dir-0.gif",
+          "pngFrames": "frames/walk-tray/dir-0/"
+        },
+        {
+          "index": 1,
+          "direction": "southwest",
+          "source": "sheets/walk-tray-8dir-8f.png",
+          "mirroredFrom": 7,
+          "frames": 8,
+          "gif": "gif/walk-tray/dir-1.gif",
+          "pngFrames": "frames/walk-tray/dir-1/"
+        },
+        {
+          "index": 2,
+          "direction": "west",
+          "source": "sheets/walk-tray-east-8f.png",
+          "mirroredFrom": 6,
+          "frames": 8,
+          "gif": "gif/walk-tray/dir-2.gif",
+          "pngFrames": "frames/walk-tray/dir-2/"
+        },
+        {
+          "index": 3,
+          "direction": "northwest",
+          "source": "sheets/walk-tray-northeast-8f.png",
+          "mirroredFrom": 5,
+          "frames": 8,
+          "gif": "gif/walk-tray/dir-3.gif",
+          "pngFrames": "frames/walk-tray/dir-3/"
+        },
+        {
+          "index": 4,
+          "direction": "north",
+          "source": "sheets/walk-tray-north-8f.png",
+          "mirroredFrom": null,
+          "frames": 8,
+          "gif": "gif/walk-tray/dir-4.gif",
+          "pngFrames": "frames/walk-tray/dir-4/"
+        },
+        {
+          "index": 5,
+          "direction": "northeast",
+          "source": "sheets/walk-tray-northeast-8f.png",
+          "mirroredFrom": null,
+          "frames": 8,
+          "gif": "gif/walk-tray/dir-5.gif",
+          "pngFrames": "frames/walk-tray/dir-5/"
+        },
+        {
+          "index": 6,
+          "direction": "east",
+          "source": "sheets/walk-tray-east-8f.png",
+          "mirroredFrom": null,
+          "frames": 8,
+          "gif": "gif/walk-tray/dir-6.gif",
+          "pngFrames": "frames/walk-tray/dir-6/"
+        },
+        {
+          "index": 7,
+          "direction": "southeast",
+          "source": "sheets/walk-tray-8dir-8f.png",
+          "mirroredFrom": null,
+          "frames": 8,
+          "gif": "gif/walk-tray/dir-7.gif",
+          "pngFrames": "frames/walk-tray/dir-7/"
+        }
+      ],
+      "fps": 8,
+      "fallbackGif": "gif/walk-tray.gif"
+    },
+    {
+      "id": "idle",
+      "source": "sheets/idle-8dir-8f.png",
+      "frames": 8,
+      "fps": 4,
+      "gif": "gif/idle.gif",
+      "pngFrames": "frames/idle/"
+    },
+    {
+      "id": "take-order",
+      "source": "sheets/take-order-8dir-8f.png",
+      "frames": 8,
+      "fps": 6,
+      "gif": "gif/take-order.gif",
+      "pngFrames": "frames/take-order/"
+    },
+    {
+      "id": "pickup-kitchen",
+      "source": "sheets/pickup-kitchen-8f.png",
+      "frames": 8,
+      "fps": 6,
+      "gif": "gif/pickup-kitchen.gif",
+      "pngFrames": "frames/pickup-kitchen/"
+    },
+    {
+      "id": "serve-table",
+      "source": "sheets/serve-table-8dir-8f.png",
+      "frames": 8,
+      "fps": 6,
+      "gif": "gif/serve-table.gif",
+      "pngFrames": "frames/serve-table/"
+    },
+    {
+      "id": "rest",
+      "source": "sheets/rest-8dir-8f.png",
+      "frames": 8,
+      "fps": 4,
+      "gif": "gif/rest.gif",
+      "pngFrames": "frames/rest/"
+    },
+    {
+      "id": "phone",
+      "source": "sheets/idle-phone-8dir-8f.png",
+      "frames": 8,
+      "fps": 4,
+      "gif": "gif/phone.gif",
+      "pngFrames": "frames/phone/"
+    }
+  ]
+}

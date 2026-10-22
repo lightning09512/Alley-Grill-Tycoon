@@ -1,0 +1,145 @@
+{
+  "ok": true,
+  "engine": "component-row",
+  "kind": "sprite-gen-inspect-report",
+  "run_dir": "D:\\hoc\\GITHUB\\Banh Mi Pho\\assets\\characters\\kitchen-prep-staff-v1\\run",
+  "states": [
+    "chop_vegetables",
+    "idle_phone",
+    "idle_wipe_sweat",
+    "idle_look_around"
+  ],
+  "thresholds": {
+    "histogram_min": 0.0,
+    "dhash_min": 0.55,
+    "motion_min": 0.01
+  },
+  "rows": [
+    {
+      "state": "chop_vegetables",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/chop_vegetables/frame-0.png",
+        "frames/chop_vegetables/frame-1.png",
+        "frames/chop_vegetables/frame-2.png",
+        "frames/chop_vegetables/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.982842757588965,
+          "mean": 0.986108337848784
+        },
+        "dhash_similarity": {
+          "min": 0.8125,
+          "mean": 0.8671875
+        },
+        "motion_presence": 0.09204484528186274,
+        "centroid_sigma": {
+          "x": 2.0157644849419323,
+          "y": 3.9069387069436567
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "idle_phone",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/idle_phone/frame-0.png",
+        "frames/idle_phone/frame-1.png",
+        "frames/idle_phone/frame-2.png",
+        "frames/idle_phone/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9407437174930695,
+          "mean": 0.951154102632181
+        },
+        "dhash_similarity": {
+          "min": 0.9375,
+          "mean": 0.9609375
+        },
+        "motion_presence": 0.037213733149509806,
+        "centroid_sigma": {
+          "x": 0.9759265046168496,
+          "y": 0.41607555381690375
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "idle_wipe_sweat",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/idle_wipe_sweat/frame-0.png",
+        "frames/idle_wipe_sweat/frame-1.png",
+        "frames/idle_wipe_sweat/frame-2.png",
+        "frames/idle_wipe_sweat/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.9485831686572133,
+          "mean": 0.9684591607203232
+        },
+        "dhash_similarity": {
+          "min": 0.890625,
+          "mean": 0.9427083333333334
+        },
+        "motion_presence": 0.07256449780433007,
+        "centroid_sigma": {
+          "x": 2.3740421820473925,
+          "y": 2.074420943155809
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "state": "idle_look_around",
+      "source": "frames",
+      "expected_frames": 4,
+      "found_frames": 4,
+      "natural_pose_count": 4,
+      "frame_files": [
+        "frames/idle_look_around/frame-0.png",
+        "frames/idle_look_around/frame-1.png",
+        "frames/idle_look_around/frame-2.png",
+        "frames/idle_look_around/frame-3.png"
+      ],
+      "metrics": {
+        "histogram_intersection": {
+          "min": 0.971045523272989,
+          "mean": 0.981983538999717
+        },
+        "dhash_similarity": {
+          "min": 0.8125,
+          "mean": 0.9010416666666666
+        },
+        "motion_presence": 0.07609073414522058,
+        "centroid_sigma": {
+          "x": 3.3256753123916836,
+          "y": 0.7081355064911674
+        }
+      },
+      "ok": true,
+      "errors": [],
+      "warnings": []
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}

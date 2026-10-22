@@ -1,0 +1,418 @@
+{
+  "kind": "sprite-gen-image-report",
+  "provider": "codex",
+  "prompt": "Create one full-body Vietnamese 2D mobile game vendor, front-facing and standing straight, feet visible and aligned, centered with clear space around the silhouette. A compact, round-bellied middle-aged fruit seller uncle wearing a woven straw sun hat, an orange-and-blue short-sleeved check shirt, a dark teal apron, charcoal trousers and worn brown sandals. Add a small salt-and-pepper moustache, one cheek dimple, one gold front tooth and a mischievous friendly grin; keep the funny appeal warm, not grotesque. A tiny banana leaf is tucked in his hat band. Both hands rest on his hips, relaxed and empty. Use the attached Vietnamese market seller only as a style and scale reference; make a clearly different face and outfit. Hand-inked 2D Vietnamese cartoon game art, bold dark-brown outlines, simplified readable shapes, warm limited palette, matte cel shading, slightly irregular hand-drawn contours and compact chibi proportions matching a mobile game sprite. No realistic rendering, no 3D, no glossy or painterly texture, no scenery, no extra objects, no text or logo. Flat solid pure magenta background (#FF00FF), evenly lit, no cast shadow, subject fully separated from every edge.",
+  "out": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\fruit-uncle\\base-source.png",
+  "raw": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\fruit-uncle\\base-source.png.raw.png",
+  "raw_bytes": 1832070,
+  "elapsed_seconds": 68.203,
+  "model": null,
+  "session_id": "01a1554c-831b-7f03-a64c-4d19c27e758e",
+  "refs": [
+    "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v2\\fishmonger-uncle\\base-source.png"
+  ],
+  "transparent": true,
+  "alpha": {
+    "strategy": "chroma",
+    "strategy_source": "explicit",
+    "out": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\fruit-uncle\\base-source.png",
+    "mode": "RGBA",
+    "method": "ycbcr",
+    "size": "990x1588",
+    "key": "magenta",
+    "keyed_pixels": 740831,
+    "fringe_pixels": 7346,
+    "cleaned_transparent_rgb_pixels": 0,
+    "alpha_zero_pct": 47.12,
+    "stale_transparent_rgb_pixels": 0,
+    "decontam": {
+      "mode": "auto",
+      "applied": true,
+      "fit": "still",
+      "band_px": 6,
+      "alpha_depth": 4,
+      "flank_px": 3,
+      "edge_band": 0,
+      "palette_size": 32,
+      "palette_source": "frame",
+      "palette": [
+        [
+          124,
+          107,
+          105
+        ],
+        [
+          252,
+          173,
+          87
+        ],
+        [
+          21,
+          115,
+          118
+        ],
+        [
+          35,
+          7,
+          2
+        ],
+        [
+          63,
+          54,
+          51
+        ],
+        [
+          251,
+          250,
+          248
+        ],
+        [
+          220,
+          92,
+          39
+        ],
+        [
+          12,
+          93,
+          97
+        ],
+        [
+          54,
+          117,
+          189
+        ],
+        [
+          188,
+          131,
+          115
+        ],
+        [
+          252,
+          208,
+          115
+        ],
+        [
+          251,
+          162,
+          47
+        ],
+        [
+          176,
+          97,
+          32
+        ],
+        [
+          206,
+          130,
+          48
+        ],
+        [
+          83,
+          68,
+          61
+        ],
+        [
+          116,
+          50,
+          14
+        ],
+        [
+          225,
+          124,
+          82
+        ],
+        [
+          244,
+          148,
+          65
+        ],
+        [
+          239,
+          124,
+          47
+        ],
+        [
+          131,
+          171,
+          43
+        ],
+        [
+          3,
+          24,
+          20
+        ],
+        [
+          38,
+          31,
+          28
+        ],
+        [
+          192,
+          177,
+          168
+        ],
+        [
+          8,
+          55,
+          58
+        ],
+        [
+          15,
+          4,
+          2
+        ],
+        [
+          148,
+          73,
+          21
+        ],
+        [
+          39,
+          84,
+          145
+        ],
+        [
+          51,
+          45,
+          41
+        ],
+        [
+          17,
+          103,
+          106
+        ],
+        [
+          79,
+          124,
+          30
+        ],
+        [
+          77,
+          22,
+          5
+        ],
+        [
+          8,
+          78,
+          82
+        ]
+      ],
+      "palette_keyfree": true,
+      "key_material_share": 0.00204,
+      "noise_sigma_rgb": 1.32,
+      "material_spread": 28.253,
+      "opaque_margin": 28.253,
+      "changed_px": 9157,
+      "refit_px": 27574,
+      "tint_px": 261,
+      "recovered_px": 2650,
+      "unexplained_px": 62,
+      "restored_px": 0,
+      "key_hue_capped_px": 1544
+    }
+  },
+  "chroma": {
+    "out": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\fruit-uncle\\base-source.png",
+    "mode": "RGBA",
+    "method": "ycbcr",
+    "size": "990x1588",
+    "key": "magenta",
+    "keyed_pixels": 740831,
+    "fringe_pixels": 7346,
+    "cleaned_transparent_rgb_pixels": 0,
+    "alpha_zero_pct": 47.12,
+    "stale_transparent_rgb_pixels": 0,
+    "decontam": {
+      "mode": "auto",
+      "applied": true,
+      "fit": "still",
+      "band_px": 6,
+      "alpha_depth": 4,
+      "flank_px": 3,
+      "edge_band": 0,
+      "palette_size": 32,
+      "palette_source": "frame",
+      "palette": [
+        [
+          124,
+          107,
+          105
+        ],
+        [
+          252,
+          173,
+          87
+        ],
+        [
+          21,
+          115,
+          118
+        ],
+        [
+          35,
+          7,
+          2
+        ],
+        [
+          63,
+          54,
+          51
+        ],
+        [
+          251,
+          250,
+          248
+        ],
+        [
+          220,
+          92,
+          39
+        ],
+        [
+          12,
+          93,
+          97
+        ],
+        [
+          54,
+          117,
+          189
+        ],
+        [
+          188,
+          131,
+          115
+        ],
+        [
+          252,
+          208,
+          115
+        ],
+        [
+          251,
+          162,
+          47
+        ],
+        [
+          176,
+          97,
+          32
+        ],
+        [
+          206,
+          130,
+          48
+        ],
+        [
+          83,
+          68,
+          61
+        ],
+        [
+          116,
+          50,
+          14
+        ],
+        [
+          225,
+          124,
+          82
+        ],
+        [
+          244,
+          148,
+          65
+        ],
+        [
+          239,
+          124,
+          47
+        ],
+        [
+          131,
+          171,
+          43
+        ],
+        [
+          3,
+          24,
+          20
+        ],
+        [
+          38,
+          31,
+          28
+        ],
+        [
+          192,
+          177,
+          168
+        ],
+        [
+          8,
+          55,
+          58
+        ],
+        [
+          15,
+          4,
+          2
+        ],
+        [
+          148,
+          73,
+          21
+        ],
+        [
+          39,
+          84,
+          145
+        ],
+        [
+          51,
+          45,
+          41
+        ],
+        [
+          17,
+          103,
+          106
+        ],
+        [
+          79,
+          124,
+          30
+        ],
+        [
+          77,
+          22,
+          5
+        ],
+        [
+          8,
+          78,
+          82
+        ]
+      ],
+      "palette_keyfree": true,
+      "key_material_share": 0.00204,
+      "noise_sigma_rgb": 1.32,
+      "material_spread": 28.253,
+      "opaque_margin": 28.253,
+      "changed_px": 9157,
+      "refit_px": 27574,
+      "tint_px": 261,
+      "recovered_px": 2650,
+      "unexplained_px": 62,
+      "restored_px": 0,
+      "key_hue_capped_px": 1544
+    }
+  },
+  "extra": {
+    "inline_results": 1,
+    "rollout_cleaned": true,
+    "transparent_background_reported": false
+  },
+  "provider_resolved_from": "explicit",
+  "report": "D:\\hoc\\GITHUB\\sprite-gen\\runs\\banh-mi-pho-market-vendors-v3\\fruit-uncle\\base-source.report.json"
+}

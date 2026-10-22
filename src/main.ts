@@ -1,24 +1,58 @@
 import Phaser from "phaser";
 import "./style.css";
-import { BUSINESS_STAGE_NAMES, CART_UPGRADE_COST, CUSTOMER_TYPES, INGREDIENTS, MAX_CART_LEVEL, RECIPES, RESTOCK_PACK_COST, STAFF_HIRE_COST } from "./game/data";
-import { GameStore, getDiningTableCapacity, type CashCollectionEvent, type GameSnapshot } from "./game/GameStore";
+import { BUSINESS_STAGE_NAMES, CART_UPGRADE_COST, CUSTOMER_TYPES, getRecipeLearningCost, INGREDIENTS, MAX_CART_LEVEL, PLAYABLE_RECIPE_IDS, RECIPES, type RecipeId } from "./game/data";
+import { DINING_ORDER_APPROACH_SECONDS, DINING_ORDER_DELIVERY_SECONDS, DINING_ORDER_GUEST_DIALOGUE_SECONDS, DINING_ORDER_SERVER_REPLY_SECONDS, DINING_ORDER_TAKE_SECONDS, GameStore, getDiningTableCapacity, type CashCollectionEvent, type DiningOrder, type GameSnapshot } from "./game/GameStore";
 import { formatVndFromThousands } from "./game/currency";
+import { MAX_STAFF_LEVEL, STAFF_CANDIDATES, STAFF_ROLES, STAFF_TRAINING_COST, getStaffCandidate, getStaffRole, type StaffRoleId } from "./game/staffCatalog";
 import { MENU_DISHES, MENU_CATEGORIES, MENU_INGREDIENTS, type MenuCategory, type MenuDish, type MenuIngredientId } from "./game/menuCatalog";
+import { getMarketStall, MARKET_PRODUCT_DETAILS, type MarketStallId } from "./game/marketCatalog";
 import { MusicPlayer } from "./game/MusicPlayer";
 import { NeighborhoodScene } from "./game/NeighborhoodScene";
 import { DiningRoomScene } from "./game/DiningRoomScene";
-import { WholesaleMarketScene, type WholesaleMarketBackgroundMood } from "./game/WholesaleMarketScene";
+import { HomeInteriorScene } from "./game/HomeInteriorScene";
+import { WholesaleMarketScene, WHOLESALE_MARKET_INTERIOR_SECTIONS, type WholesaleMarketLightingState, type WholesaleMarketSection } from "./game/WholesaleMarketScene";
 import { formatStoreNameForDisplay, GAME_TITLE } from "./config/game";
-import { SHOP_STAGES } from "./config/shopStages";
 import { iconMarkup, setIcon, type UiIconName } from "./ui/icons";
 import kitchenRoomShellUrl from "../assets/interior-v2/kitchen-pack-v1/kitchen-room-shell-empty.png?url";
 import kitchenObjectsLayoutUrl from "../assets/interior-v2/kitchen-pack-v1/kitchen_objects_layout.png?url";
-import hotpotGrillSheetUrl from "../assets/interior-v2/food/food-spritesheet-hotpot-grill.png?url";
-import snacksRiceSheetUrl from "../assets/interior-v2/food/food-spritesheet-snacks-rice.png?url";
-import mixedGrillPlatterUrl from "../assets/interior-v2/food/mixed_grill_platter.png?url";
+import kitchenPrepStaffChopUrl from "../assets/characters/slow-playback-v1/kitchen-prep-staff-v3/run/exports/chop_vegetables.gif?url";
+import kitchenPrepStaffPhoneUrl from "../assets/characters/slow-playback-v1/kitchen-prep-staff-v2/run/exports/idle_phone.gif?url";
+import kitchenPrepStaffWipeUrl from "../assets/characters/slow-playback-v1/kitchen-prep-staff-v2/run/exports/idle_wipe_sweat.gif?url";
+import kitchenPrepStaffLookUrl from "../assets/characters/slow-playback-v1/kitchen-prep-staff-v2/run/exports/idle_look_around.gif?url";
+import heldBasketUrl from "../assets/characters/market-player/held-basket.png?url";
+import heldBasketFullUrl from "../assets/characters/market-player/held-basket-full.png?url";
+import maiLinhPortraitUrl from "../assets/characters/restaurant-staff-v1/server-mai-linh.png?url";
+import quangTinPortraitUrl from "../assets/characters/restaurant-staff-v1/cashier-quang-tin.png?url";
+import tanHuyPortraitUrl from "../assets/characters/kitchen-prep-staff-v2/base-source.png?url";
+import coHanhPortraitUrl from "../assets/characters/restaurant-staff-v1/chef-co-hanh.png?url";
+import anNhienPortraitUrl from "../assets/characters/restaurant-staff-v1/promoter-an.png?url";
+import lineCookPortraitUrl from "../assets/characters/kitchen-line-cook-v1/base-source.png?url";
+import maiLinhWalkEmptyGifUrl from "../assets/characters/staff-roster-v1/server-mai-linh/redrawn-v1/gif/walk-empty.gif?url";
+import maiLinhWalkTrayGifUrl from "../assets/characters/staff-roster-v1/server-mai-linh/redrawn-v1/gif/walk-tray.gif?url";
+import maiLinhIdleGifUrl from "../assets/characters/staff-roster-v1/server-mai-linh/redrawn-v1/gif/idle.gif?url";
+import maiLinhTakeOrderGifUrl from "../assets/characters/staff-roster-v1/server-mai-linh/redrawn-v1/gif/take-order.gif?url";
+import maiLinhPickupKitchenGifUrl from "../assets/characters/staff-roster-v1/server-mai-linh/redrawn-v1/gif/pickup-kitchen.gif?url";
+import maiLinhServeTableGifUrl from "../assets/characters/staff-roster-v1/server-mai-linh/redrawn-v1/gif/serve-table.gif?url";
+import maiLinhRestGifUrl from "../assets/characters/staff-roster-v1/server-mai-linh/redrawn-v1/gif/rest.gif?url";
+import maiLinhPhoneGifUrl from "../assets/characters/staff-roster-v1/server-mai-linh/redrawn-v1/gif/phone.gif?url";
+import quangTinWorkUrl from "../assets/characters/slow-playback-v1/staff-roster-v1/cashier-quang-tin/run/exports/work_cashier.gif?url";
+import quangTinRestUrl from "../assets/characters/slow-playback-v1/staff-roster-v1/cashier-quang-tin/run/exports/rest_tired.gif?url";
+import quangTinLazyUrl from "../assets/characters/slow-playback-v1/staff-roster-v1/cashier-quang-tin/run/exports/idle_lazy.gif?url";
+import coHanhWorkUrl from "../assets/characters/slow-playback-v1/staff-roster-v1/chef-co-hanh/run/exports/work_cook.gif?url";
+import coHanhRestUrl from "../assets/characters/slow-playback-v1/staff-roster-v1/chef-co-hanh/run/exports/rest_tired.gif?url";
+import coHanhLazyUrl from "../assets/characters/slow-playback-v1/staff-roster-v1/chef-co-hanh/run/exports/idle_lazy.gif?url";
+import anNhienWorkUrl from "../assets/characters/slow-playback-v1/staff-roster-v1/promoter-an/run/exports/work_promoter.gif?url";
+import anNhienRestUrl from "../assets/characters/slow-playback-v1/staff-roster-v1/promoter-an/run/exports/rest_tired.gif?url";
+import anNhienLazyUrl from "../assets/characters/slow-playback-v1/staff-roster-v1/promoter-an/run/exports/idle_lazy.gif?url";
+import lineCookWorkUrl from "../assets/characters/slow-playback-v1/kitchen-line-cook-v1/run/exports/cook_stir.gif?url";
+import lineCookRestUrl from "../assets/characters/slow-playback-v1/kitchen-line-cook-v1/run/exports/rest_tired.gif?url";
+import lineCookLazyUrl from "../assets/characters/slow-playback-v1/kitchen-line-cook-v1/run/exports/idle_lazy.gif?url";
+import choppedVegetablesUrl from "../assets/interior-v2/food/kitchen-pass-v1/chopped-vegetables.png?url";
+import { DISH_ART_URLS } from "./game/dishArt";
 
 document.title = GAME_TITLE;
 
+const debugParams = new URLSearchParams(window.location.search);
 const store = new GameStore();
 let displayedCoinBalance = store.getSnapshot().coins;
 let latestCoinBalance = displayedCoinBalance;
@@ -48,37 +82,93 @@ const musicPlayer = new MusicPlayer((state) => {
 });
 const scene = new NeighborhoodScene(store);
 const diningScene = new DiningRoomScene(store);
+const homeInteriorScene = new HomeInteriorScene(store, () => scene.getPlayerOwnerGender());
 const wholesaleMarketScene = new WholesaleMarketScene();
-wholesaleMarketScene.setBackgroundMoodProvider((): WholesaleMarketBackgroundMood => scene.getWholesaleMarketBackgroundMood());
-const shopStageDebugControls = document.querySelector<HTMLDivElement>("#shop-stage-debug");
-const shopStageDebugValue = document.querySelector<HTMLElement>("#shop-stage-debug-value");
-const debugParams = new URLSearchParams(window.location.search);
-const shopStageDebugEnabled = import.meta.env.DEV && debugParams.get("debug") === "1";
-if (shopStageDebugControls && shopStageDebugEnabled) {
-  shopStageDebugControls.hidden = false;
-  const requestedStage = Number(debugParams.get("stage"));
-  const initialStage = Number.isInteger(requestedStage) && requestedStage >= 1 && requestedStage <= SHOP_STAGES.length
-    ? requestedStage
-    : store.getSnapshot().cartLevel;
-  if (shopStageDebugValue) shopStageDebugValue.textContent = `${String(initialStage).padStart(2, "0")} / ${SHOP_STAGES.length}`;
-  // Bind this before Phaser initializes so a quick click during its asset load
-  // is queued instead of being lost while the rest of the UI is still booting.
-  shopStageDebugControls.addEventListener("click", (event) => {
-    const target = event.target;
-    if (!(target instanceof Element)) return;
-    const button = target.closest<HTMLButtonElement>("button[data-shop-stage-step]");
-    if (button) {
-      scene.stepShopStage(Number(button.dataset.shopStageStep));
-    }
-  });
-}
+wholesaleMarketScene.setBackgroundLightingProvider((): WholesaleMarketLightingState => scene.getWholesaleMarketLightingState());
 let activeTab = "outside";
+let selectedLedgerDay: number | null = null;
+
+function renderLedger(snapshot: GameSnapshot): void {
+  const dialog = document.querySelector<HTMLDialogElement>("#ledger-dialog");
+  if (!dialog?.open) return;
+  const day = selectedLedgerDay === null ? snapshot.ledgerDay : Math.min(selectedLedgerDay, snapshot.ledgerDay);
+  const entries = snapshot.ledger.filter((entry) => entry.day === day);
+  const income = entries.reduce((sum, entry) => sum + Math.max(0, entry.amount), 0);
+  const expense = entries.reduce((sum, entry) => sum + Math.max(0, -entry.amount), 0);
+  const sales = entries.filter((entry) => entry.label.startsWith("Bán ")).reduce((sum, entry) => sum + entry.amount, 0);
+  const ingredients = entries.filter((entry) => entry.label.startsWith("Đi chợ:") || entry.label.startsWith("Nhập nguyên liệu"))
+    .reduce((sum, entry) => sum - entry.amount, 0);
+  const setText = (selector: string, value: string): void => {
+    const node = dialog.querySelector<HTMLElement>(selector);
+    if (node) node.textContent = value;
+  };
+  setText("#ledger-title", `Ngày ${day}`);
+  setText("#ledger-paper-day", `· Ngày ${day}`);
+  setText("#ledger-balance", formatVndFromThousands(snapshot.coins));
+  setText("#ledger-sales", sales ? `+${formatVndFromThousands(sales)}` : "0đ");
+  setText("#ledger-other-income", income > sales ? `+${formatVndFromThousands(income - sales)}` : "0đ");
+  setText("#ledger-ingredients", ingredients ? `−${formatVndFromThousands(ingredients)}` : "0đ");
+  setText("#ledger-other-expense", expense > ingredients ? `−${formatVndFromThousands(expense - ingredients)}` : "0đ");
+  setText("#ledger-income", income ? `+${formatVndFromThousands(income)}` : "0đ");
+  setText("#ledger-expense", expense ? `−${formatVndFromThousands(expense)}` : "0đ");
+  const net = income - expense;
+  setText("#ledger-profit", net ? `${net > 0 ? "+" : "−"}${formatVndFromThousands(Math.abs(net))}` : "0đ");
+  dialog.querySelector(".ledger-profit")?.classList.toggle("is-negative", net < 0);
+  const days = dialog.querySelector<HTMLElement>("#ledger-days");
+  if (days) days.innerHTML = Array.from(new Set([...snapshot.ledger.map((entry) => entry.day), snapshot.ledgerDay]))
+    .sort((a, b) => b - a).map((value) => `<button type="button" data-ledger-day="${value}" aria-pressed="${value === day}">Ngày ${value}</button>`).join("");
+  const list = dialog.querySelector<HTMLElement>("#ledger-entries");
+  if (list) {
+    list.replaceChildren();
+    if (entries.length === 0) {
+      const empty = document.createElement("p");
+      empty.textContent = "Hôm nay chưa có khoản thu chi nào.";
+      list.append(empty);
+    }
+    for (const entry of [...entries].reverse()) {
+      const row = document.createElement("div");
+      row.className = `ledger-entry ${entry.amount < 0 ? "is-expense" : "is-income"}`;
+      const label = document.createElement("span");
+      label.textContent = entry.label;
+      const amount = document.createElement("strong");
+      amount.textContent = `${entry.amount < 0 ? "−" : "+"}${formatVndFromThousands(Math.abs(entry.amount))}`;
+      row.append(label, amount);
+      list.append(row);
+    }
+  }
+}
 let diningView: "tables" | "kitchen" = "tables";
 let homeOpen = false;
+let homeInteriorStarted = false;
+let homeInteriorSleeping = false;
 let wholesaleMarketOpen = false;
 let wholesaleMarketStarted = false;
 let wholesaleMarketSleeping = false;
 let selectedMenuCategory: MenuCategory | "all" = "all";
+let shiftMenuDraft = new Set<RecipeId>();
+let recipeLearningFeedback = "";
+let selectedStaffRole: StaffRoleId = "server";
+let staffManagementSignature = "";
+let diningDeliveryReturnTimer: number | null = null;
+type StockCategoryId = "all" | "fresh" | "produce" | "dry" | "seasoning";
+const STOCK_CATEGORY_FILTERS: { id: StockCategoryId; label: string }[] = [
+  { id: "all", label: "Tất cả" },
+  { id: "fresh", label: "Thịt cá" },
+  { id: "produce", label: "Rau củ" },
+  { id: "dry", label: "Đồ khô" },
+  { id: "seasoning", label: "Gia vị" },
+];
+const STOCK_CATEGORY_STALLS: Record<Exclude<StockCategoryId, "all">, MarketStallId[]> = {
+  fresh: ["meat", "fish"],
+  produce: ["produce", "greens"],
+  dry: ["dry-goods"],
+  seasoning: ["seasonings"],
+};
+let selectedStockCategory: StockCategoryId = "all";
+let selectedStockIngredient: MenuIngredientId | null = null;
+let selectedMarketStallId: MarketStallId | null = null;
+let marketShopFeedback = "";
+const marketProductQuantities = new Map<MenuIngredientId, number>();
 const app = document.querySelector<HTMLDivElement>("#app");
 const phaserRoot = document.querySelector<HTMLDivElement>("#phaser-root");
 const gameLoadingScreen = document.querySelector<HTMLElement>("#game-loading-screen");
@@ -86,9 +176,34 @@ const gameLoadingCopy = document.querySelector<HTMLElement>("#game-loading-copy"
 const gameLoadingProgress = document.querySelector<HTMLElement>("#game-loading-progress");
 const wholesaleMarketInterface = document.querySelector<HTMLDivElement>("#market-interface");
 const homeInterface = document.querySelector<HTMLDivElement>("#home-interface");
+const homeStageCopy = document.querySelector<HTMLElement>("#home-stage-copy");
+const homeEntryPrompt = document.querySelector<HTMLDivElement>("#home-entry-prompt");
 const wholesaleMarketSectionCopy = document.querySelector<HTMLElement>("#market-section-copy");
-const wholesaleMarketSectionButton = document.querySelector<HTMLButtonElement>("#market-section-button");
+const wholesaleMarketSectionProgress = document.querySelector<HTMLElement>("#market-section-progress");
+const wholesaleMarketHeldBasket = document.querySelector<HTMLImageElement>("#market-held-basket");
+if (wholesaleMarketHeldBasket) wholesaleMarketHeldBasket.src = store.getSnapshot().marketBasketHasItems ? heldBasketFullUrl : heldBasketUrl;
+const wholesaleMarketStallArrow = document.querySelector<HTMLButtonElement>("#market-stall-arrow");
 const wholesaleMarketPanCopy = document.querySelector<HTMLElement>("#market-pan-copy");
+const marketShopDialog = document.querySelector<HTMLDialogElement>("#market-shop-dialog");
+const shiftMenuDialog = document.querySelector<HTMLDialogElement>("#shift-menu-dialog");
+const recipeLearningDialog = document.querySelector<HTMLDialogElement>("#recipe-learning-dialog");
+const shiftMenuTitle = document.querySelector<HTMLElement>("#shift-menu-title");
+const shiftMenuDescription = document.querySelector<HTMLElement>("#shift-menu-description");
+const shiftMenuList = document.querySelector<HTMLElement>("#shift-menu-list");
+const shiftMenuSelectionCount = document.querySelector<HTMLElement>("#shift-menu-selection-count");
+const shiftMenuAvailability = document.querySelector<HTMLElement>("#shift-menu-availability");
+const shiftMenuFeedback = document.querySelector<HTMLElement>("#shift-menu-feedback");
+const confirmShiftMenuButton = document.querySelector<HTMLButtonElement>("#confirm-shift-menu");
+const marketShopTitle = document.querySelector<HTMLElement>("#market-shop-title");
+const marketShopSubtitle = document.querySelector<HTMLElement>("#market-shop-subtitle");
+const marketShopBalance = document.querySelector<HTMLElement>("#market-shop-balance");
+const marketShopProducts = document.querySelector<HTMLElement>("#market-shop-products");
+const marketShopFeedbackNode = document.querySelector<HTMLElement>("#market-shop-feedback");
+marketShopDialog?.addEventListener("close", () => {
+  selectedMarketStallId = null;
+  marketProductQuantities.clear();
+  marketShopFeedback = "";
+});
 if (!app || !phaserRoot || !wholesaleMarketInterface) throw new Error("Không tìm thấy khung game.");
 window.addEventListener("game-loading-progress", (event) => {
   const progress = (event as CustomEvent<number>).detail;
@@ -105,9 +220,381 @@ const kitchenArt: [string, string][] = [
   ["kitchen-layout-art", kitchenObjectsLayoutUrl],
 ];
 let kitchenArtLoaded = false;
+const staffAnimationUrls: Record<string, { work: string; rest: string; lazy: string }> = {
+  "quang-tin": { work: quangTinWorkUrl, rest: quangTinRestUrl, lazy: quangTinLazyUrl },
+  "huy-phu-bep": { work: kitchenPrepStaffChopUrl, rest: kitchenPrepStaffWipeUrl, lazy: kitchenPrepStaffPhoneUrl },
+  "co-hanh": { work: coHanhWorkUrl, rest: coHanhRestUrl, lazy: coHanhLazyUrl },
+  "line-cook": { work: lineCookWorkUrl, rest: lineCookRestUrl, lazy: lineCookLazyUrl },
+  "an-nhien": { work: anNhienWorkUrl, rest: anNhienRestUrl, lazy: anNhienLazyUrl },
+};
+const maiLinhSpriteUrls = {
+  "walk-empty": maiLinhWalkEmptyGifUrl,
+  "walk-tray": maiLinhWalkTrayGifUrl,
+  idle: maiLinhIdleGifUrl,
+  "take-order": maiLinhTakeOrderGifUrl,
+  "pickup-kitchen": maiLinhPickupKitchenGifUrl,
+  "serve-table": maiLinhServeTableGifUrl,
+  rest: maiLinhRestGifUrl,
+  phone: maiLinhPhoneGifUrl,
+} as const;
+const maiLinhWalkDirectionUrls = {
+  "walk-empty": import.meta.glob("../assets/characters/staff-roster-v1/server-mai-linh/redrawn-v1/gif/walk-empty/dir-*.gif", {
+    eager: true,
+    query: "?url",
+    import: "default",
+  }) as Record<string, string>,
+  "walk-tray": import.meta.glob("../assets/characters/staff-roster-v1/server-mai-linh/redrawn-v1/gif/walk-tray/dir-*.gif", {
+    eager: true,
+    query: "?url",
+    import: "default",
+  }) as Record<string, string>,
+};
+type MaiLinhSpriteMotion = keyof typeof maiLinhSpriteUrls;
+const staffPortraitById: Record<string, string> = {
+  "mai-linh": maiLinhPortraitUrl,
+  "quang-tin": quangTinPortraitUrl,
+  "huy-phu-bep": tanHuyPortraitUrl,
+  "co-hanh": coHanhPortraitUrl,
+  "line-cook": lineCookPortraitUrl,
+  "an-nhien": anNhienPortraitUrl,
+};
+
+function getMaiLinhDirectionRow(from: { x: number; y: number }, to: { x: number; y: number }): number {
+  const angle = Math.atan2(to.y - from.y, to.x - from.x);
+  const compassStep = ((Math.round(angle / (Math.PI / 4)) % 8) + 8) % 8;
+  // Direction indices are S, SW, W, NW, N, NE, E, SE.
+  return (compassStep + 6) % 8;
+}
+
+function setMaiLinhSpriteMotion(element: HTMLElement, motion: MaiLinhSpriteMotion, directionRow = 4): void {
+  const oldMotion = element.dataset.spriteMotion as MaiLinhSpriteMotion | undefined;
+  const direction = ((directionRow % 8) + 8) % 8;
+  const directionalWalk = motion === "walk-empty" || motion === "walk-tray";
+  const directionPath = `../assets/characters/staff-roster-v1/server-mai-linh/redrawn-v1/gif/${motion}/dir-${direction}.gif`;
+  const spriteUrl = directionalWalk
+    ? maiLinhWalkDirectionUrls[motion][directionPath] ?? maiLinhSpriteUrls[motion]
+    : maiLinhSpriteUrls[motion];
+  if (oldMotion !== motion || element.dataset.spriteDirection !== String(direction)) {
+    if (oldMotion) element.classList.remove(`mai-linh-motion-${oldMotion}`);
+    element.classList.add(`mai-linh-motion-${motion}`);
+    element.dataset.spriteMotion = motion;
+    element.dataset.spriteDirection = String(direction);
+    element.style.setProperty("--mai-linh-animation", `url(${JSON.stringify(spriteUrl)})`);
+  }
+  // Walk animations have a dedicated image for all eight directions. Stationary
+  // poses still use the existing left/right mirror for a natural facing.
+  element.classList.toggle("is-mirrored", !directionalWalk && [1, 2, 3].includes(direction));
+}
+
+const MAI_LINH_WORK_HOLD_SECONDS = 32;
+let maiLinhWorkHoldUntil = -1;
+
+function getStaffActivity(member: GameSnapshot["staff"][number], snapshot: GameSnapshot): "work" | "rest" | "lazy" {
+  if (member.id === "mai-linh") {
+    if (!snapshot.inShift || !member.isWorking) maiLinhWorkHoldUntil = -1;
+    else {
+      const isServing = snapshot.dining.orders.some((order) => ["called", "taking", "queued", "cooking", "ready", "carrying"].includes(order.status))
+        || snapshot.dining.guests.some((guest) => ["approaching", "entering", "waiting-order", "waiting-food", "eating", "awaiting-payment"].includes(guest.status));
+      if (isServing) maiLinhWorkHoldUntil = snapshot.elapsedSeconds + MAI_LINH_WORK_HOLD_SECONDS;
+      if (isServing || snapshot.elapsedSeconds <= maiLinhWorkHoldUntil) {
+        if (member.restSeconds <= 0 && member.energy > 18) return "work";
+      }
+    }
+  }
+  if (member.restSeconds > 0 || member.energy <= 18) return "rest";
+  const hasKitchenWork = snapshot.dining.orders.some((order) => order.status === "cooking");
+  if (member.role === "server" && snapshot.dining.orders.some((order) => ["taking", "ready", "carrying"].includes(order.status))) return "work";
+  if (member.role === "cashier" && snapshot.dining.guests.some((guest) => guest.status === "awaiting-payment")) return "work";
+  if ((member.role === "chef" || member.role === "prep") && hasKitchenWork) return "work";
+  if (member.role === "promoter" && snapshot.elapsedSeconds % 32 < 9) return "work";
+  return "lazy";
+}
+
+function renderRestaurantStaffActors(snapshot: GameSnapshot): void {
+  const stage = document.querySelector<HTMLElement>("#restaurant-staff-stage");
+  if (!stage) return;
+  const deliveryStage = document.querySelector<HTMLElement>("#dining-delivery-stage");
+  const serverDelivering = snapshot.dining.orders.some((order) => ["taking", "carrying"].includes(order.status) && order.carriedByStaff)
+    || Boolean(deliveryStage?.dataset.returnOrderId);
+  const visibleStaff = snapshot.inShift ? snapshot.staff.filter((member) => member.isWorking && !["prep", "chef"].includes(member.role)
+    && !(member.role === "server" && serverDelivering)) : [];
+  const roleIndexes = new Map<string, number>();
+  const actors = visibleStaff.map((member) => {
+    const candidate = getStaffCandidate(member.id);
+    const activity = getStaffActivity(member, snapshot);
+    const animation = staffAnimationUrls[member.id];
+    if (!candidate || (member.id !== "mai-linh" && !animation)) return { signature: `${member.id}:missing`, markup: "" };
+    const roleIndex = roleIndexes.get(member.role) ?? 0;
+    roleIndexes.set(member.role, roleIndex + 1);
+    const markup = member.id === "mai-linh"
+      ? `<div class="restaurant-staff-sprite role-${member.role} mai-linh-gif" data-staff-id="${member.id}" data-staff-index="${roleIndex}" data-staff-activity="${activity}" aria-hidden="true" title="${candidate.name} · ${getStaffRole(member.role).shortName}"></div>`
+      : `<img class="restaurant-staff-sprite role-${member.role}" data-staff-id="${member.id}" data-staff-index="${roleIndex}" src="${animation![activity]}" alt="" aria-hidden="true" title="${candidate.name} · ${getStaffRole(member.role).shortName}">`;
+    return {
+      signature: `${member.id}:${member.level}:${activity}:${roleIndex}`,
+      markup,
+    };
+  });
+  const signature = actors.map((actor) => actor.signature).join(",");
+  if (stage.dataset.staffSignature !== signature) {
+    stage.dataset.staffSignature = signature;
+    stage.innerHTML = actors.map((actor) => actor.markup).join("");
+  }
+  const maiLinh = stage.querySelector<HTMLElement>('[data-staff-id="mai-linh"]');
+  const counterStaffPoint = diningScene.getServiceCounterStaffScreenPoint();
+  if (maiLinh && counterStaffPoint && !serverDelivering) {
+    const activity = maiLinh.dataset.staffActivity;
+    // Face diagonally toward the dining room so her expression reads in the game view.
+    setMaiLinhSpriteMotion(maiLinh, activity === "rest" ? "rest" : activity === "lazy" ? "phone" : "take-order", 1);
+    maiLinh.style.left = `${counterStaffPoint.x}px`;
+    maiLinh.style.top = `${counterStaffPoint.y}px`;
+    maiLinh.style.bottom = "auto";
+  }
+}
+
+function renderKitchenStaffSprite(selector: string, member: GameSnapshot["staff"][number] | undefined, snapshot: GameSnapshot): void {
+  const sprite = document.querySelector<HTMLImageElement>(selector);
+  if (!sprite) return;
+  if (!member || !snapshot.inShift || !member.isWorking) {
+    sprite.hidden = true;
+    delete sprite.dataset.activity;
+    return;
+  }
+
+  const animation = staffAnimationUrls[member.id];
+  if (!animation) {
+    sprite.hidden = true;
+    return;
+  }
+  const activity = getStaffActivity(member, snapshot);
+  const source = member.id === "huy-phu-bep" && activity === "lazy" && Math.floor(snapshot.elapsedSeconds / 12) % 2 === 1
+    ? kitchenPrepStaffLookUrl
+    : animation[activity];
+  const sourceKey = `${activity}:${source}`;
+  if (sprite.dataset.activity !== sourceKey) {
+    sprite.src = source;
+    sprite.dataset.activity = sourceKey;
+  }
+  sprite.hidden = false;
+}
+
+function renderKitchenStaff(snapshot: GameSnapshot): void {
+  const prep = snapshot.staff.find((member) => member.id === "huy-phu-bep");
+  const hanh = snapshot.staff.find((member) => member.id === "co-hanh");
+  const lineCook = snapshot.staff.find((member) => member.id === "line-cook");
+  renderKitchenStaffSprite("#kitchen-prep-staff", prep, snapshot);
+  renderKitchenStaffSprite("#kitchen-chef-hanh", hanh, snapshot);
+  renderKitchenStaffSprite("#kitchen-chef-line", lineCook, snapshot);
+  const choppedVegetables = document.querySelector<HTMLImageElement>("#kitchen-chopped-vegetables");
+  if (choppedVegetables) {
+    if (!choppedVegetables.dataset.srcReady) {
+      choppedVegetables.src = choppedVegetablesUrl;
+      choppedVegetables.dataset.srcReady = "true";
+    }
+    const hasKitchenWork = snapshot.dining.orders.some((order) => order.status === "cooking");
+    choppedVegetables.hidden = !prep?.isWorking || !snapshot.inShift || !hasKitchenWork || prep.restSeconds > 0;
+  }
+}
+
+function renderKitchenStove(snapshot: GameSnapshot): void {
+  const indicator = document.querySelector<HTMLElement>("#kitchen-stove-indicator");
+  if (!indicator) return;
+  const cookingOrder = snapshot.dining.orders.find((order) => order.status === "cooking");
+  const queuedOrder = snapshot.dining.orders.find((order) => order.status === "queued");
+  const order = cookingOrder ?? queuedOrder;
+  if (!order || !snapshot.inShift) {
+    indicator.hidden = true;
+    return;
+  }
+
+  const isCooking = order.status === "cooking";
+  const recipe = RECIPES[order.recipe];
+  const missingIngredient = recipe.ingredients.find((ingredient) => (snapshot.inventory[ingredient.id] ?? 0) < ingredient.quantity);
+  const missingName = missingIngredient && INGREDIENTS.find((ingredient) => ingredient.id === missingIngredient.id)?.name;
+  indicator.hidden = false;
+  indicator.classList.toggle("is-cooking", isCooking);
+  indicator.classList.toggle("has-missing-stock", Boolean(missingIngredient));
+  if (isCooking) {
+    indicator.innerHTML = `<span class="kitchen-stove-indicator-icon" aria-hidden="true">🔥</span><span class="kitchen-stove-indicator-copy"><strong>ĐANG NẤU</strong><small>Bàn ${order.tableId} · còn ${order.cookSeconds}s</small></span>`;
+    indicator.setAttribute("aria-label", `Đầu bếp đang nấu ${recipe.name} cho bàn ${order.tableId}, còn ${order.cookSeconds} giây`);
+  } else if (missingIngredient) {
+    indicator.innerHTML = `<span class="kitchen-stove-indicator-icon" aria-hidden="true">🧺</span><span class="kitchen-stove-indicator-copy"><strong>CHỜ NGUYÊN LIỆU</strong><small>${missingName}</small></span>`;
+    indicator.setAttribute("aria-label", `Đang chờ ${missingName} để đầu bếp nấu món cho bàn ${order.tableId}`);
+  } else {
+    const cookAvailable = snapshot.staff.some((member) => (member.role === "chef" || member.role === "prep")
+      && member.isWorking && member.restSeconds <= 0 && member.energy > 18);
+    indicator.innerHTML = `<span class="kitchen-stove-indicator-icon" aria-hidden="true">${cookAvailable ? "🍳" : "💤"}</span><span class="kitchen-stove-indicator-copy"><strong>${cookAvailable ? "ĐẦU BẾP ĐANG NHẬN PHIẾU" : "ĐẦU BẾP ĐANG NGHỈ"}</strong><small>${cookAvailable ? `Bàn ${order.tableId} · ${recipe.name}` : `Bàn ${order.tableId} · chờ nhân viên hồi sức`}</small></span>`;
+    indicator.setAttribute("aria-label", cookAvailable
+      ? `Phiếu ${recipe.name} bàn ${order.tableId} đang chờ đầu bếp`
+      : `Đầu bếp đang nghỉ, đơn bàn ${order.tableId} sẽ được nấu khi nhân viên hồi sức`);
+  }
+}
+
+function renderKitchenPass(snapshot: GameSnapshot): void {
+  const stage = document.querySelector<HTMLElement>("#kitchen-pass-stage");
+  if (!stage) return;
+  const readyOrders = snapshot.dining.orders.filter((order) => order.status === "ready");
+  const hasAvailableServer = snapshot.inShift && snapshot.staff.some((member) => member.role === "server"
+    && member.isWorking && member.restSeconds <= 0 && member.energy > 18);
+  const serverPickup = document.querySelector<HTMLElement>("#kitchen-server-pickup");
+  if (serverPickup) {
+    const hasDishToPickUp = readyOrders.length > 0 && hasAvailableServer;
+    serverPickup.hidden = !hasDishToPickUp;
+    if (hasDishToPickUp) setMaiLinhSpriteMotion(serverPickup, "pickup-kitchen", 0);
+  }
+  const signature = readyOrders.map((order) => `${order.id}:${order.recipe}:${order.tableId}`).join(",");
+  const serviceSignature = `${signature}:${hasAvailableServer}`;
+  if (stage.dataset.passSignature === serviceSignature) return;
+  stage.dataset.passSignature = serviceSignature;
+  stage.innerHTML = readyOrders.slice(0, 4).map((order, index) => `<button class="kitchen-pass-dish ${hasAvailableServer ? "has-server" : "needs-manual-service"}" data-action="dining-take-dish" data-order-id="${order.id}" type="button" style="--pass-index:${index}" aria-label="${hasAvailableServer ? `Món ${RECIPES[order.recipe].name} đang chờ phục vụ tới bàn ${order.tableId}` : `Chạm để bưng ${RECIPES[order.recipe].name} tới bàn ${order.tableId}`}" title="${hasAvailableServer ? `Nhân viên sẽ bưng tới bàn ${order.tableId}` : `Chạm để bưng tới bàn ${order.tableId}`}" ${hasAvailableServer ? "disabled" : ""}>
+    <img src="${DISH_ART_URLS[order.recipe]}" alt="" draggable="false">
+    <small>${hasAvailableServer ? `Bàn ${order.tableId}` : `Bàn ${order.tableId} · Bưng món`}</small>
+  </button>`).join("");
+}
+
+function pointAlongScreenRoute(points: { x: number; y: number }[], progress: number): { x: number; y: number } {
+  if (points.length === 0) return { x: 0, y: 0 };
+  if (points.length === 1) return points[0]!;
+  const distances = points.slice(1).map((point, index) => Math.hypot(point.x - points[index]!.x, point.y - points[index]!.y));
+  const total = distances.reduce((sum, distance) => sum + distance, 0);
+  let remaining = Math.max(0, Math.min(1, progress)) * total;
+  for (let index = 0; index < distances.length; index += 1) {
+    const distance = distances[index]!;
+    if (remaining > distance && index < distances.length - 1) {
+      remaining -= distance;
+      continue;
+    }
+    const from = points[index]!;
+    const to = points[index + 1]!;
+    const amount = distance > 0 ? Math.min(1, remaining / distance) : 1;
+    return { x: from.x + (to.x - from.x) * amount, y: from.y + (to.y - from.y) * amount };
+  }
+  return points[points.length - 1]!;
+}
+
+function renderDiningDelivery(snapshot: GameSnapshot): void {
+  const stage = document.querySelector<HTMLElement>("#dining-delivery-stage");
+  if (!stage) return;
+  const order = snapshot.dining.orders.find((entry) => entry.status === "taking" || entry.status === "carrying");
+  if (snapshot.serviceMode !== "dining") {
+    if (diningDeliveryReturnTimer !== null) window.clearTimeout(diningDeliveryReturnTimer);
+    diningDeliveryReturnTimer = null;
+    stage.replaceChildren();
+    delete stage.dataset.orderId;
+    delete stage.dataset.returnOrderId;
+    delete stage.dataset.carriedByStaff;
+    return;
+  }
+
+  if (!order) {
+    const actor = stage.querySelector<HTMLElement>(".dining-delivery-actor");
+    const tableId = Number(stage.dataset.tableId);
+    const serviceRoute = diningScene.getServiceTableRouteScreenPoints(tableId);
+    const homePoint = serviceRoute?.[0] ?? diningScene.getServiceCounterStaffScreenPoint();
+    const destination = serviceRoute?.[serviceRoute.length - 1] ?? diningScene.getServiceTableApproachScreenPoint(tableId);
+    if (actor && stage.dataset.carriedByStaff === "true" && stage.dataset.orderId && !stage.dataset.returnOrderId && homePoint && destination) {
+      stage.dataset.returnOrderId = stage.dataset.orderId;
+      actor.classList.add("is-returning");
+      actor.querySelector(".dining-delivery-dish")?.remove();
+      actor.querySelector("span")?.remove();
+      const person = actor.querySelector<HTMLElement>(".dining-delivery-person");
+      const returnRoute = serviceRoute ? [...serviceRoute].reverse() : [destination, homePoint];
+      const firstTurn = returnRoute[1] ?? homePoint;
+      if (person) setMaiLinhSpriteMotion(person, "walk-empty", getMaiLinhDirectionRow(destination, firstTurn));
+      actor.dataset.staffMotion = "walk-empty";
+      actor.style.left = `${destination.x}px`;
+      actor.style.top = `${destination.y}px`;
+      const returnDistances = returnRoute.slice(1).map((point, index) => Math.hypot(point.x - returnRoute[index]!.x, point.y - returnRoute[index]!.y));
+      const returnDistance = returnDistances.reduce((sum, distance) => sum + distance, 0);
+      let coveredDistance = 0;
+      const returnKeyframes = returnRoute.map((point, index) => {
+        if (index > 0) coveredDistance += returnDistances[index - 1]!;
+        return { left: `${point.x}px`, top: `${point.y}px`, offset: returnDistance > 0 ? coveredDistance / returnDistance : 1 };
+      });
+      actor.style.transition = "none";
+      const returnAnimation = actor.animate(returnKeyframes, { duration: 2_200, easing: "linear", fill: "forwards" });
+      diningDeliveryReturnTimer = window.setTimeout(() => {
+        returnAnimation.cancel();
+        stage.replaceChildren();
+        delete stage.dataset.orderId;
+        delete stage.dataset.returnOrderId;
+        delete stage.dataset.carriedByStaff;
+        diningDeliveryReturnTimer = null;
+        renderRestaurantStaffActors(store.getSnapshot());
+      }, 2_220);
+      return;
+    }
+    if (stage.dataset.returnOrderId) return;
+    stage.replaceChildren();
+    delete stage.dataset.orderId;
+    delete stage.dataset.carriedByStaff;
+    delete stage.dataset.tableId;
+    return;
+  }
+
+  const serviceRoute = order.carriedByStaff ? diningScene.getServiceTableRouteScreenPoints(order.tableId) : null;
+  const homePoint = order.carriedByStaff
+    ? serviceRoute?.[0] ?? diningScene.getServiceCounterStaffScreenPoint()
+    : diningScene.getServiceCounterScreenPoint();
+  const destination = order.carriedByStaff
+    ? serviceRoute?.[serviceRoute.length - 1] ?? diningScene.getServiceTableApproachScreenPoint(order.tableId)
+    : diningScene.getTableScreenPoint(order.tableId);
+  const tableCenter = diningScene.getTableScreenPoint(order.tableId);
+  if (!homePoint || !destination || !tableCenter) return;
+  if (diningDeliveryReturnTimer !== null) window.clearTimeout(diningDeliveryReturnTimer);
+  diningDeliveryReturnTimer = null;
+  delete stage.dataset.returnOrderId;
+  const duration = order.status === "taking" ? DINING_ORDER_TAKE_SECONDS : DINING_ORDER_DELIVERY_SECONDS;
+  const remaining = order.status === "taking" ? order.takeSeconds : order.deliverySeconds;
+  const progress = Math.max(0, Math.min(1, (duration - remaining) / duration));
+  const approachProgress = DINING_ORDER_APPROACH_SECONDS / DINING_ORDER_TAKE_SECONDS;
+  const guestDialogueEndProgress = (DINING_ORDER_APPROACH_SECONDS + DINING_ORDER_GUEST_DIALOGUE_SECONDS) / DINING_ORDER_TAKE_SECONDS;
+  const serverReplyEndProgress = (DINING_ORDER_APPROACH_SECONDS + DINING_ORDER_GUEST_DIALOGUE_SECONDS + DINING_ORDER_SERVER_REPLY_SECONDS) / DINING_ORDER_TAKE_SECONDS;
+  const interactionProgress = order.status === "taking" ? approachProgress : 0.82;
+  const travelProgress = order.status === "taking" ? Math.min(1, progress / approachProgress) : progress;
+  const movementProgress = order.status === "carrying" ? Math.min(1, progress / interactionProgress) : travelProgress;
+  const route = serviceRoute ?? [homePoint, destination];
+  const nextPoint = pointAlongScreenRoute(route, movementProgress);
+  const lookAheadPoint = pointAlongScreenRoute(route, Math.min(1, movementProgress + 0.025));
+  const directionRow = progress >= interactionProgress
+    ? getMaiLinhDirectionRow(destination, tableCenter)
+    : getMaiLinhDirectionRow(nextPoint, lookAheadPoint);
+  const staffMotion: MaiLinhSpriteMotion = order.status === "taking"
+    ? progress < approachProgress ? "walk-empty" : progress < serverReplyEndProgress ? "idle" : "take-order"
+    : progress >= 0.82 ? "serve-table" : "walk-tray";
+  if (stage.dataset.orderId !== order.id) {
+    stage.dataset.orderId = order.id;
+    stage.dataset.carriedByStaff = String(order.carriedByStaff);
+    stage.dataset.tableId = String(order.tableId);
+    stage.innerHTML = `<div class="dining-delivery-actor ${order.carriedByStaff ? "is-staff" : "is-player"} ${order.status === "taking" ? "is-taking-order" : "is-delivering-dish"}" style="left:${homePoint.x}px;top:${homePoint.y}px">
+      ${order.carriedByStaff ? `<div class="dining-delivery-person mai-linh-gif" aria-hidden="true"></div>` : ""}
+      ${order.status === "taking" && order.carriedByStaff ? `<div class="dining-order-staff-bubble" hidden>Dạ, để em ghi từng món cho bàn mình ạ.</div>` : ""}
+      ${order.status === "carrying" && !order.carriedByStaff ? `<img class="dining-delivery-dish" src="${DISH_ART_URLS[order.recipe]}" alt="">` : ""}
+      ${order.status === "carrying" ? `<span>Bàn ${order.tableId}</span>` : ""}
+    </div>`;
+  }
+  const actor = stage.querySelector<HTMLElement>(".dining-delivery-actor");
+  if (!actor) return;
+  if (order.carriedByStaff) {
+    actor.dataset.staffMotion = staffMotion;
+    const person = actor.querySelector<HTMLElement>(".dining-delivery-person");
+    if (person) setMaiLinhSpriteMotion(person, staffMotion, directionRow);
+    const staffBubble = actor.querySelector<HTMLElement>(".dining-order-staff-bubble");
+    if (staffBubble) staffBubble.hidden = !(progress >= guestDialogueEndProgress && progress < serverReplyEndProgress);
+    actor.querySelector(".dining-delivery-dish")?.remove();
+  }
+  const nextX = nextPoint.x;
+  const nextY = nextPoint.y;
+  if (actor.dataset.pathPosition !== `${nextX},${nextY}`) {
+    actor.dataset.pathPosition = `${nextX},${nextY}`;
+    actor.style.left = `${nextX}px`;
+    actor.style.top = `${nextY}px`;
+  }
+}
 
 const devicePixelRatio = Math.max(1, window.devicePixelRatio || 1);
 const initialCanvasBounds = phaserRoot.getBoundingClientRect();
+// A slightly slower frame cadence keeps animated characters from looking rushed.
+const SPRITE_ANIMATION_SPEED = 0.85;
 const game = new Phaser.Game({
   type: Phaser.AUTO,
   parent: "phaser-root",
@@ -123,10 +610,13 @@ const game = new Phaser.Game({
   },
   scene: [scene, diningScene],
 });
+game.anims.globalTimeScale = SPRITE_ANIMATION_SPEED;
 game.scene.add("wholesale-market", wholesaleMarketScene, false);
+game.scene.add("home-interior", homeInteriorScene, false);
 const updateStreetStatus = (): void => {
   const status = document.querySelector<HTMLElement>("#street-status");
   const indicator = document.querySelector<HTMLElement>("#street-crowd-indicator");
+  if (homeEntryPrompt) homeEntryPrompt.hidden = homeOpen || !scene.isHomeZoneActive();
   if (scene.isHomeZoneActive()) {
     if (status) status.textContent = "Khu nhà dân";
     indicator?.removeAttribute("data-crowd");
@@ -134,9 +624,8 @@ const updateStreetStatus = (): void => {
     if (status) status.textContent = "Chợ đầu mối";
     indicator?.removeAttribute("data-crowd");
   } else {
-    const crowd = scene.getStreetCrowdState();
-    if (status) status.textContent = crowd.label;
-    if (indicator) indicator.dataset.crowd = crowd.level;
+    if (status) status.textContent = "Góc phố thân quen";
+    indicator?.removeAttribute("data-crowd");
   }
 };
 const updateOutsideNavLabel = (): void => {
@@ -154,6 +643,7 @@ game.events.once(Phaser.Core.Events.READY, () => {
   scene.events.on("street-shop-entrance-nearby", updateOutsideNavLabel);
   scene.events.on("street-enter-home", openHome);
   scene.events.on("street-enter-wholesale-market", openWholesaleMarket);
+  wholesaleMarketScene.events.on("market-section-changed", updateWholesaleMarketSectionUI);
   store.setStreetDemandMultiplier(scene.getStreetCrowdState().customerArrivalMultiplier);
   updateStreetStatus();
   updateOutsideNavLabel();
@@ -182,13 +672,15 @@ const updateMovementJoystick = (event: PointerEvent): void => {
     directionY = 0;
   }
   movementJoystickKnob.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0)`;
-  scene.setMovementVector(directionX, directionY);
+  if (homeOpen) homeInteriorScene.setMovementVector(directionX, directionY);
+  else scene.setMovementVector(directionX, directionY);
 };
 const resetMovementJoystick = (pointerId?: number): void => {
   if (pointerId !== undefined && movementJoystickPointerId !== pointerId) return;
   movementJoystickPointerId = null;
   if (movementJoystickKnob) movementJoystickKnob.style.transform = "translate3d(0,0,0)";
   scene.setMovementVector(0, 0);
+  homeInteriorScene.setMovementVector(0, 0);
 };
 movementJoystick?.addEventListener("pointerdown", (event) => {
   if (event.pointerType === "mouse" && event.button !== 0) return;
@@ -219,6 +711,7 @@ const resizeGameCanvasForDpr = (): void => {
   const height = Math.max(1, Math.round(bounds.height * dpr));
   scene.setDevicePixelRatio(dpr);
   diningScene.setDevicePixelRatio(dpr);
+  homeInteriorScene.setDevicePixelRatio(dpr);
   wholesaleMarketScene.setDevicePixelRatio(dpr);
   if (game.scale.width !== width || game.scale.height !== height) game.scale.resize(width, height);
   game.canvas.style.width = `${bounds.width}px`;
@@ -237,6 +730,12 @@ function applyLocationScenes(): void {
   if (wholesaleMarketOpen) {
     scene.setMapInteractionEnabled(false);
     diningScene.setInteractionEnabled(false);
+    homeInteriorScene.setInteractionEnabled(false);
+    if (homeInteriorStarted && !homeInteriorSleeping) {
+      scene.scene.setVisible(false, "home-interior");
+      scene.scene.sleep("home-interior");
+      homeInteriorSleeping = true;
+    }
     scene.scene.setVisible(false, "neighborhood");
     scene.scene.setVisible(false, "dining-room");
     if (!wholesaleMarketStarted) {
@@ -256,9 +755,26 @@ function applyLocationScenes(): void {
   if (homeOpen) {
     scene.setMapInteractionEnabled(false);
     diningScene.setInteractionEnabled(false);
+    homeInteriorScene.setHomeStage(store.getSnapshot().cartLevel);
+    homeInteriorScene.setInteractionEnabled(true);
     scene.scene.setVisible(false, "neighborhood");
     scene.scene.setVisible(false, "dining-room");
+    if (!homeInteriorStarted) {
+      scene.scene.launch("home-interior");
+      homeInteriorStarted = true;
+      homeInteriorSleeping = false;
+    } else if (homeInteriorSleeping) {
+      scene.scene.wake("home-interior");
+      homeInteriorSleeping = false;
+    }
+    scene.scene.setVisible(true, "home-interior");
     return;
+  }
+  if (homeInteriorStarted && !homeInteriorSleeping) {
+    homeInteriorScene.setInteractionEnabled(false);
+    scene.scene.setVisible(false, "home-interior");
+    scene.scene.sleep("home-interior");
+    homeInteriorSleeping = true;
   }
   if (store.getSnapshot().serviceMode === "dining") {
     scene.setMapInteractionEnabled(false);
@@ -280,8 +796,11 @@ function openHome(): void {
   if (store.getSnapshot().serviceMode !== "street" || !scene.isHomeZoneActive()) return;
   selectTab("outside");
   homeOpen = true;
+  homeInteriorScene.setHomeStage(store.getSnapshot().cartLevel);
+  if (homeStageCopy) homeStageCopy.textContent = `CẤP NHÀ ${String(store.getSnapshot().cartLevel).padStart(2, "0")} / 12`;
   if (homeInterface) homeInterface.hidden = false;
   if (app) app.dataset.location = "home";
+  updateStreetStatus();
   applyLocationScenes();
 }
 
@@ -289,21 +808,24 @@ function closeHome(): void {
   homeOpen = false;
   if (homeInterface) homeInterface.hidden = true;
   if (app) app.dataset.location = "street";
+  updateStreetStatus();
   applyLocationScenes();
 }
 
 function openWholesaleMarket(): void {
   if (store.getSnapshot().serviceMode !== "street") return;
+  closeMarketShop();
   selectTab("outside");
-  wholesaleMarketScene.setSection("produce");
-  updateWholesaleMarketSectionUI();
   wholesaleMarketOpen = true;
+  wholesaleMarketScene.setSection("grocery");
+  updateWholesaleMarketSectionUI();
   if (wholesaleMarketInterface) wholesaleMarketInterface.hidden = false;
   if (app) app.dataset.location = "market";
   applyLocationScenes();
 }
 
 function closeWholesaleMarket(): void {
+  closeMarketShop();
   wholesaleMarketOpen = false;
   wholesaleMarketScene.setSection("exterior");
   if (wholesaleMarketInterface) wholesaleMarketInterface.hidden = true;
@@ -315,43 +837,136 @@ function updateWholesaleMarketSectionUI(): void {
   const section = wholesaleMarketScene.getSection();
   const sectionCopy = {
     exterior: "Mặt tiền · bãi xe máy",
-    produce: "Khu rau củ và nông sản",
-    seafood: "Sạp thịt, cá & hải sản",
-  } as const;
-  const buttonCopy = {
-    exterior: "Vào khu rau củ ↑",
-    produce: "Qua khu thịt cá →",
-    seafood: "Về khu rau củ ←",
-  } as const;
-  const buttonLabels = {
-    exterior: "Vào khu rau củ trong chợ",
-    produce: "Đi sang khu thịt và hải sản",
-    seafood: "Quay lại khu rau củ",
-  } as const;
+    grocery: "Rau củ · nông sản",
+    "grocery-clothing": "Tạp hóa · quần áo",
+    "meat-fish": "Sạp thịt · cá",
+    "seafood-vegetables": "Hải sản · rau xanh",
+    "shoes-bags": "Giày dép · túi xách",
+  } satisfies Record<WholesaleMarketSection, string>;
+  const sectionIndex = wholesaleMarketScene.getInteriorSectionIndex();
+  const isInterior = sectionIndex >= 0;
+  if (wholesaleMarketHeldBasket) wholesaleMarketHeldBasket.hidden = !wholesaleMarketOpen || !isInterior;
+  for (const button of document.querySelectorAll<HTMLButtonElement>(".market-stall-board")) {
+    const stall = getMarketStall(button.dataset.marketStall);
+    const isVisible = wholesaleMarketOpen && Boolean(stall && stall.products.length > 0 && stall.section === section);
+    button.hidden = !isVisible;
+    if (!stall) continue;
+
+    const isLeftStall = Boolean(stall.position.left);
+    button.style.left = isLeftStall ? "33%" : "auto";
+    button.style.right = isLeftStall ? "auto" : "33%";
+    button.style.top = "32%";
+    button.style.translate = isLeftStall ? "-50% 0" : "50% 0";
+    button.setAttribute("aria-label", `Mở bảng mua quầy ${stall.boardLabel.toLowerCase()}`);
+    const boardName = button.querySelector<HTMLElement>(".market-stall-board-name");
+    if (boardName) boardName.textContent = stall.boardLabel;
+
+  }
+  const selectedStall = selectedMarketStallId ? getMarketStall(selectedMarketStallId) : undefined;
+  if (selectedStall && selectedStall.section !== section) closeMarketShop();
   if (wholesaleMarketSectionCopy) {
     wholesaleMarketSectionCopy.textContent = sectionCopy[section];
   }
-  if (wholesaleMarketSectionButton) {
-    wholesaleMarketSectionButton.textContent = buttonCopy[section];
-    wholesaleMarketSectionButton.setAttribute("aria-label", buttonLabels[section]);
+  if (wholesaleMarketSectionProgress) {
+    wholesaleMarketSectionProgress.textContent = isInterior
+      ? `${sectionIndex + 1} / ${WHOLESALE_MARKET_INTERIOR_SECTIONS.length}`
+      : "";
+  }
+  const hasNextStall = isInterior && sectionIndex < WHOLESALE_MARKET_INTERIOR_SECTIONS.length - 1;
+  wholesaleMarketStallArrow?.toggleAttribute("hidden", !hasNextStall);
+  if (wholesaleMarketStallArrow && hasNextStall) {
+    const nextSection = WHOLESALE_MARKET_INTERIOR_SECTIONS[sectionIndex + 1];
+    wholesaleMarketStallArrow.setAttribute("aria-label", `Đi tới quầy tiếp theo: ${sectionCopy[nextSection]}`);
   }
   if (wholesaleMarketPanCopy) {
-    wholesaleMarketPanCopy.textContent = "Kéo ngang để xem bãi xe và các dãy nhà";
-    wholesaleMarketPanCopy.closest(".market-pan-hint")?.toggleAttribute("hidden", section !== "exterior");
+    wholesaleMarketPanCopy.textContent = !isInterior
+      ? "Kéo ngang để xem bãi xe và các dãy nhà"
+      : hasNextStall
+        ? sectionIndex === 0
+          ? "Vuốt xuống hoặc chạm mũi tên để tới quầy tiếp theo"
+          : "Vuốt xuống để đi tiếp · vuốt lên để quay lại"
+        : "Vuốt lên để quay lại quầy trước";
+    wholesaleMarketPanCopy.closest(".market-pan-hint")?.toggleAttribute("hidden", !isInterior);
   }
+}
+
+function openMarketStall(stallId: string | undefined): void {
+  const stall = getMarketStall(stallId);
+  if (!wholesaleMarketOpen || !stall || stall.products.length === 0 || stall.section !== wholesaleMarketScene.getSection() || !marketShopDialog) return;
+  selectedMarketStallId = stall.id;
+  marketShopFeedback = "";
+  marketProductQuantities.clear();
+  for (const id of stall.products) marketProductQuantities.set(id, 1);
+  renderMarketShop();
+  marketShopDialog.showModal();
+}
+
+function closeMarketShop(): void {
+  if (marketShopDialog?.open) marketShopDialog.close();
+  selectedMarketStallId = null;
+  marketShopFeedback = "";
+  marketProductQuantities.clear();
+}
+
+function renderMarketShop(): void {
+  const stall = selectedMarketStallId ? getMarketStall(selectedMarketStallId) : undefined;
+  if (!stall || !marketShopProducts) return;
+  const snapshot = store.getSnapshot();
+  if (marketShopTitle) marketShopTitle.textContent = stall.title;
+  if (marketShopSubtitle) marketShopSubtitle.textContent = `${stall.subtitle} · giá theo đơn vị`;
+  if (marketShopBalance) marketShopBalance.textContent = formatVndFromThousands(snapshot.coins);
+  if (marketShopFeedbackNode) marketShopFeedbackNode.textContent = marketShopFeedback;
+  marketShopProducts.innerHTML = stall.products.map((id) => {
+    const ingredient = MENU_INGREDIENTS[id];
+    const product = MARKET_PRODUCT_DETAILS[id];
+    const quantity = marketProductQuantities.get(id) ?? 1;
+    const total = product.priceThousands * quantity;
+    const stock = snapshot.marketInventory[id] ?? 0;
+    const image = `/assets/ingredients/individual/${ingredient.assetFile}`;
+    return `<article class="market-product-card">
+      <div class="market-product-heading">
+        <img class="market-product-icon" src="${image}" alt="${ingredient.name}" loading="lazy">
+        <div class="market-product-name"><strong>${ingredient.name}</strong><small>Trong kho: ${stock} ${product.unit}</small></div>
+      </div>
+      <p class="market-product-description">${product.description}</p>
+      <div class="market-product-price"><span>Đơn giá / ${product.unit}</span><strong>${formatVndFromThousands(product.priceThousands)}</strong></div>
+      <div class="market-product-actions">
+        <div class="market-quantity-stepper" aria-label="Số lượng ${ingredient.name}">
+          <button type="button" data-action="market-quantity-down" data-market-ingredient="${id}" aria-label="Giảm số lượng ${ingredient.name}" ${quantity <= 1 ? "disabled" : ""}>−</button>
+          <output>${quantity}</output>
+          <button type="button" data-action="market-quantity-up" data-market-ingredient="${id}" aria-label="Tăng số lượng ${ingredient.name}" ${quantity >= 99 ? "disabled" : ""}>+</button>
+        </div>
+        <button class="market-buy-button" type="button" data-action="market-buy" data-market-ingredient="${id}" ${total > snapshot.coins ? "disabled" : ""}>Mua ${formatVndFromThousands(total)}</button>
+      </div>
+    </article>`;
+  }).join("");
 }
 
 function toggleWholesaleMarketSection(): void {
-  const next = {
-    exterior: "produce",
-    produce: "seafood",
-    seafood: "produce",
-  } as const;
-  wholesaleMarketScene.setSection(next[wholesaleMarketScene.getSection()]);
+  wholesaleMarketScene.advanceSection(1);
   updateWholesaleMarketSectionUI();
 }
 
+let marketArrowPointerPressed = false;
+wholesaleMarketStallArrow?.addEventListener("pointerdown", (event) => {
+  if (!event.isPrimary || event.button !== 0) return;
+  marketArrowPointerPressed = true;
+  toggleWholesaleMarketSection();
+});
+wholesaleMarketStallArrow?.addEventListener("click", (event) => {
+  if (event.detail === 0) {
+    toggleWholesaleMarketSection();
+    return;
+  }
+  if (marketArrowPointerPressed) {
+    marketArrowPointerPressed = false;
+    return;
+  }
+  toggleWholesaleMarketSection();
+});
+
 function setLocation(location: "street" | "dining"): void {
+  closeMarketShop();
   homeOpen = false;
   if (homeInterface) homeInterface.hidden = true;
   wholesaleMarketOpen = false;
@@ -376,13 +991,12 @@ function setDiningView(view: "tables" | "kitchen"): void {
   const locationName = document.querySelector<HTMLElement>("#dining-location-name");
   if (locationName) locationName.textContent = view === "kitchen" ? "GIAN BẾP" : "PHÒNG ĂN";
   setDiningPanelMode(null);
-  renderDining(store.getSnapshot());
+  render(store.getSnapshot());
 }
 
 function setDiningPanelMode(mode: "tables" | "kitchen" | null): void {
   const panel = document.querySelector<HTMLElement>("#dining-control-panel");
   const title = document.querySelector<HTMLElement>("#dining-panel-title");
-  const kitchenPanelToggle = document.querySelector<HTMLButtonElement>("#dining-panel-toggle");
   const isOpen = mode !== null;
   if (app) app.dataset.diningPanelOpen = String(isOpen);
   if (panel) {
@@ -390,12 +1004,14 @@ function setDiningPanelMode(mode: "tables" | "kitchen" | null): void {
     panel.dataset.mode = mode ?? "tables";
     panel.scrollTop = 0;
   }
-  if (title) title.textContent = mode === "kitchen" ? "Phiếu bếp" : "Bàn ăn";
-  kitchenPanelToggle?.setAttribute("aria-expanded", String(isOpen));
+  if (title) title.textContent = mode === "kitchen" ? "Bếp" : "Bàn ăn";
 }
 
 document.addEventListener("dining-table-selected", () => setDiningPanelMode("tables"));
-
+document.addEventListener("dining-kitchen-requested", () => {
+  setDiningView("kitchen");
+  setDiningPanelMode("kitchen");
+});
 let diningSwipeStart: { x: number; y: number; pointerId: number } | null = null;
 const beginDiningSwipe = (event: PointerEvent): void => {
   diningSwipeStart = null;
@@ -419,6 +1035,11 @@ window.addEventListener("pointercancel", () => { diningSwipeStart = null; });
 game.events.once(Phaser.Core.Events.READY, () => {
   phaserReady = true;
   applyLocationScenes();
+  const previewSection = import.meta.env.DEV ? debugParams.get("market-preview") : null;
+  if (previewSection && WHOLESALE_MARKET_INTERIOR_SECTIONS.includes(previewSection as typeof WHOLESALE_MARKET_INTERIOR_SECTIONS[number])) {
+    openWholesaleMarket();
+    wholesaleMarketScene.setSection(previewSection as typeof WHOLESALE_MARKET_INTERIOR_SECTIONS[number]);
+  }
 });
 
 let editingStoreName = false;
@@ -472,7 +1093,6 @@ function saveStoreName(event: SubmitEvent): void {
     return;
   }
   modal.hidden = true;
-  if (!store.getSnapshot().inShift) store.startShift();
 }
 
 function selectTab(tab: string, toggle = false): void {
@@ -510,18 +1130,16 @@ function selectTab(tab: string, toggle = false): void {
   if (eyebrowNode) eyebrowNode.textContent = eyebrow;
   if (titleNode) titleNode.textContent = title;
   if (activeTab === "recipes") renderMenuCatalog();
+  if (activeTab === "staff") renderStaffManagement(store.getSnapshot());
+  if (activeTab === "stock") renderStockInventory(store.getSnapshot());
   if (selectedPanel) activeButton?.scrollIntoView({ block: "nearest", inline: "nearest" });
 }
 
 function menuDishArtMarkup(dish: MenuDish): string {
-  if (dish.visual.type === "sheet") {
-    const imageUrl = dish.visual.sheet === "hotpot-grill" ? hotpotGrillSheetUrl : snacksRiceSheetUrl;
-    const column = dish.visual.cell % 4;
-    const row = Math.floor(dish.visual.cell / 4);
-    return `<span class="menu-dish-art menu-dish-art--sheet" role="img" aria-label="${dish.name}" style="--menu-sheet: url('${imageUrl}'); --menu-position-x: ${column * 100 / 3}%; --menu-position-y: ${row * 100 / 3}%"></span>`;
-  }
-  if (dish.visual.type === "image") return `<img class="menu-dish-art menu-dish-art--image" src="${mixedGrillPlatterUrl}" alt="${dish.name}">`;
-  return `<span class="menu-dish-art menu-dish-art--icon">${iconMarkup(dish.visual.icon, "ui-icon")}</span>`;
+  const imageUrl = DISH_ART_URLS[dish.id];
+  if (imageUrl) return `<img class="menu-dish-art menu-dish-art--image" src="${imageUrl}" alt="${dish.name}" loading="lazy">`;
+  if (dish.visual.type === "icon") return `<span class="menu-dish-art menu-dish-art--icon">${iconMarkup(dish.visual.icon, "ui-icon")}</span>`;
+  return `<span class="menu-dish-art menu-dish-art--icon" role="img" aria-label="${dish.name}"></span>`;
 }
 
 function menuDishIngredientsMarkup(ingredientIds: readonly MenuIngredientId[]): string {
@@ -535,23 +1153,82 @@ function menuDishIngredientsMarkup(ingredientIds: readonly MenuIngredientId[]): 
   }).join("");
 }
 
-function renderMenuCatalog(): void {
+function renderStaffManagement(snapshot: GameSnapshot): void {
+  const tabs = document.querySelector<HTMLElement>("#staff-role-tabs");
+  const roster = document.querySelector<HTMLElement>("#staff-roster");
+  const status = document.querySelector<HTMLElement>("#staff-status");
+  if (!tabs || !roster) return;
+  const signature = `${snapshot.cartLevel}|${snapshot.coins}|${snapshot.inShift}|${selectedStaffRole}|${snapshot.staff.map((entry) => `${entry.id}:${entry.level}:${entry.isWorking}:${Math.floor(entry.energy / 5)}:${entry.restSeconds > 0}`).join(",")}`;
+  if (signature === staffManagementSignature) return;
+  staffManagementSignature = signature;
+
+  tabs.innerHTML = STAFF_ROLES.map((role) => `<button type="button" class="staff-role-tab ${selectedStaffRole === role.id ? "is-active" : ""}" role="tab" aria-selected="${selectedStaffRole === role.id}" data-staff-role="${role.id}">${role.tabLabel}</button>`).join("");
+  const role = getStaffRole(selectedStaffRole);
+  const roleCandidates = STAFF_CANDIDATES.filter((entry) => entry.role === role.id);
+  roster.innerHTML = roleCandidates.map((candidate) => {
+    const employee = snapshot.staff.find((entry) => entry.id === candidate.id);
+    const locked = candidate.unlockLevel > snapshot.cartLevel;
+    const score = Math.min(99, candidate.serviceScore + Math.max(0, (employee?.level ?? 1) - 1) * 9);
+    const wage = candidate.wagePerShift * (employee?.level ?? 1);
+    const stars = Array.from({ length: 5 }, (_, index) => `<i class="${employee && index < employee.level ? "is-filled" : ""}" aria-hidden="true">★</i>`).join("");
+    const hireDisabled = locked || snapshot.coins < candidate.hireCost;
+    const trainingCost = employee ? STAFF_TRAINING_COST[employee.level] : undefined;
+    const trainDisabled = !employee || employee.level >= MAX_STAFF_LEVEL || trainingCost === undefined || snapshot.coins < trainingCost;
+    const workButton = employee
+      ? `<button class="staff-action-button ${employee.isWorking ? "secondary" : ""}" data-action="staff-shift" data-employee-id="${employee.id}" type="button">${employee.isWorking ? "Cho nghỉ ca" : "Xếp vào ca"}</button>`
+      : `<button class="staff-action-button" data-action="staff-hire" data-candidate-id="${candidate.id}" type="button" ${hireDisabled ? "disabled" : ""}>${locked ? `Mở ở cấp ${candidate.unlockLevel}` : `Tuyển · ${formatVndFromThousands(candidate.hireCost)}`}</button>`;
+    const trainButton = employee
+      ? `<button class="staff-action-button" data-action="staff-train" data-employee-id="${employee.id}" type="button" ${trainDisabled ? "disabled" : ""}>${employee.level >= MAX_STAFF_LEVEL ? "Đã tối đa" : `Đào tạo · ${formatVndFromThousands(trainingCost ?? 0)}`}</button>`
+      : "";
+    const state = !employee ? locked ? `Khóa tới cấp ${candidate.unlockLevel}` : "Ứng viên"
+      : !employee.isWorking ? "Nghỉ ca"
+        : !snapshot.inShift ? "Đã xếp ca"
+          : employee.restSeconds > 0 ? `Đang nghỉ lấy sức · ${employee.energy}%`
+            : employee.energy <= 45 ? `Mệt · ${employee.energy}%`
+              : `Đang làm · ${employee.energy}%`;
+    return `<article class="employee-management-card ${locked ? "is-locked" : ""}">
+      <div class="employee-portrait"><img src="${staffPortraitById[candidate.id]}" alt="Chân dung ${candidate.name}" loading="lazy"></div>
+      <div class="employee-details">
+        <div class="employee-name-line"><div><small>${role.tabLabel}</small><h3>${candidate.name}</h3></div><span class="employee-score"><b>${score}</b><small>điểm phục vụ</small></span></div>
+        <div class="employee-stars" aria-label="${employee ? `Bậc kỹ năng ${employee.level} trên ${MAX_STAFF_LEVEL}` : "Chưa tuyển"}">${stars}</div>
+        <p>${role.duty}</p>
+        ${employee ? `<div class="employee-energy" role="meter" aria-label="Sức bền ${employee.energy}%" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${employee.energy}"><span style="width:${employee.energy}%"></span></div>` : ""}
+        <div class="employee-facts"><span><b>Nơi làm:</b> ${role.workstation}</span><span><b>Lương:</b> ${formatVndFromThousands(wage)}/ca</span><span><b>Trạng thái:</b> ${state}</span></div>
+        <div class="employee-actions">${workButton}${trainButton}</div>
+      </div>
+    </article>`;
+  }).join("");
+  const workingCount = snapshot.staff.filter((entry) => entry.isWorking).length;
+  if (status) status.textContent = workingCount > 0
+    ? `${snapshot.inShift ? "Đang làm" : "Đã xếp ca"} ${workingCount}/${snapshot.staff.length} nhân viên · lương ca kế tiếp ${formatVndFromThousands(snapshot.staff.filter((entry) => entry.isWorking).reduce((sum, entry) => sum + (getStaffCandidate(entry.id)?.wagePerShift ?? 0) * entry.level, 0))}.`
+    : "Nhân viên nghỉ ca sẽ không nhận lương và không đóng góp hiệu ứng nghề.";
+}
+
+function renderMenuCatalog(snapshot = store.getSnapshot()): void {
   const list = document.querySelector<HTMLElement>("#menu-dish-collection");
   const count = document.querySelector<HTMLElement>("#menu-catalog-count");
   if (!list) return;
 
+  const learnedDishes = MENU_DISHES.filter((dish) => snapshot.learnedRecipes.includes(dish.id as RecipeId));
   const visibleDishes = selectedMenuCategory === "all"
-    ? MENU_DISHES
-    : MENU_DISHES.filter((dish) => dish.category === selectedMenuCategory);
-  const categoryName = selectedMenuCategory === "all"
-    ? "4 danh mục"
-    : MENU_CATEGORIES.find((category) => category.id === selectedMenuCategory)?.name ?? "Món ăn";
+    ? learnedDishes
+    : learnedDishes.filter((dish) => dish.category === selectedMenuCategory);
+  const categoryName = MENU_CATEGORIES.find((category) => category.id === selectedMenuCategory)?.name ?? "Món ăn";
   if (count) count.textContent = selectedMenuCategory === "all"
-    ? `${visibleDishes.length} món · ${categoryName}`
-    : `${categoryName} · ${visibleDishes.length} món`;
+    ? `${learnedDishes.length} món đã học · ${PLAYABLE_RECIPE_IDS.length} công thức`
+    : `${categoryName} · ${visibleDishes.length} món đã học`;
+  const note = document.querySelector<HTMLElement>("#menu-catalog-note");
+  if (note) note.textContent = `Đã học ${snapshot.learnedRecipes.length}/${PLAYABLE_RECIPE_IDS.length} công thức. Học thêm món bằng tiền trong quán.`;
 
   for (const button of document.querySelectorAll<HTMLButtonElement>("[data-menu-filter]")) {
-    const active = button.dataset.menuFilter === selectedMenuCategory;
+    const filter = button.dataset.menuFilter;
+    const categoryCount = filter === "all"
+      ? learnedDishes.length
+      : learnedDishes.filter((dish) => dish.category === filter).length;
+    const active = filter === selectedMenuCategory;
+    const badge = button.querySelector<HTMLElement>("span");
+    if (badge) badge.textContent = String(categoryCount);
+    button.hidden = filter !== "all" && categoryCount === 0;
     button.classList.toggle("is-active", active);
     button.setAttribute("aria-pressed", String(active));
   }
@@ -562,10 +1239,17 @@ function renderMenuCatalog(): void {
     const costLabel = dish.currentRecipe ? "Chi phí" : "Chi phí dự kiến";
     const profitLabel = dish.currentRecipe ? "Lãi gộp" : "Lời dự kiến";
     const categoryLabel = MENU_CATEGORIES.find((category) => category.id === dish.category)?.name ?? "Món ăn";
-    return `<article class="menu-dish-card">
+    const recipeId = PLAYABLE_RECIPE_IDS.find((id) => id === dish.id);
+    const active = recipeId ? snapshot.activeMenu.includes(recipeId) : false;
+    const locked = recipeId ? RECIPES[recipeId].unlockLevel > snapshot.cartLevel : true;
+    const missing = recipeId
+      ? RECIPES[recipeId].ingredients.filter((ingredient) => snapshot.inventory[ingredient.id] < ingredient.quantity)
+        .map((ingredient) => MENU_INGREDIENTS[ingredient.id].name)
+      : [];
+    return `<article class="menu-dish-card ${recipeId ? "is-playable" : ""}">
       <div class="menu-dish-art-frame">${menuDishArtMarkup(dish)}</div>
       <div class="menu-dish-copy">
-        <div class="menu-dish-heading"><div><span class="menu-dish-category">${categoryLabel}</span><h3>${dish.name}</h3></div><span class="menu-dish-status ${dish.currentRecipe ? "is-current" : ""}">${dish.currentRecipe ? "Đang bán" : "Gợi ý"}</span></div>
+        <div class="menu-dish-heading"><div><span class="menu-dish-category">${categoryLabel}</span><h3>${dish.name}</h3></div><span class="menu-dish-status ${active ? "is-current" : ""}">${recipeId ? locked ? `Mở ở cấp ${RECIPES[recipeId].unlockLevel}` : active ? missing.length > 0 ? "Thiếu nguyên liệu" : "Đang bán" : "Tạm ngừng" : "Chưa mở"}</span></div>
         <div class="menu-dish-metrics">
           <span><small>${priceLabel}</small><b>${formatVndFromThousands(dish.suggestedPrice)}</b></span>
           <span><small>${costLabel}</small><b>${formatVndFromThousands(dish.estimatedCost)}</b></span>
@@ -576,32 +1260,181 @@ function renderMenuCatalog(): void {
           <span class="menu-dish-ingredients-heading">Nguyên liệu</span>
           <div class="menu-dish-ingredient-list" role="list" aria-label="Nguyên liệu món ${dish.name}">${menuDishIngredientsMarkup(dish.ingredients)}</div>
         </div>
+        ${recipeId ? `<button class="menu-recipe-toggle ${active ? "is-active" : ""}" data-action="toggle-menu-dish" data-recipe-id="${recipeId}" type="button" ${locked ? "disabled" : ""}>${active ? "Ngừng bán món này" : "Đưa món vào thực đơn"}</button>` : ""}
       </div>
     </article>`;
   }).join("");
+}
+
+function renderShiftMenuSelector(snapshot: GameSnapshot): void {
+  if (!shiftMenuList) return;
+  const learnedDishes = MENU_DISHES.filter((dish) => snapshot.learnedRecipes.includes(dish.id as RecipeId)
+    && RECIPES[dish.id as RecipeId].unlockLevel <= snapshot.cartLevel);
+  updateShiftMenuSelectionSummary(learnedDishes.length, learnedDishes.length);
+
+  shiftMenuList.innerHTML = learnedDishes.map((dish) => {
+    const recipeId = PLAYABLE_RECIPE_IDS.find((id) => id === dish.id);
+    if (!recipeId) return "";
+    const recipe = RECIPES[recipeId];
+    const selected = shiftMenuDraft.has(recipeId);
+    const category = MENU_CATEGORIES.find((entry) => entry.id === dish.category)?.name ?? "Món ăn";
+    const missing = recipe.ingredients.filter((ingredient) => snapshot.inventory[ingredient.id] < ingredient.quantity);
+    const stockStatus = missing.length > 0 ? `Thiếu ${missing.length} loại nguyên liệu` : "Đủ nguyên liệu";
+    return `<label class="shift-menu-item ${selected ? "is-selected" : ""}">
+      <input type="checkbox" data-shift-menu-recipe="${recipeId}" ${selected ? "checked" : ""} aria-label="Bán ${dish.name}">
+      <span class="shift-menu-art">${menuDishArtMarkup(dish)}</span>
+      <span class="shift-menu-copy"><strong>${dish.name}</strong><small>${category} · ${formatVndFromThousands(dish.suggestedPrice)}</small></span>
+      <span class="shift-menu-stock">${stockStatus}</span>
+    </label>`;
+  }).join("");
+}
+
+function renderRecipeLearningDialog(snapshot = store.getSnapshot()): void {
+  const list = document.querySelector<HTMLElement>("#recipe-learning-list");
+  const balance = document.querySelector<HTMLElement>("#recipe-learning-balance");
+  const count = document.querySelector<HTMLElement>("#recipe-learning-count");
+  const feedback = document.querySelector<HTMLElement>("#recipe-learning-feedback");
+  if (!list) return;
+  if (balance) balance.textContent = formatVndFromThousands(snapshot.coins);
+  if (count) count.textContent = `${snapshot.learnedRecipes.length}/${PLAYABLE_RECIPE_IDS.length} công thức đã học`;
+  if (feedback) feedback.textContent = recipeLearningFeedback;
+
+  const unlearnedDishes = MENU_DISHES.filter((dish) => !snapshot.learnedRecipes.includes(dish.id as RecipeId));
+  list.innerHTML = unlearnedDishes.length === 0
+    ? `<p class="recipe-learning-empty">Bạn đã học hết công thức trong sổ.</p>`
+    : unlearnedDishes.map((dish) => {
+      const recipeId = dish.id as RecipeId;
+      const recipe = RECIPES[recipeId];
+      const cost = getRecipeLearningCost(recipeId);
+      const levelLocked = recipe.unlockLevel > snapshot.cartLevel;
+      const cannotAfford = snapshot.coins < cost;
+      const category = MENU_CATEGORIES.find((entry) => entry.id === dish.category)?.name ?? "Món ăn";
+      const status = levelLocked ? `Mở ở cấp ${recipe.unlockLevel}` : cannotAfford ? "Chưa đủ tiền" : "Có thể học";
+      const buttonLabel = levelLocked ? `Cấp ${recipe.unlockLevel}` : `Học · ${formatVndFromThousands(cost)}`;
+      return `<article class="recipe-learning-item ${levelLocked ? "is-locked" : ""}">
+        <span class="recipe-learning-art">${menuDishArtMarkup(dish)}</span>
+        <span class="recipe-learning-copy"><strong>${dish.name}</strong><small>${category} · ${status}</small><small>Học phí ${formatVndFromThousands(cost)} · bán gợi ý ${formatVndFromThousands(dish.suggestedPrice)}</small></span>
+        <button class="recipe-learn-action" type="button" data-action="learn-recipe" data-recipe-id="${recipeId}" ${levelLocked || cannotAfford ? "disabled" : ""}>${buttonLabel}</button>
+      </article>`;
+    }).join("");
+}
+
+function updateShiftMenuSelectionSummary(availableCount: number, allCount: number): void {
+  if (shiftMenuSelectionCount) shiftMenuSelectionCount.textContent = `${shiftMenuDraft.size} món đã chọn`;
+  if (shiftMenuAvailability) shiftMenuAvailability.textContent = `${availableCount}/${allCount} món đã học`;
+  if (confirmShiftMenuButton) confirmShiftMenuButton.disabled = shiftMenuDraft.size === 0;
+  if (shiftMenuFeedback) shiftMenuFeedback.textContent = shiftMenuDraft.size > 0
+    ? "Có thể chọn nhiều món. Món thiếu nguyên liệu vẫn bán được sau khi bạn nhập kho."
+    : "Chọn ít nhất một món để bắt đầu bán.";
+}
+
+function openShiftMenuSelector(): void {
+  if (!shiftMenuDialog) return;
+  const snapshot = store.getSnapshot();
+  const resumingShift = snapshot.elapsedSeconds > 0 || snapshot.customers.length > 0 || snapshot.dining.guests.length > 0;
+  if (shiftMenuTitle) shiftMenuTitle.textContent = resumingShift ? "Chọn món để mở bán lại" : "Chọn món cho ca bán";
+  if (shiftMenuDescription) shiftMenuDescription.textContent = resumingShift
+    ? "Ca hiện tại sẽ tiếp tục; thực đơn mới áp dụng cho khách sắp tới."
+    : "Khách chỉ gọi những món bạn chọn ở đây.";
+  shiftMenuDraft = new Set(snapshot.activeMenu.filter((id) => snapshot.learnedRecipes.includes(id)
+    && RECIPES[id]?.unlockLevel <= snapshot.cartLevel));
+  renderShiftMenuSelector(snapshot);
+  shiftMenuDialog.showModal();
+}
+
+function openRecipeLearningDialog(): void {
+  if (!recipeLearningDialog) return;
+  recipeLearningFeedback = "";
+  renderRecipeLearningDialog(store.getSnapshot());
+  recipeLearningDialog.showModal();
+}
+
+function getStockCategory(ingredientId: MenuIngredientId): Exclude<StockCategoryId, "all"> {
+  const priority: Exclude<StockCategoryId, "all">[] = ["seasoning", "dry", "fresh", "produce"];
+  return priority.find((category) => STOCK_CATEGORY_STALLS[category].some((stallId) => getMarketStall(stallId)?.products.includes(ingredientId))) ?? "produce";
+}
+
+function renderStockInventory(snapshot: GameSnapshot): void {
+  const categoryTabs = document.querySelector<HTMLElement>("#stock-category-tabs");
+  const inventoryGrid = document.querySelector<HTMLElement>("#stock-inventory-grid");
+  const itemDetail = document.querySelector<HTMLElement>("#stock-item-detail");
+  const stockStatus = document.querySelector<HTMLElement>("#stock-status");
+  if (!inventoryGrid) return;
+
+  const ingredientIds = Object.keys(MENU_INGREDIENTS) as MenuIngredientId[];
+  const stockedIngredientIds = ingredientIds.filter((id) => (snapshot.marketInventory[id] ?? 0) > 0);
+  if (selectedStockCategory !== "all" && !stockedIngredientIds.some((id) => getStockCategory(id) === selectedStockCategory)) {
+    selectedStockCategory = "all";
+  }
+  if (stockStatus) stockStatus.textContent = `Kho đang có ${stockedIngredientIds.length} loại nguyên liệu`;
+
+  if (categoryTabs) {
+    const stockedCategories = STOCK_CATEGORY_FILTERS.filter((category) => category.id === "all"
+      || stockedIngredientIds.some((id) => getStockCategory(id) === category.id));
+    categoryTabs.innerHTML = stockedCategories.map((category) => {
+      const count = category.id === "all"
+        ? stockedIngredientIds.length
+        : stockedIngredientIds.filter((id) => getStockCategory(id) === category.id).length;
+      const active = selectedStockCategory === category.id;
+      return `<button type="button" class="inventory-category-tab ${active ? "is-active" : ""}" data-stock-filter="${category.id}" aria-pressed="${active}">${category.label}<span>${count}</span></button>`;
+    }).join("");
+  }
+
+  const visibleIds = selectedStockCategory === "all"
+    ? stockedIngredientIds
+    : stockedIngredientIds.filter((id) => getStockCategory(id) === selectedStockCategory);
+  if (selectedStockIngredient && !visibleIds.includes(selectedStockIngredient)) selectedStockIngredient = null;
+  inventoryGrid.innerHTML = visibleIds.length > 0 ? visibleIds.map((id) => {
+    const ingredient = MENU_INGREDIENTS[id];
+    const count = Math.max(0, Math.trunc(snapshot.marketInventory[id] ?? 0));
+    const selected = selectedStockIngredient === id;
+    return `<button type="button" class="inventory-slot ${count === 0 ? "is-empty" : ""} ${selected ? "is-selected" : ""}" role="listitem" data-stock-ingredient="${id}" aria-pressed="${selected}" aria-label="${ingredient.name}, ${count} ${MARKET_PRODUCT_DETAILS[id].unit}" title="${ingredient.name}">
+      <span class="inventory-slot-art"><img src="/assets/ingredients/individual/${ingredient.assetFile}" alt="" loading="lazy"><b>${count}</b></span>
+      <span class="inventory-slot-name">${ingredient.name}</span>
+    </button>`;
+  }).join("") : `<div class="inventory-empty-state">${stockedIngredientIds.length === 0 ? "Kho đang trống. Ghé chợ để mua nguyên liệu." : "Danh mục này hiện chưa có nguyên liệu."}</div>`;
+
+  if (!itemDetail) return;
+  const selectedId = selectedStockIngredient;
+  const selectedIngredient = selectedId ? MENU_INGREDIENTS[selectedId] : null;
+  const selectedProduct = selectedId ? MARKET_PRODUCT_DETAILS[selectedId] : null;
+  if (!selectedId || !selectedIngredient || !selectedProduct) {
+    itemDetail.innerHTML = `<span class="inventory-detail-empty">${stockedIngredientIds.length === 0 ? "Kho đang trống · vào Cửa tiệm để nhập nguyên liệu." : "Chạm vào một ô để xem thông tin nguyên liệu."}</span>`;
+    return;
+  }
+
+  const categoryLabel = STOCK_CATEGORY_FILTERS.find((category) => category.id === getStockCategory(selectedId))?.label ?? "Nguyên liệu";
+  const count = Math.max(0, Math.trunc(snapshot.marketInventory[selectedId] ?? 0));
+  itemDetail.innerHTML = `<img class="inventory-detail-art" src="/assets/ingredients/individual/${selectedIngredient.assetFile}" alt="">
+    <div class="inventory-detail-copy"><span>${categoryLabel} · ${selectedProduct.unit}</span><strong>${selectedIngredient.name}</strong><small>${selectedProduct.description}</small></div>
+    <div class="inventory-detail-stock"><b>${count}</b><span>${selectedProduct.unit}</span></div>`;
 }
 
 function renderDining(snapshot: GameSnapshot): void {
   const root = document.querySelector<HTMLElement>("#dining-interface");
   const shiftStatus = document.querySelector<HTMLElement>("#dining-shift-status");
   const guestName = document.querySelector<HTMLElement>("#dining-guest-name");
-  const dialogue = document.querySelector<HTMLElement>("#dining-dialogue");
   const recipeLine = document.querySelector<HTMLElement>("#dining-recipe-line");
   const contextActions = document.querySelector<HTMLElement>("#dining-context-actions");
   const ticketList = document.querySelector<HTMLElement>("#dining-ticket-list");
+  const ticketCount = document.querySelector<HTMLElement>("#dining-ticket-count");
   const kitchenStatus = document.querySelector<HTMLElement>("#dining-kitchen-status");
-  const ingredientGrid = document.querySelector<HTMLElement>("#dining-ingredient-grid");
-  const feedback = document.querySelector<HTMLElement>("#dining-feedback");
+  const orderActions = document.querySelector<HTMLElement>("#dining-order-actions");
   const inside = snapshot.serviceMode === "dining";
   if (root) root.hidden = !inside;
   if (app) app.dataset.location = homeOpen ? "home" : wholesaleMarketOpen ? "market" : inside ? "dining" : "street";
   updateOutsideNavLabel();
+  renderKitchenStaff(snapshot);
+  renderKitchenStove(snapshot);
+  renderKitchenPass(snapshot);
+  renderDiningDelivery(snapshot);
+  renderRestaurantStaffActors(snapshot);
   if (!inside) return;
 
   const guestStatusNames: Record<string, string> = {
     approaching: "đang đi bộ tới quán",
     entering: "đang vào bàn",
-    "waiting-order": "đã ngồi · chờ gọi món",
+    "waiting-order": "đã ngồi · chờ Mai Linh",
     "waiting-food": "đang chờ món",
     eating: "đang ăn",
     "awaiting-payment": "chờ thanh toán",
@@ -610,28 +1443,38 @@ function renderDining(snapshot: GameSnapshot): void {
   };
   const orderStatusNames: Record<string, string> = {
     called: "Khách vừa gọi",
+    taking: "Mai Linh đang hỏi và ghi món",
     queued: "Chờ bếp",
     cooking: "Đang nấu",
     ready: "Đã sẵn sàng",
+    carrying: "Đang bưng tới bàn",
     delivered: "Đã giao",
     paid: "Đã thanh toán",
   };
   const selectedGuest = snapshot.dining.guests.find((guest) => guest.id === snapshot.dining.selectedGuestId);
   const selectedOrder = snapshot.dining.orders.find((order) => order.id === snapshot.dining.selectedOrderId);
-  const selectedTable = snapshot.dining.tables.find((table) => table.id === snapshot.dining.selectedTableId);
-  const selectedSeat = selectedTable?.seats.find((seat) => seat.index === snapshot.dining.selectedSeatIndex);
   const guestOrder = selectedGuest && snapshot.dining.orders.find((order) => order.guestId === selectedGuest.id);
   const selectedPartyGuests = selectedGuest ? snapshot.dining.guests.filter((guest) => guest.partyId === selectedGuest.partyId) : [];
   const selectedPartyOrders = selectedGuest ? snapshot.dining.orders.filter((order) => order.partyId === selectedGuest.partyId) : [];
-
   if (shiftStatus) {
     const capacity = getDiningTableCapacity();
-    const partyCount = new Set(snapshot.dining.guests.map((guest) => guest.partyId)).size;
+    const activeGuests = snapshot.dining.guests.filter((guest) => !["leaving", "departing"].includes(guest.status));
+    const partyCount = new Set(activeGuests.map((guest) => guest.partyId)).size;
+    const arrivingPartyCount = new Set(activeGuests.filter((guest) => guest.status === "approaching").map((guest) => guest.partyId)).size;
+    const enteringGuestCount = activeGuests.filter((guest) => guest.status === "entering").length;
+    const emptySeatCount = snapshot.dining.tables.filter((table) => table.id <= capacity && table.cleanliness !== "dirty")
+      .flatMap((table) => table.seats).filter((seat) => seat.status === "empty").length;
     shiftStatus.textContent = diningView === "kitchen"
-      ? (snapshot.inShift ? "Ca đang chạy · vuốt trái về phòng ăn" : "Ca đã nghỉ · vuốt trái về phòng ăn")
+      ? (snapshot.inShift ? "Đang ở gian bếp · chạm Phòng ăn để quay lại" : "Quán đang nghỉ · chạm Phòng ăn để quay lại")
       : snapshot.inShift
-        ? `${snapshot.dining.guests.length} khách · ${partyCount} nhóm · ${snapshot.dining.tables.filter((table) => table.id <= capacity).flatMap((table) => table.seats).filter((seat) => seat.status === "empty").length} chỗ trống`
-        : "Vuốt phải để vào bếp";
+        ? arrivingPartyCount > 0
+          ? `${arrivingPartyCount} nhóm đang tới từ phố · ${emptySeatCount} chỗ trống`
+          : enteringGuestCount > 0
+            ? `${enteringGuestCount} khách đang vào bàn · ${emptySeatCount} chỗ trống`
+            : activeGuests.length > 0
+              ? `${activeGuests.length} khách · ${partyCount} nhóm · ${emptySeatCount} chỗ trống`
+              : `Đang chờ nhóm khách đầu tiên · ${emptySeatCount} chỗ trống`
+        : "Quán đang nghỉ · chạm Mở bán để tiếp tục";
   }
   if (guestName) {
     const partyLabel = selectedGuest
@@ -641,81 +1484,134 @@ function renderDining(snapshot: GameSnapshot): void {
       ? `${partyLabel} · ${CUSTOMER_TYPES[selectedGuest.type].name} · bàn ${selectedGuest.tableId}, chỗ ${selectedGuest.seatIndex + 1}`
       : "Chưa chọn khách";
   }
-  if (dialogue) {
-    dialogue.textContent = selectedGuest
-      ? selectedGuest.status === "waiting-order"
-        ? `“${selectedGuest.orderDialogue}” · cả nhóm gọi ${selectedPartyOrders.length} món`
-        : `“${selectedGuest.orderDialogue}”`
-      : selectedSeat?.status === "dirty"
-        ? `Chỗ ${selectedSeat.index + 1} tại bàn ${selectedTable?.id} đang cần dọn.`
-        : "Chạm khách đang ngồi để nghe lời gọi món.";
-  }
   if (recipeLine) {
-    recipeLine.textContent = selectedGuest
-      ? `${selectedPartyOrders.length} món: ${selectedPartyOrders.map((order) => RECIPES[order.recipe].name).join(" · ")} · ${guestStatusNames[selectedGuest.status]}`
-      : "Chưa có món được gọi.";
+    if (!selectedGuest || selectedPartyOrders.length === 0) {
+      recipeLine.textContent = "Chưa có món được gọi.";
+    } else {
+      const orderCounts = new Map<RecipeId, number>();
+      for (const order of selectedPartyOrders) orderCounts.set(order.recipe, (orderCounts.get(order.recipe) ?? 0) + 1);
+      recipeLine.innerHTML = `<span class="dining-order-list-label">MÓN ĐÃ GỌI</span><ul class="dining-order-list" role="list">${[...orderCounts].map(([recipeId, count]) => `<li class="dining-order-item" role="listitem"><strong>${RECIPES[recipeId].name}</strong><span>${count} phần</span></li>`).join("")}</ul><span class="dining-order-progress">${guestStatusNames[selectedGuest.status]}</span>`;
+    }
   }
   if (contextActions) {
     const actions: string[] = [];
-    if (selectedSeat?.status === "dirty") {
-      actions.push(`<button class="dining-action-button" data-action="dining-clean" data-table-id="${selectedTable!.id}" data-seat-index="${selectedSeat.index}" type="button">Dọn chỗ ${selectedSeat.index + 1}</button>`);
-    }
-    const canAcceptParty = selectedGuest
-      && selectedPartyGuests.length === selectedGuest.partySize
-      && selectedPartyGuests.every((guest) => guest.status === "waiting-order")
-      && selectedPartyOrders.length === selectedPartyGuests.length
-      && selectedPartyOrders.every((order) => order.status === "called");
-    if (canAcceptParty) {
-      actions.push(`<button class="dining-action-button" data-action="dining-accept" type="button">Nhận order nhóm · ${selectedPartyOrders.length} món</button>`);
-    } else if (selectedGuest && selectedPartyGuests.some((guest) => guest.status === "approaching" || guest.status === "entering")) {
-      const arrivedMembers = selectedPartyGuests.filter((guest) => guest.status !== "approaching" && guest.status !== "entering").length;
-      actions.push(`<span class="dining-empty-action">Đang chờ cả nhóm tới và ngồi đủ chỗ (${arrivedMembers}/${selectedPartyGuests.length}).</span>`);
-    }
     if (selectedOrder?.status === "ready") {
-      actions.push(`<button class="dining-action-button" data-action="dining-serve" type="button">Bưng món</button>`);
+      const serverAvailable = snapshot.inShift && snapshot.staff.some((member) => member.role === "server"
+        && member.isWorking && member.restSeconds <= 0 && member.energy > 18);
+      actions.push(`<span class="dining-empty-action">${serverAvailable ? "Phục vụ đang mang món tới bàn." : "Đầu bếp đã đặt món ở quầy. Vào bếp rồi chạm chiếc dĩa để tự mang ra."}</span>`);
+    }
+    if (selectedOrder?.status === "queued") {
+      const firstQueuedOrder = snapshot.dining.orders.find((order) => order.status === "queued");
+      if (firstQueuedOrder && firstQueuedOrder.id !== selectedOrder.id) {
+        actions.push(`<button class="dining-action-button secondary" data-action="dining-prioritize" data-order-id="${selectedOrder.id}" type="button">Ưu tiên phiếu này</button>`);
+      }
+    }
+    if (selectedOrder?.status === "cooking") {
+      actions.push(`<button class="dining-action-button secondary" data-action="dining-boost" type="button">Hỗ trợ bếp · 5.000đ</button>`);
     }
     if (selectedGuest && guestOrder?.status === "delivered"
       && selectedPartyGuests.length > 0 && selectedPartyGuests.every((guest) => guest.status === "awaiting-payment")) {
       actions.push(`<button class="dining-action-button" data-action="dining-pay" type="button">Thu hóa đơn · ${selectedPartyOrders.length} món</button>`);
     }
-    if (actions.length === 0 && !snapshot.inShift && selectedSeat?.status !== "dirty") {
+    if (actions.length === 0 && !snapshot.inShift) {
       actions.push("<span class=\"dining-empty-action\">Khách sẽ tự chọn bàn khi quán tiếp tục bán.</span>");
     }
     contextActions.innerHTML = actions.join("");
   }
 
   const visibleOrders = snapshot.dining.orders.filter((order) => order.status !== "paid" && order.status !== "called");
+  const groupedOrders = new Map<string, typeof visibleOrders>();
+  for (const order of visibleOrders) {
+    const key = `${order.partyId}:${order.recipe}`;
+    const group = groupedOrders.get(key) ?? [];
+    group.push(order);
+    groupedOrders.set(key, group);
+  }
+  if (ticketCount) ticketCount.textContent = visibleOrders.length > 0 ? `${groupedOrders.size} phiếu · ${visibleOrders.length} phần` : "";
   if (ticketList) {
     ticketList.innerHTML = visibleOrders.length > 0
-      ? visibleOrders.map((order) => { const guest = snapshot.dining.guests.find((entry) => entry.id === order.guestId); return `<button type="button" class="dining-ticket-button ${selectedOrder?.id === order.id ? "is-selected" : ""}" data-dining-order="${order.id}" data-status="${order.status}">Bàn ${order.tableId} · ${guest?.partyType === "family" ? "Gia đình" : "Nhóm bạn"} ${guest?.partySize ?? ""} người · ${RECIPES[order.recipe].name} · ${orderStatusNames[order.status]}</button>`; }).join("")
-      : "<span class=\"dining-empty-action\">Chưa có phiếu bếp.</span>";
-  }
-  if (kitchenStatus) {
-    if (selectedOrder?.status === "cooking") kitchenStatus.textContent = `Đang nấu · còn khoảng ${selectedOrder.cookSeconds}s.`;
-    else if (selectedOrder?.status === "queued") {
-      const next = RECIPES[selectedOrder.recipe].ingredients[selectedOrder.assembly.length];
-      const nextName = INGREDIENTS.find((item) => item.id === next)?.name ?? "hoàn tất món";
-      kitchenStatus.textContent = `Phiếu bàn ${selectedOrder.tableId} · tiếp theo: ${nextName}.`;
-    } else if (selectedOrder) kitchenStatus.textContent = `${RECIPES[selectedOrder.recipe].name} · ${orderStatusNames[selectedOrder.status]}.`;
-    else kitchenStatus.textContent = "Chọn phiếu ở bếp; chỉ nấu một order mỗi lần.";
-  }
-  if (kitchenStatus && selectedOrder?.status === "ready") {
-    kitchenStatus.innerHTML = `Món đã sẵn sàng cho bàn ${selectedOrder.tableId}. <button class="dining-action-button" data-action="dining-serve" type="button">Bưng món tới bàn ${selectedOrder.tableId}</button>`;
+      ? [...groupedOrders.values()].map((orders) => {
+        const order = orders.find((entry) => entry.status === "ready")
+          ?? orders.find((entry) => entry.status === "carrying")
+          ?? orders.find((entry) => entry.status === "cooking")
+          ?? orders.find((entry) => entry.status === "queued")
+          ?? orders.find((entry) => entry.status === "taking")
+          ?? orders[0];
+        if (!order) return "";
+        const guest = snapshot.dining.guests.find((entry) => entry.id === order.guestId);
+        const partyLabel = `${guest?.partyType === "family" ? "Gia đình" : "Nhóm bạn"} · ${guest?.partySize ?? 1} người`;
+        const selectedGroup = orders.some((entry) => entry.id === selectedOrder?.id);
+        const statusCounts = new Map<DiningOrder["status"], number>();
+        for (const entry of orders) statusCounts.set(entry.status, (statusCounts.get(entry.status) ?? 0) + 1);
+        const orderedStatuses: DiningOrder["status"][] = ["ready", "carrying", "cooking", "taking", "queued", "delivered"];
+        const statusSummary = orderedStatuses
+          .filter((status) => statusCounts.has(status))
+          .map((status) => {
+            const count = statusCounts.get(status) ?? 0;
+            const label = orderStatusNames[status];
+            return statusCounts.size > 1 ? `${count} ${label.toLowerCase()}` : count > 1 ? `${label} × ${count}` : label;
+          })
+          .join(" · ");
+        return `<div role="listitem"><button type="button" class="dining-ticket-button ${selectedGroup ? "is-selected" : ""}" data-dining-order="${order.id}" data-status="${order.status}" aria-label="Bàn ${order.tableId}, ${RECIPES[order.recipe].name}, ${orders.length} phần, ${partyLabel}, ${statusSummary}">
+          <span class="dining-ticket-table">${order.tableId}</span>
+          <span class="dining-ticket-main"><strong>${RECIPES[order.recipe].name}${orders.length > 1 ? ` × ${orders.length}` : ""}</strong><small>${partyLabel}</small></span>
+          <span class="dining-ticket-status">${statusSummary}</span>
+        </button></div>`;
+      }).join("")
+      : `<div class="dining-ticket-empty"><strong>Chưa có phiếu chờ</strong><span>${snapshot.inShift ? "Mai Linh sẽ tự nhận món khách gọi rồi chuyển phiếu sang bếp." : "Vào phòng ăn và chạm Mở bán để đón khách."}</span></div>`;
   }
   const activeKitchenOrder = snapshot.dining.orders.find((order) => order.id === snapshot.dining.activeOrderId);
-  if (kitchenStatus && selectedOrder?.status === "queued"
-    && snapshot.dining.activeOrderId && snapshot.dining.activeOrderId !== selectedOrder.id) {
-    kitchenStatus.textContent = activeKitchenOrder
-      ? "Bếp đang xử lý " + RECIPES[activeKitchenOrder.recipe].name + " · bàn " + activeKitchenOrder.tableId + ". Hoàn tất phiếu đó trước."
-      : "Bếp đang khôi phục phiếu còn dang dở; hãy chờ nhịp cập nhật tiếp theo.";
+  const recipeIngredients = selectedOrder ? RECIPES[selectedOrder.recipe].ingredients : [];
+  const missingIngredient = selectedOrder?.status === "queued"
+    ? recipeIngredients.find((ingredient) => (snapshot.inventory[ingredient.id] ?? 0) < ingredient.quantity)
+    : undefined;
+  const missingIngredientName = missingIngredient
+    ? INGREDIENTS.find((ingredient) => ingredient.id === missingIngredient.id)?.name
+    : null;
+  if (kitchenStatus) {
+    if (!snapshot.inShift && selectedOrder && ["queued", "cooking"].includes(selectedOrder.status)) {
+      kitchenStatus.textContent = "Ca đã nghỉ. Bật ca để tiếp tục xử lý phiếu này.";
+    } else if (selectedOrder?.status === "cooking") kitchenStatus.textContent = `Bàn ${selectedOrder.tableId} · ${RECIPES[selectedOrder.recipe].name} · đang nấu, còn khoảng ${selectedOrder.cookSeconds}s.`;
+    else if (selectedOrder?.status === "queued") {
+      if (activeKitchenOrder && activeKitchenOrder.id !== selectedOrder.id) {
+        kitchenStatus.textContent = `Bếp đang nấu món cho bàn ${activeKitchenOrder.tableId}. Xong phiếu đó sẽ đến lượt bàn ${selectedOrder.tableId}.`;
+      } else if (missingIngredientName) {
+        kitchenStatus.textContent = `Thiếu ${missingIngredientName} trong kho. Nhập thêm hàng; phiếu bàn ${selectedOrder.tableId} vẫn được giữ.`;
+      } else {
+        const cookAvailable = snapshot.staff.some((member) => (member.role === "chef" || member.role === "prep")
+          && member.isWorking && member.restSeconds <= 0 && member.energy > 18);
+        kitchenStatus.textContent = cookAvailable
+          ? `Bàn ${selectedOrder.tableId} · ${RECIPES[selectedOrder.recipe].name}. Đầu bếp sẽ tự nhận phiếu.`
+          : `Đầu bếp đang nghỉ; phiếu bàn ${selectedOrder.tableId} sẽ được nấu khi nhân viên hồi sức.`;
+      }
+    } else if (selectedOrder) kitchenStatus.textContent = `${RECIPES[selectedOrder.recipe].name} · ${orderStatusNames[selectedOrder.status]}.`;
+    else if (visibleOrders.length > 0) kitchenStatus.textContent = "Chạm một phiếu để xem món và tiếp tục xử lý.";
+    else kitchenStatus.textContent = snapshot.inShift
+      ? "Mai Linh tự hỏi món ở phòng ăn rồi chuyển phiếu vào bếp."
+      : "Ca đã nghỉ. Bật ca để khách tiếp tục gọi món.";
   }
-  const canChooseIngredient = snapshot.inShift
-    && selectedOrder?.status === "queued"
-    && (!snapshot.dining.activeOrderId || snapshot.dining.activeOrderId === selectedOrder.id);
-  if (ingredientGrid) {
-    ingredientGrid.innerHTML = INGREDIENTS.map((ingredient) => `<button type="button" class="dining-ingredient-button" data-action="dining-ingredient" data-ingredient="${ingredient.id}" ${canChooseIngredient ? "" : "disabled"}>${iconMarkup(ingredient.icon as UiIconName, "ui-icon")}<b>${ingredient.name}</b><small>${snapshot.inventory[ingredient.id]}</small></button>`).join("");
+  if (kitchenStatus && selectedOrder?.status === "ready") {
+    const serverAvailable = snapshot.inShift && snapshot.staff.some((member) => member.role === "server"
+      && member.isWorking && member.restSeconds <= 0 && member.energy > 18);
+    kitchenStatus.textContent = serverAvailable
+      ? `Món bàn ${selectedOrder.tableId} đã xong; phục vụ đang mang ra.`
+      : `Món bàn ${selectedOrder.tableId} đã xong; chạm chiếc dĩa ở quầy để mang ra.`;
   }
-  if (feedback) feedback.textContent = snapshot.dining.feedback;
+  if (orderActions) {
+    const actions: string[] = [];
+    if (snapshot.inShift && selectedOrder?.status === "queued" && !missingIngredient && (!activeKitchenOrder || activeKitchenOrder.id === selectedOrder.id)) {
+      const firstQueuedOrder = snapshot.dining.orders.find((order) => order.status === "queued");
+      if (firstQueuedOrder && firstQueuedOrder.id !== selectedOrder.id) {
+        actions.push(`<button class="dining-action-button secondary" data-action="dining-prioritize" data-order-id="${selectedOrder.id}" type="button">Ưu tiên phiếu này</button>`);
+      } else {
+        actions.push(`<p class="dining-stove-hint">Đầu bếp tự nhận phiếu. Nếu đang nghỉ, bếp sẽ tiếp tục khi nhân viên hồi sức.</p>`);
+      }
+    }
+    if (snapshot.inShift && selectedOrder?.status === "cooking") {
+      actions.push(`<button class="dining-action-button secondary" data-action="dining-boost" type="button">Hỗ trợ bếp · 5.000đ</button>`);
+    }
+    orderActions.innerHTML = actions.join("");
+  }
 }
 
 function framePointForCashCollection(event: CashCollectionEvent, frame: HTMLElement): { x: number; y: number } {
@@ -740,7 +1636,7 @@ function animateCoinCounter(from: number, to: number, coins: HTMLElement): Promi
     const step = (now: number): void => {
       const progress = Math.min(1, (now - startedAt) / duration);
       const eased = 1 - (1 - progress) ** 3;
-      coins.textContent = Math.round(from + (to - from) * eased).toLocaleString("vi-VN");
+      coins.textContent = formatVndFromThousands(Math.round(from + (to - from) * eased));
       if (progress < 1) window.requestAnimationFrame(step);
       else resolve();
     };
@@ -762,7 +1658,7 @@ async function playNextCashCollection(): Promise<void> {
     displayedCoinBalance = latestCoinBalance;
     const coins = document.querySelector<HTMLElement>("#coins");
     const walletPill = coins?.closest<HTMLElement>(".wallet-pill");
-    if (coins) coins.textContent = displayedCoinBalance.toLocaleString("vi-VN");
+    if (coins) coins.textContent = formatVndFromThousands(displayedCoinBalance);
     if (walletPill) walletPill.setAttribute("aria-label", `Số dư ${formatVndFromThousands(displayedCoinBalance)}`);
     return;
   }
@@ -786,7 +1682,7 @@ async function playNextCashCollection(): Promise<void> {
   const targetWallet = walletVisible ? walletPill : fallbackWallet;
   if (!walletVisible && fallbackWallet) {
     fallbackWallet.hidden = false;
-    if (fallbackBalance) fallbackBalance.textContent = displayedCoinBalance.toLocaleString("vi-VN");
+    if (fallbackBalance) fallbackBalance.textContent = formatVndFromThousands(displayedCoinBalance);
   }
   const targetBounds = targetWallet?.getBoundingClientRect();
   if (!targetBounds || targetBounds.width <= 0) {
@@ -801,27 +1697,38 @@ async function playNextCashCollection(): Promise<void> {
     y: targetBounds.top - frameBounds.top + targetBounds.height * 0.5,
   };
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const flights = Array.from({ length: 3 }, (_, index) => {
+  const flights = Array.from({ length: 6 }, (_, index) => {
     const bill = document.createElement("img");
     bill.className = "money-cash-flight";
     bill.src = "/assets/money-stack.png";
     bill.alt = "";
     bill.draggable = false;
-    const startX = origin.x + (index - 1) * 12;
-    const startY = origin.y + (index % 2 ? -8 : 6);
+    const startX = origin.x + (index - 2.5) * 9;
+    const startY = origin.y + (index % 3 - 1) * 8;
     const deltaX = target.x - startX;
     const deltaY = target.y - startY;
     bill.style.left = `${startX}px`;
     bill.style.top = `${startY}px`;
     layer.append(bill);
-    const animation = bill.animate([
-      { opacity: 0, transform: "translate(-50%, -50%) scale(.62) rotate(-16deg)" },
-      { opacity: 1, offset: 0.18, transform: `translate(calc(-50% + ${deltaX * 0.15}px), calc(-50% + ${deltaY * 0.15 - 28}px)) scale(.95) rotate(9deg)` },
-      { opacity: 0.18, transform: `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px)) scale(.28) rotate(24deg)` },
-    ], {
-      duration: prefersReducedMotion ? 1 : 760,
-      delay: prefersReducedMotion ? 0 : index * 95,
-      easing: "cubic-bezier(.2,.72,.21,1)",
+    const arc = 38 + (index % 3) * 9;
+    const sway = (index - 2.5) * 11;
+    const frames = Array.from({ length: 13 }, (_, step) => {
+      const t = step / 12;
+      const eased = 1 - (1 - t) ** 2.1;
+      const x = deltaX * eased + Math.sin(Math.PI * t) * sway;
+      const y = deltaY * eased - Math.sin(Math.PI * t) * arc;
+      const scale = 0.7 + Math.sin(Math.PI * t) * 0.23 - t * 0.36;
+      const rotation = -18 + index * 7 + Math.sin(t * Math.PI * 2) * 11;
+      return {
+        offset: t,
+        opacity: t < 0.08 ? t / 0.08 : t > 0.82 ? (1 - t) / 0.18 : 1,
+        transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(${scale}) rotate(${rotation}deg)`,
+      };
+    });
+    const animation = bill.animate(frames, {
+      duration: prefersReducedMotion ? 1 : 620,
+      delay: prefersReducedMotion ? 0 : index * 42,
+      easing: "linear",
       fill: "forwards",
     });
     return animation.finished.catch(() => undefined).finally(() => bill.remove());
@@ -847,7 +1754,7 @@ async function playNextCashCollection(): Promise<void> {
   await animateCoinCounter(displayedCoinBalance, balanceAfterPayment, coins);
   displayedCoinBalance = balanceAfterPayment;
   if (fallbackBalance && fallbackWallet && !fallbackWallet.hidden) {
-    fallbackBalance.textContent = displayedCoinBalance.toLocaleString("vi-VN");
+    fallbackBalance.textContent = formatVndFromThousands(displayedCoinBalance);
   }
   if (walletPill) walletPill.setAttribute("aria-label", `Số dư ${formatVndFromThousands(displayedCoinBalance)}`);
 
@@ -857,7 +1764,7 @@ async function playNextCashCollection(): Promise<void> {
   }
   if (fallbackWallet) window.setTimeout(() => { fallbackWallet.hidden = true; }, 700);
   displayedCoinBalance = latestCoinBalance;
-  coins.textContent = displayedCoinBalance.toLocaleString("vi-VN");
+  coins.textContent = formatVndFromThousands(displayedCoinBalance);
   if (walletPill) walletPill.setAttribute("aria-label", `Số dư ${formatVndFromThousands(displayedCoinBalance)}`);
   cashFlightPlaying = false;
 }
@@ -875,48 +1782,104 @@ function render(snapshot: GameSnapshot): void {
   const level = $("#cart-level");
   const businessStage = $("#business-stage");
   const upgradeButton = $("[data-action='upgrade']") as HTMLButtonElement | null;
-  const hireButton = $("#hire-button") as HTMLButtonElement | null;
+  const shiftButton = $("#shift-button") as HTMLButtonElement | null;
+  const diningOpenButton = $("#dining-open-button") as HTMLButtonElement | null;
   const storeNameShort = $("#store-name-short");
+  const walletRow = document.querySelector<HTMLElement>(".wallet-row");
+  const walletTarget = snapshot.serviceMode === "dining" ? $("#dining-wallet-slot") : $(".topbar");
+  if (walletRow && walletTarget && walletRow.parentElement !== walletTarget) {
+    const hudActions = walletTarget.matches(".topbar") ? walletTarget.querySelector<HTMLElement>(".hud-actions") : null;
+    if (hudActions) walletTarget.insertBefore(walletRow, hudActions);
+    else walletTarget.append(walletRow);
+  }
 
+  if (wholesaleMarketHeldBasket) {
+    wholesaleMarketHeldBasket.src = snapshot.marketBasketHasItems ? heldBasketFullUrl : heldBasketUrl;
+  }
+  if (homeStageCopy) homeStageCopy.textContent = `CẤP NHÀ ${String(snapshot.cartLevel).padStart(2, "0")} / 12`;
+  homeInteriorScene.setHomeStage(snapshot.cartLevel);
   if (storeNameShort) storeNameShort.textContent = formatStoreNameForDisplay(snapshot.storeName) || "Chưa đặt tên";
   latestCoinBalance = snapshot.coins;
   if (snapshot.cashCollection) queueCashCollection(snapshot.cashCollection);
-  if (coins && !cashFlightPlaying) coins.textContent = snapshot.coins.toLocaleString("vi-VN");
+  if (coins && !cashFlightPlaying) coins.textContent = formatVndFromThousands(snapshot.coins);
   if (walletPill && !cashFlightPlaying) walletPill.setAttribute("aria-label", `Số dư ${formatVndFromThousands(snapshot.coins)}`);
+  renderLedger(snapshot);
   if (reputation) reputation.textContent = snapshot.reputation.toLocaleString("vi-VN");
   if (feedback) feedback.textContent = snapshot.offlineNotice || snapshot.feedback;
   if (status) updateStreetStatus();
   if (level) level.textContent = `CẤP ${snapshot.cartLevel} / ${MAX_CART_LEVEL}`;
   if (level) level.title = BUSINESS_STAGE_NAMES[snapshot.cartLevel - 1];
   if (businessStage) businessStage.textContent = BUSINESS_STAGE_NAMES[snapshot.cartLevel - 1];
+  const shiftActionLabel = snapshot.closingShift ? "Đang tiễn khách" : snapshot.inShift ? "Nghỉ bán" : "Mở bán";
+  if (diningOpenButton) {
+    const isKitchen = diningView === "kitchen";
+    diningOpenButton.disabled = !isKitchen && snapshot.closingShift;
+    diningOpenButton.dataset.action = isKitchen ? "dining-back-tables" : "toggle-shift";
+    diningOpenButton.textContent = isKitchen ? "Phòng ăn" : shiftActionLabel;
+    diningOpenButton.setAttribute("aria-pressed", String(!isKitchen && snapshot.inShift));
+  }
+  if (shiftButton) {
+    shiftButton.hidden = false;
+    shiftButton.disabled = snapshot.closingShift;
+    shiftButton.setAttribute("aria-pressed", String(snapshot.inShift));
+    const label = shiftButton.querySelector<HTMLElement>(".action-label");
+    if (label) label.textContent = shiftActionLabel;
+  }
   renderDining(snapshot);
+  if (activeTab === "staff") renderStaffManagement(snapshot);
 
   if (callout) {
     const customer = snapshot.customers[0];
-    if (snapshot.inShift && customer?.status === "walking") {
+    if (!snapshot.inShift) {
+      callout.textContent = snapshot.closingShift
+        ? "Quán đã nghỉ bán; khách đang đi ra cửa."
+        : "Quán đang nghỉ bán. Chạm Mở bán để tiếp tục đón khách.";
+    } else if (snapshot.serviceMode === "dining") {
+      const arrivingPartyCount = new Set(snapshot.dining.guests
+        .filter((guest) => guest.status === "approaching")
+        .map((guest) => guest.partyId)).size;
+      const enteringGuestCount = snapshot.dining.guests.filter((guest) => guest.status === "entering").length;
+      const activeGuestCount = snapshot.dining.guests.filter((guest) => !["leaving", "departing"].includes(guest.status)).length;
+      if (arrivingPartyCount > 0) callout.textContent = `${arrivingPartyCount} nhóm khách đang đi từ phố tới quán…`;
+      else if (enteringGuestCount > 0) callout.textContent = `${enteringGuestCount} khách đang vào bàn…`;
+      else if (activeGuestCount > 0) callout.textContent = `${activeGuestCount} khách đang ở trong phòng ăn.`;
+      else callout.textContent = "Đang chờ nhóm khách kế tiếp ghé quán…";
+    } else if (customer?.status === "walking") {
       callout.textContent = `${CUSTOMER_TYPES[customer.type].name} đang đi tới quán…`;
-    } else if (snapshot.inShift && customer) {
+    } else if (customer) {
       callout.textContent = `${CUSTOMER_TYPES[customer.type].name} gọi ${RECIPES[customer.recipe].name.toLowerCase()} · còn ${customer.patience}s`;
-    } else if (snapshot.inShift) {
-      callout.textContent = "Đang đợi khách kế tiếp ghé quán…";
     } else {
-      callout.textContent = "Khách sẽ sớm ghé quán.";
+      callout.textContent = "Đang đợi khách kế tiếp ghé quán…";
     }
   }
 
   const activeCustomer = snapshot.customers[0];
+  const activeDiningOrder = snapshot.dining.orders.find((order) => ["called", "taking", "queued", "cooking", "ready", "carrying"].includes(order.status));
   const waitingForStreetOrder = snapshot.serviceMode === "street" && activeCustomer?.status === "waiting";
   const hasDiningOrder = snapshot.serviceMode === "dining"
-    && snapshot.dining.orders.some((order) => order.status === "called" || order.status === "queued" || order.status === "ready");
+    && snapshot.dining.orders.some((order) => ["called", "taking", "queued", "ready"].includes(order.status));
   document.querySelector<HTMLElement>('[data-tab-target="menu"]')?.classList.toggle("has-task", waitingForStreetOrder || hasDiningOrder);
-  if (orderTitle) orderTitle.textContent = activeCustomer?.status === "walking"
-    ? "Khách đang tới"
-    : activeCustomer ? RECIPES[activeCustomer.recipe].name : "Chưa có khách";
+  if (orderTitle) orderTitle.textContent = snapshot.serviceMode === "dining"
+    ? activeDiningOrder ? `${RECIPES[activeDiningOrder.recipe].name} · bàn ${activeDiningOrder.tableId}`
+      : snapshot.dining.guests.length > 0 ? `${snapshot.dining.guests.length} khách trong phòng ăn` : "Đang chờ nhóm khách"
+    : activeCustomer?.status === "walking"
+      ? "Khách đang tới"
+      : activeCustomer ? RECIPES[activeCustomer.recipe].name : "Chưa có khách";
   if (orderHint) {
     if (!snapshot.inShift) orderHint.textContent = "Mở quán để đón khách.";
+    else if (snapshot.serviceMode === "dining") {
+      const approachingDiningGuests = snapshot.dining.guests.some((guest) => guest.status === "approaching" || guest.status === "entering");
+      const waitingOrder = snapshot.dining.guests.some((guest) => guest.status === "waiting-order");
+      if (activeDiningOrder) orderHint.textContent = `Đơn phòng ăn ở bàn ${activeDiningOrder.tableId}; mở Phiếu món để xem tiến độ.`;
+      else if (approachingDiningGuests) orderHint.textContent = "Nhóm khách đang đi từ phố vào; đợi họ ngồi đủ chỗ.";
+      else if (waitingOrder) orderHint.textContent = "Khách đã ngồi; Mai Linh sẽ tới hỏi món.";
+      else orderHint.textContent = "Khách sẽ ghé theo từng nhóm; nhóm đầu tiên đang trên đường tới.";
+    }
     else if (activeCustomer?.status === "walking") orderHint.textContent = `${CUSTOMER_TYPES[activeCustomer.type].shortName} đang tới quầy.`;
-    else if (activeCustomer) orderHint.textContent = "Chạm nguyên liệu theo thứ tự để làm món.";
-    else orderHint.textContent = "Đang chờ khách mới. Hãy chuẩn bị nguyên liệu.";
+    else if (activeCustomer) orderHint.textContent = snapshot.staff.some((member) => member.isWorking)
+      ? "Nhân viên đang tự xử lý đơn. Bạn có thể chỉnh món bán và nhập thêm hàng."
+      : "Quầy vẫn tự phục vụ; đội ngũ cơ bản xử lý chậm hơn khi chưa tuyển người.";
+    else orderHint.textContent = "Đang chờ khách mới. Nhân viên sẽ tự nhận đơn.";
   }
 
   const orderTimer = $("#order-timer");
@@ -932,11 +1895,11 @@ function render(snapshot: GameSnapshot): void {
       steps.innerHTML = "<span class='empty-step'>Đang chờ đơn đầu tiên</span>";
     } else {
       const recipe = RECIPES[activeCustomer.recipe];
-      steps.innerHTML = recipe.ingredients.map((ingredientId, index) => {
-        const item = INGREDIENTS.find((entry) => entry.id === ingredientId)!;
-        const done = index < snapshot.assembly.length;
-        const current = index === snapshot.assembly.length;
-        return `<span class="step-chip ${done ? "done" : ""} ${current ? "current" : ""}"><i>${iconMarkup(done ? "check" : item.icon as UiIconName, "step-icon ui-icon")}</i>${item.name}</span>`;
+      steps.innerHTML = recipe.ingredients.map((entry) => {
+        const item = INGREDIENTS.find((ingredient) => ingredient.id === entry.id)!;
+        const stock = snapshot.inventory[entry.id] ?? 0;
+        const stocked = stock >= entry.quantity;
+        return `<span class="step-chip ${stocked ? "done" : "current"}"><i>${iconMarkup(item.icon as UiIconName, "step-icon ui-icon")}</i>${item.name}${entry.quantity > 1 ? ` ×${entry.quantity}` : ""}<small>${stock}/${entry.quantity}</small></span>`;
       }).join("");
     }
   }
@@ -946,85 +1909,82 @@ function render(snapshot: GameSnapshot): void {
 
   const lowStock = INGREDIENTS.filter((ingredient) => snapshot.inventory[ingredient.id] <= 2);
   document.querySelector<HTMLElement>('[data-tab-target="stock"]')?.classList.toggle("has-alert", lowStock.length > 0);
-  const stockStatus = $("#stock-status");
-  if (stockStatus) {
-    stockStatus.textContent = lowStock.length
-      ? `Sắp hết: ${lowStock.map((ingredient) => ingredient.name).join(", ")}`
-      : "Nguyên liệu đã sẵn sàng cho ca bán.";
-  }
+  renderStockInventory(snapshot);
 
   for (const ingredient of INGREDIENTS) {
     const stock = $(`#stock-${ingredient.id}`);
     const button = $(`.ingredient-button[data-ingredient='${ingredient.id}']`) as HTMLButtonElement | null;
     const count = snapshot.inventory[ingredient.id];
     if (stock) stock.textContent = `${count} phần`;
-    const stockCount = $(`[data-stock-count="${ingredient.id}"]`);
-    if (stockCount) stockCount.textContent = count.toString();
     if (button) button.disabled = snapshot.serviceMode !== "street" || !snapshot.inShift || !activeCustomer || activeCustomer.status !== "waiting" || count < 1;
   }
-
-  const restockButton = $("[data-action='restock']") as HTMLButtonElement | null;
-  const restockLabel = $("#restock-label");
-  const restockCost = $("#restock-cost");
-  if (restockButton) restockButton.disabled = snapshot.coins < RESTOCK_PACK_COST && !snapshot.emergencyRestockAvailable;
-  if (restockLabel) restockLabel.textContent = snapshot.emergencyRestockAvailable ? "Nhận nguyên liệu dự phòng" : "Nhập nguyên liệu";
-  if (restockCost) restockCost.textContent = snapshot.emergencyRestockAvailable
-    ? "Miễn phí · +4 mỗi loại"
-    : `${formatVndFromThousands(RESTOCK_PACK_COST)} · +5 mỗi loại`;
 
   const nextUpgradeCost = CART_UPGRADE_COST[snapshot.cartLevel] ?? 0;
   const upgradeLabel = $("#upgrade-label");
   const upgradeCost = $("#upgrade-cost");
-  if (upgradeLabel) upgradeLabel.querySelector<HTMLElement>(".action-label")!.textContent = snapshot.cartLevel < MAX_CART_LEVEL ? `Nâng quán lên cấp ${snapshot.cartLevel + 1}` : "Đã đạt cấp cao nhất";
-  if (upgradeCost) upgradeCost.textContent = nextUpgradeCost > 0 ? formatVndFromThousands(nextUpgradeCost) : "Đã đạt cấp cao nhất";
+  if (upgradeLabel) upgradeLabel.querySelector<HTMLElement>(".action-label")!.textContent = snapshot.cartLevel < MAX_CART_LEVEL ? `Nâng cấp ${snapshot.cartLevel + 1}` : "Đã đạt cấp cao nhất";
+  if (upgradeCost) upgradeCost.textContent = nextUpgradeCost > 0 ? formatVndFromThousands(nextUpgradeCost) : "";
   if (upgradeButton) upgradeButton.disabled = nextUpgradeCost === 0 || snapshot.coins < nextUpgradeCost;
-
-  const hireCost = $("#hire-cost");
-  const businessNote = $("#business-note");
-  const recentService = $("#recent-service");
-  const staffStatus = $("#staff-status");
-  if (recentService) {
-    recentService.textContent = snapshot.report
-      ? `2 phút vừa qua: phục vụ ${snapshot.report.served} khách · lãi ${snapshot.report.net >= 0 ? "+" : ""}${formatVndFromThousands(snapshot.report.net)}.`
-      : "Quán đang đón khách. Doanh thu gần đây sẽ hiện ở đây.";
+  const shiftReport = $("#shift-report") as HTMLDetailsElement | null;
+  if (shiftReport) {
+    shiftReport.hidden = !snapshot.report;
   }
-  if (snapshot.hasStaff) {
-    if (hireCost) hireCost.textContent = `Đã có phụ bếp · lương ${formatVndFromThousands(30)}/2 phút`;
-    if (businessNote) businessNote.textContent = "Phụ bếp tự phục vụ khách ngoài phố và trong quán, giúp quán có thu nhập ngoại tuyến tối đa 4 giờ.";
-    if (staffStatus) {
-      const cookingOrder = snapshot.dining.orders.find((order) => order.status === "cooking");
-      staffStatus.textContent = snapshot.serviceMode === "dining"
-        ? cookingOrder ? `Phụ bếp đang nấu món cho bàn ${cookingOrder.tableId}.` : "Phụ bếp đang hỗ trợ nhận món, bưng món, thu tiền và dọn bàn."
-        : snapshot.customers.some((customer) => customer.status === "waiting") ? "Phụ bếp đang hỗ trợ khách tại quầy ngoài phố." : "Phụ bếp đang chờ khách mới.";
+  if (snapshot.report) {
+    const report = snapshot.report;
+    const reportHeadline = $("#shift-report-headline");
+    if (reportHeadline) reportHeadline.textContent = `${report.served} phục vụ${report.left ? ` · ${report.left} bỏ đi` : ""} · Lãi ${report.net > 0 ? "+" : ""}${formatVndFromThousands(report.net)}`;
+    const reportValues: Record<string, string> = {
+      "#shift-report-revenue": formatVndFromThousands(report.revenue),
+      "#shift-report-ingredients": formatVndFromThousands(report.ingredientCosts),
+      "#shift-report-tips": formatVndFromThousands(report.tips),
+      "#shift-report-wages": formatVndFromThousands(report.wages),
+      "#shift-report-reputation": `+${report.reputationEarned}`,
+    };
+    for (const [selector, value] of Object.entries(reportValues)) {
+      const node = $(selector);
+      if (node) node.textContent = value;
     }
-    if (hireButton) {
-      hireButton.disabled = true;
-      hireButton.querySelector<HTMLElement>(".action-label")!.textContent = "Đã thuê phụ bếp";
-    }
-  } else {
-    if (hireCost) hireCost.textContent = snapshot.cartLevel >= 2 ? formatVndFromThousands(STAFF_HIRE_COST) : "1.200.000đ · cần quán cấp 2";
-    if (businessNote) businessNote.textContent = "Phục vụ món để dành tiền nâng cấp. Có phụ bếp, quán vẫn kiếm tiền khi bạn rời game.";
-    if (staffStatus) staffStatus.textContent = "Thuê phụ bếp từ cấp quán 2 để hỗ trợ phục vụ.";
-    if (hireButton) {
-      hireButton.disabled = snapshot.cartLevel < 2 || snapshot.coins < STAFF_HIRE_COST;
-      hireButton.querySelector<HTMLElement>(".action-label")!.textContent = "Thuê phụ bếp";
+    const bestSeller = $("#shift-report-best-seller");
+    if (bestSeller) {
+      bestSeller.hidden = !report.bestSellingRecipe;
+      bestSeller.textContent = report.bestSellingRecipe
+        ? `Bán chạy: ${RECIPES[report.bestSellingRecipe].name} ×${report.bestSellingCount}`
+        : "";
     }
   }
 
-  for (const button of document.querySelectorAll<HTMLButtonElement>(".ingredient-button")) {
-    button.classList.toggle("is-ready", !button.disabled);
-  }
+  if (activeTab === "recipes") renderMenuCatalog(snapshot);
+  if (recipeLearningDialog?.open) renderRecipeLearningDialog(snapshot);
 
 }
 
 document.addEventListener("click", (event) => {
   const target = event.target;
   if (!(target instanceof Element)) return;
+  const stockCategoryButton = target.closest<HTMLButtonElement>("button[data-stock-filter]");
+  if (stockCategoryButton?.dataset.stockFilter) {
+    selectedStockCategory = stockCategoryButton.dataset.stockFilter as StockCategoryId;
+    selectedStockIngredient = null;
+    renderStockInventory(store.getSnapshot());
+    return;
+  }
+  const stockItemButton = target.closest<HTMLButtonElement>("button[data-stock-ingredient]");
+  if (stockItemButton?.dataset.stockIngredient) {
+    selectedStockIngredient = stockItemButton.dataset.stockIngredient as MenuIngredientId;
+    renderStockInventory(store.getSnapshot());
+    return;
+  }
   const categoryButton = target.closest<HTMLButtonElement>("button[data-menu-filter]");
   if (categoryButton?.dataset.menuFilter) {
     const filter = categoryButton.dataset.menuFilter;
     selectedMenuCategory = filter === "all" ? "all" : filter as MenuCategory;
     renderMenuCatalog();
+    return;
+  }
+  const staffRoleButton = target.closest<HTMLButtonElement>("button[data-staff-role]");
+  if (staffRoleButton?.dataset.staffRole) {
+    selectedStaffRole = staffRoleButton.dataset.staffRole as StaffRoleId;
+    renderStaffManagement(store.getSnapshot());
     return;
   }
   if (target.closest("#panel-backdrop")) {
@@ -1036,6 +1996,12 @@ document.addEventListener("click", (event) => {
 document.addEventListener("click", (event) => {
   const target = event.target;
   if (!(target instanceof Element)) return;
+  const ledgerDayButton = target.closest<HTMLButtonElement>("button[data-ledger-day]");
+  if (ledgerDayButton) {
+    selectedLedgerDay = Number(ledgerDayButton.dataset.ledgerDay);
+    renderLedger(store.getSnapshot());
+    return;
+  }
   const button = target.closest<HTMLButtonElement>("button[data-action]");
   const diningTicketButton = target.closest<HTMLButtonElement>("button[data-dining-order]");
   if (diningTicketButton?.dataset.diningOrder) {
@@ -1045,47 +2011,132 @@ document.addEventListener("click", (event) => {
   if (!button || button.disabled) return;
 
   switch (button.dataset.action) {
+    case "open-ledger":
+      selectedLedgerDay = null;
+      document.querySelector<HTMLDialogElement>("#ledger-dialog")?.showModal();
+      renderLedger(store.getSnapshot());
+      break;
+    case "close-ledger":
+      document.querySelector<HTMLDialogElement>("#ledger-dialog")?.close();
+      break;
+    case "open-market-stall":
+      openMarketStall(button.dataset.marketStall);
+      break;
+    case "close-market-shop":
+      closeMarketShop();
+      break;
+    case "market-quantity-down":
+    case "market-quantity-up": {
+      const ingredientId = button.dataset.marketIngredient as MenuIngredientId | undefined;
+      const stall = selectedMarketStallId ? getMarketStall(selectedMarketStallId) : undefined;
+      if (!ingredientId || !stall?.products.includes(ingredientId)) break;
+      const currentQuantity = marketProductQuantities.get(ingredientId) ?? 1;
+      const delta = button.dataset.action === "market-quantity-up" ? 1 : -1;
+      marketProductQuantities.set(ingredientId, Math.max(1, Math.min(99, currentQuantity + delta)));
+      renderMarketShop();
+      break;
+    }
+    case "market-buy": {
+      const ingredientId = button.dataset.marketIngredient as MenuIngredientId | undefined;
+      if (!ingredientId || !selectedMarketStallId) break;
+      const stall = getMarketStall(selectedMarketStallId);
+      if (!stall?.products.includes(ingredientId)) break;
+      store.buyMarketIngredient(ingredientId, marketProductQuantities.get(ingredientId) ?? 1);
+      marketShopFeedback = store.getSnapshot().feedback;
+      renderMarketShop();
+      break;
+    }
     case "leave-home":
       closeHome();
+      break;
+    case "enter-home":
+      openHome();
       break;
     case "leave-wholesale-market":
       closeWholesaleMarket();
       break;
-    case "toggle-wholesale-market-section":
-      toggleWholesaleMarketSection();
-      break;
     case "dining-close-panel":
       setDiningPanelMode(null);
       break;
-    case "dining-toggle-panel":
-      setDiningPanelMode("kitchen");
+    case "dining-take-dish": {
+      const orderId = button.dataset.orderId;
+      if (!orderId) break;
+      button.disabled = true;
+      button.classList.add("is-taking");
+      window.setTimeout(() => {
+        const order = store.getSnapshot().dining.orders.find((entry) => entry.id === orderId && entry.status === "ready");
+        if (!order) return;
+        store.selectDiningOrder(order.id);
+        store.serveSelectedDiningOrder();
+        if (diningView === "kitchen") setDiningView("tables");
+      }, 520);
       break;
-    case "dining-accept":
-      store.acceptDiningOrder();
-      setDiningPanelMode("tables");
-      break;
-    case "dining-serve":
-      store.serveSelectedDiningOrder();
-      break;
+    }
     case "dining-pay":
       store.collectDiningPayment();
       break;
-    case "dining-clean":
-      store.cleanDiningTable(Number(button.dataset.tableId), Number(button.dataset.seatIndex));
+    case "toggle-shift":
+      if (store.getSnapshot().inShift) store.toggleShift();
+      else openShiftMenuSelector();
       break;
-    case "ingredient": {
-      const id = button.dataset.ingredient;
-      if (id) store.tapIngredient(id as "bread" | "pate" | "cha" | "egg" | "greens");
+    case "cancel-shift-menu":
+      shiftMenuDialog?.close();
+      break;
+    case "confirm-shift-menu": {
+      const started = store.toggleShift([...shiftMenuDraft]);
+      if (started) shiftMenuDialog?.close();
       break;
     }
-    case "dining-ingredient": {
-      const id = button.dataset.ingredient;
-      if (id) store.tapDiningIngredient(id as "bread" | "pate" | "cha" | "egg" | "greens");
+    case "open-recipe-learning":
+      openRecipeLearningDialog();
+      break;
+    case "close-recipe-learning":
+      recipeLearningDialog?.close();
+      recipeLearningFeedback = "";
+      break;
+    case "learn-recipe": {
+      const recipeId = button.dataset.recipeId as RecipeId | undefined;
+      if (!recipeId || !PLAYABLE_RECIPE_IDS.includes(recipeId)) break;
+      const learned = store.learnRecipe(recipeId);
+      recipeLearningFeedback = learned
+        ? `Đã học ${RECIPES[recipeId].name}. Món này đã được thêm vào sổ công thức.`
+        : store.getSnapshot().feedback;
+      renderRecipeLearningDialog(store.getSnapshot());
+      renderMenuCatalog(store.getSnapshot());
       break;
     }
-    case "restock":
-      store.restock();
+    case "dining-prioritize": {
+      const orderId = button.dataset.orderId;
+      if (orderId) store.prioritizeDiningOrder(orderId);
       break;
+    }
+    case "dining-back-tables":
+      setDiningView("tables");
+      break;
+    case "dining-boost":
+      store.boostDiningKitchen();
+      break;
+    case "toggle-menu-dish": {
+      const recipeId = button.dataset.recipeId;
+      if (recipeId) store.toggleMenuDish(recipeId as RecipeId);
+      renderMenuCatalog();
+      break;
+    }
+    case "staff-hire": {
+      const candidateId = button.dataset.candidateId;
+      if (candidateId) store.hireEmployee(candidateId);
+      break;
+    }
+    case "staff-train": {
+      const employeeId = button.dataset.employeeId;
+      if (employeeId) store.trainEmployee(employeeId);
+      break;
+    }
+    case "staff-shift": {
+      const employeeId = button.dataset.employeeId;
+      if (employeeId) store.toggleEmployeeShift(employeeId);
+      break;
+    }
     case "upgrade":
       store.upgradeCart();
       break;
@@ -1108,6 +2159,12 @@ document.addEventListener("click", (event) => {
     case "close-settings":
       document.querySelector<HTMLDialogElement>("#settings-dialog")?.close();
       break;
+    case "open-how-to-play":
+      document.querySelector<HTMLDialogElement>("#how-to-play-dialog")?.showModal();
+      break;
+    case "close-how-to-play":
+      document.querySelector<HTMLDialogElement>("#how-to-play-dialog")?.close();
+      break;
     case "screenshot":
       captureGameScreenshot();
       break;
@@ -1116,6 +2173,19 @@ document.addEventListener("click", (event) => {
       void musicPlayer.toggle();
       break;
   }
+});
+
+document.addEventListener("change", (event) => {
+  const input = event.target;
+  if (!(input instanceof HTMLInputElement) || !input.matches("input[data-shift-menu-recipe]")) return;
+  const recipeId = input.dataset.shiftMenuRecipe as RecipeId | undefined;
+  if (!recipeId || !PLAYABLE_RECIPE_IDS.includes(recipeId) || input.disabled) return;
+  if (input.checked) shiftMenuDraft.add(recipeId);
+  else shiftMenuDraft.delete(recipeId);
+  input.closest(".shift-menu-item")?.classList.toggle("is-selected", input.checked);
+  const snapshot = store.getSnapshot();
+  const learnedCount = snapshot.learnedRecipes.filter((id) => RECIPES[id].unlockLevel <= snapshot.cartLevel).length;
+  updateShiftMenuSelectionSummary(learnedCount, learnedCount);
 });
 
 function stopAutoStartMusic(): void {
@@ -1133,6 +2203,10 @@ document.addEventListener("pointerdown", startMusicAfterGesture);
 document.addEventListener("keydown", startMusicAfterGesture);
 
 document.querySelector<HTMLDialogElement>("#settings-dialog")?.addEventListener("click", (event) => {
+  if (event.target === event.currentTarget) (event.currentTarget as HTMLDialogElement).close();
+});
+
+document.querySelector<HTMLDialogElement>("#how-to-play-dialog")?.addEventListener("click", (event) => {
   if (event.target === event.currentTarget) (event.currentTarget as HTMLDialogElement).close();
 });
 
@@ -1234,7 +2308,6 @@ document.addEventListener("click", (event) => {
     }
     if (tabButton.dataset.tabTarget === "menu" && store.getSnapshot().serviceMode === "dining") {
       selectTab("outside");
-      setDiningView("kitchen");
       setDiningPanelMode("kitchen");
       return;
     }
@@ -1254,4 +2327,3 @@ document.addEventListener("fullscreenchange", () => {
 store.subscribe(render);
 selectTab("outside");
 if (!store.getSnapshot().storeName) openStoreNameModal();
-else store.startShift();
