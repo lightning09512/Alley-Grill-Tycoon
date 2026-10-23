@@ -42,6 +42,7 @@ import {
   MAX_STAFF_LEVEL,
   STAFF_CANDIDATES,
   STAFF_TRAINING_COST,
+  getServerCleaningRestSeconds,
   getStaffCandidate,
   getStaffRole,
   type StaffRoleId,
@@ -72,13 +73,15 @@ export const DINING_ORDER_TAKE_SECONDS = DINING_ORDER_APPROACH_SECONDS
   + DINING_ORDER_GUEST_DIALOGUE_SECONDS
   + DINING_ORDER_SERVER_REPLY_SECONDS
   + DINING_ORDER_WRITE_SECONDS;
-export const DINING_ORDER_DELIVERY_SECONDS = 4;
+export const DINING_ORDER_DELIVERY_SECONDS = 16;
 export type DiningOrderStatus = "called" | "taking" | "queued" | "cooking" | "ready" | "carrying" | "delivered" | "paid";
 
 export interface DiningTable {
   id: number;
   status: DiningTableStatus;
   cleanliness: "clean" | "dirty";
+  cleaningSeconds: number;
+  cleaningTotalSeconds: number;
   guestId: string | null;
   seats: DiningSeat[];
 }
@@ -134,6 +137,7 @@ export interface CashCollectionEvent {
 }
 
 export interface DiningState {
+  cleaningCooldownSeconds: number;
   tables: DiningTable[];
   guests: DiningGuest[];
   orders: DiningOrder[];
@@ -255,10 +259,13 @@ export function getDiningTableCapacity(): number {
 
 function createDiningState(): DiningState {
   return {
+    cleaningCooldownSeconds: 0,
     tables: [1, 2, 3, 4, 5, 6].map((id) => ({
       id,
       status: "empty",
       cleanliness: "clean",
+      cleaningSeconds: 0,
+      cleaningTotalSeconds: 0,
       guestId: null,
       seats: [0, 1, 2, 3].map((index) => ({ index, status: "empty", guestId: null })),
     })),
@@ -609,6 +616,8 @@ export class GameStore {
       return;
     }
     table.cleanliness = "clean";
+    table.cleaningSeconds = 0;
+    table.cleaningTotalSeconds = 0;
     this.dining.feedback = `Đã dọn sạch bàn ${tableId}; bàn sẵn sàng đón khách.`;
     this.persist();
     this.publish();
@@ -919,8 +928,10 @@ export class GameStore {
     employee.level += 1;
     this.coins -= cost;
     const candidate = getStaffCandidate(employee.id);
-    this.recordLedger(`Đào tạo: ${candidate?.name ?? "Nhân viên"}`, -cost);
-    this.feedback = `${candidate?.name ?? "Nhân viên"} lên bậc ${employee.level}; kỹ năng nghề được cải thiện.`;
+    this.recordLedger(`${employee.role === "server" ? "Tăng lương" : "Đào tạo"}: ${candidate?.name ?? "Nhân viên"}`, -cost);
+    this.feedback = employee.role === "server"
+      ? `${candidate?.name ?? "Phục vụ"} lên bậc ${employee.level}; dọn bàn trong 3 giây, nghỉ ${getServerCleaningRestSeconds(employee.level)} giây giữa hai bàn.`
+      : `${candidate?.name ?? "Nhân viên"} lên bậc ${employee.level}; kỹ năng nghề được cải thiện.`;
     this.persist();
     this.publish();
   }
@@ -1284,6 +1295,7 @@ export class GameStore {
       if (party.some((guest) => guest.id === selectedOrderGuest)) this.dining.selectedOrderId = null;
       this.dining.feedback = `Cả nhóm đã đi khỏi quán; bàn ${party[0].tableId} cần được dọn trước khi đón khách mới.`;
     }
+    this.tickDiningTableCleaning();
     const activeOrder = this.dining.orders.find((order) => order.id === this.dining.activeOrderId);
     if (this.dining.activeOrderId && (!activeOrder || activeOrder.status !== "cooking")) {
       this.dining.activeOrderId = null;
@@ -1295,7 +1307,7 @@ export class GameStore {
         cookingOrder.status = "ready";
         this.dining.activeOrderId = null;
         this.dining.selectedOrderId = cookingOrder.id;
-        this.dining.feedback = `${RECIPES[cookingOrder.recipe].name} đã sẵn sàng. Chọn đúng khách để bưng món.`;
+        this.dining.feedback = `${RECIPES[cookingOrder.recipe].name} đã sẵn sàng; đang chờ phục vụ mang ra bàn.`;
       }
     }
     for (const order of this.dining.orders) {
@@ -1341,6 +1353,37 @@ export class GameStore {
       this.diningStaffClock = 0;
       this.helpDiningRoom();
     }
+  }
+
+  private tickDiningTableCleaning(): void {
+    this.dining.cleaningCooldownSeconds = Math.max(0, this.dining.cleaningCooldownSeconds - 1);
+    const activeTable = this.dining.tables.find((table) => table.cleanliness === "dirty" && table.cleaningSeconds > 0);
+    if (activeTable) {
+      activeTable.cleaningSeconds = Math.max(0, activeTable.cleaningSeconds - 1);
+      if (activeTable.cleaningSeconds > 0) return;
+      activeTable.cleanliness = "clean";
+      activeTable.cleaningTotalSeconds = 0;
+      const server = this.staff.find((member) => member.isWorking && member.role === "server");
+      this.dining.cleaningCooldownSeconds = server ? getServerCleaningRestSeconds(server.level) : 0;
+      this.dining.feedback = `${getStaffCandidate(server?.id ?? "")?.name ?? "Phục vụ"} đã dọn sạch bàn ${activeTable.id}.`;
+      return;
+    }
+
+    const server = this.getAvailableStaff("server");
+    if (!server) return;
+    const serverHasPriorityWork = this.dining.orders.some((order) => ["called", "taking", "queued", "cooking", "ready", "carrying"].includes(order.status))
+      || this.dining.guests.some((guest) => guest.status === "waiting-order" || guest.status === "waiting-food");
+    if (serverHasPriorityWork || this.dining.cleaningCooldownSeconds > 0) return;
+
+    const dirtyTable = this.dining.tables.find((table) => table.cleanliness === "dirty"
+      && table.seats.every((seat) => seat.status === "empty" && !seat.guestId));
+    if (!dirtyTable) return;
+    // Four seconds to approach, followed by three seconds actually cleaning.
+    const duration = 7;
+    dirtyTable.cleaningSeconds = duration;
+    dirtyTable.cleaningTotalSeconds = duration;
+    this.consumeStaffEnergy(server, 7);
+    this.dining.feedback = `${getStaffCandidate(server.id)?.name ?? "Phục vụ"} đang dọn bàn ${dirtyTable.id} · khoảng ${duration} giây.`;
   }
 
   private arriveDiningParty(): void {
@@ -1618,7 +1661,9 @@ export class GameStore {
     order.status = "carrying";
     order.deliverySeconds = DINING_ORDER_DELIVERY_SECONDS;
     order.carriedByStaff = byStaff;
-    this.dining.feedback = `${byStaff ? "Phục vụ" : "Bạn"} đã lấy ${RECIPES[order.recipe].name.toLowerCase()} ở quầy, đang mang tới bàn ${order.tableId}.`;
+    this.dining.feedback = byStaff
+      ? `Mai Linh đang qua bếp lấy ${RECIPES[order.recipe].name.toLowerCase()} cho bàn ${order.tableId}.`
+      : `Bạn đang mang ${RECIPES[order.recipe].name.toLowerCase()} tới bàn ${order.tableId}.`;
   }
 
   private serveDiningOrder(order: DiningOrder, guest: DiningGuest, byStaff: boolean): void {
@@ -1661,8 +1706,6 @@ export class GameStore {
   }
 
   private helpDiningRoom(): void {
-    this.takeCalledDiningOrder();
-
     const queuedOrder = this.dining.orders.find((order) => order.status === "queued");
     const activeKitchenOrder = this.dining.orders.some((order) => order.status === "cooking");
     const cook = this.getAvailableStaff("chef") ?? this.getAvailableStaff("prep");
@@ -1680,22 +1723,25 @@ export class GameStore {
       && payablePartyOrders?.every((order) => order.status === "delivered")) {
       this.consumeStaffEnergy(cashier, 16);
       this.payDiningOrder(payableOrder, awaitingPayment, true);
-      return;
     }
 
     const readyOrder = this.dining.orders.find((order) => order.status === "ready");
     const readyGuest = readyOrder && this.dining.guests.find((guest) => guest.id === readyOrder.guestId && guest.status === "waiting-food");
     const server = this.getAvailableStaff("server");
     if (server && readyOrder && readyGuest
+      && !this.dining.tables.some((table) => table.cleaningSeconds > 0)
       && !this.dining.orders.some((order) => order.status === "taking" || order.status === "carrying")) {
       this.consumeStaffEnergy(server, 17);
       this.takeDiningOrder(readyOrder, readyGuest, true);
       return;
     }
 
+    // Deliver cooked food before Mai Linh accepts another table's order.
+    this.takeCalledDiningOrder();
   }
 
   private takeCalledDiningOrder(): boolean {
+    if (this.dining.tables.some((table) => table.cleaningSeconds > 0)) return false;
     if (this.dining.orders.some((order) => order.status === "taking" || order.status === "carrying")) return false;
     const server = this.getAvailableStaff("server");
     if (!server) return false;

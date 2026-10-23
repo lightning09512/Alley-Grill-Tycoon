@@ -20,7 +20,7 @@ export interface StaffCandidate {
 }
 
 export const STAFF_ROLES: readonly StaffRole[] = [
-  { id: "server", name: "Nhân viên phục vụ", shortName: "Phục vụ", tabLabel: "PHỤC VỤ", workstation: "Phòng ăn", duty: "Bưng món đến đúng bàn và hỗ trợ phục vụ." },
+  { id: "server", name: "Nhân viên phục vụ", shortName: "Phục vụ", tabLabel: "PHỤC VỤ", workstation: "Phòng ăn", duty: "Nhận món, bưng món và tự dọn bàn khi rảnh." },
   { id: "cashier", name: "Thu ngân", shortName: "Thu ngân", tabLabel: "THU NGÂN", workstation: "Quầy thu ngân", duty: "Thanh toán hóa đơn nhanh, giảm thời gian khách chờ." },
   { id: "prep", name: "Phụ bếp", shortName: "Phụ bếp", tabLabel: "PHỤ BẾP", workstation: "Bếp sơ chế", duty: "Sơ chế nguyên liệu và đỡ hàng chờ trong bếp." },
   { id: "chef", name: "Đầu bếp", shortName: "Đầu bếp", tabLabel: "ĐẦU BẾP", workstation: "Bếp nướng", duty: "Nấu nhanh hơn và giúp món giữ chất lượng." },
@@ -43,6 +43,15 @@ export const STAFF_TRAINING_COST: Readonly<Record<number, number>> = {
   3: 680,
   4: 980,
 };
+
+export function getServerTableCleaningSeconds(level: number): number {
+  const safeLevel = Math.max(1, Math.min(MAX_STAFF_LEVEL, Math.trunc(level)));
+  return 21 - safeLevel * 3;
+}
+
+export function getServerCleaningRestSeconds(level: number): number {
+  return getServerTableCleaningSeconds(level) * 2;
+}
 
 export function getStaffRole(roleId: StaffRoleId): StaffRole {
   return STAFF_ROLES.find((role) => role.id === roleId)!;

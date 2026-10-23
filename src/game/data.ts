@@ -134,17 +134,17 @@ export const MAX_CART_LEVEL = SHOP_STAGES.length;
 export const BUSINESS_STAGE_NAMES = SHOP_STAGES.map((stage) => stage.name);
 
 export const CART_UPGRADE_COST: Record<number, number> = {
-  1: 300,
-  2: 750,
-  3: 1_800,
-  4: 4_200,
-  5: 9_000,
-  6: 18_000,
-  7: 35_000,
-  8: 65_000,
-  9: 120_000,
-  10: 220_000,
-  11: 400_000,
+  1: 100_000,
+  2: 200_000,
+  3: 350_000,
+  4: 550_000,
+  5: 800_000,
+  6: 1_200_000,
+  7: 1_800_000,
+  8: 2_600_000,
+  9: 3_800_000,
+  10: 5_500_000,
+  11: 8_000_000,
 };
 
 export function createStartingInventory(): Inventory {

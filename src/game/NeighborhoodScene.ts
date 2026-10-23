@@ -352,7 +352,6 @@ const CUSTOMER_DISPLAY_WIDTH = 54;
 const CUSTOMER_DISPLAY_HEIGHT = 86;
 const CHARACTER_TARGET_VISIBLE_HEIGHT = 78;
 const CHARACTER_DISPLAY_SCALE = 1.5;
-const MARKET_CHARACTER_SCALE = 1.45;
 const WALKER_BASELINE_Y = 374;
 const OWNER_WALK_FRAME_RATE = 9;
 // A relaxed cadence keeps the generated eight-pose walk cycle from feeling hurried.
@@ -615,6 +614,15 @@ function setCharacterDisplaySize(
 
 function getWalkerArtHeight(textureKey: string): number {
   return WALKER_ART_HEIGHTS[textureKey] ?? 350;
+}
+
+function getZoneArtworkScale(zone: MapZone): number {
+  const artworkHeight = zone === "home"
+    ? HOME_MAP_SIZE.height
+    : zone === "market"
+      ? WHOLESALE_MARKET_EXTERIOR_SIZE.height
+      : SHOP_BASE_SIZE.height;
+  return SHOP_BASE_SIZE.height / artworkHeight;
 }
 
 function getDinerFrameHeight(textureKey: string): number {
@@ -1758,9 +1766,9 @@ export class NeighborhoodScene extends Phaser.Scene {
   }
 
   private getStreetWalkerSpeechBubbleY(walker: Walker, laneY: number): number {
-    const marketScale = walker.zone === "market" ? MARKET_CHARACTER_SCALE : 1;
-    const characterHeight = CHARACTER_TARGET_VISIBLE_HEIGHT * CHARACTER_DISPLAY_SCALE * marketScale;
-    return laneY - (characterHeight + 18) * this.unit;
+    const characterUnit = this.characterUnit * getZoneArtworkScale(walker.zone);
+    const characterHeight = CHARACTER_TARGET_VISIBLE_HEIGHT * characterUnit;
+    return laneY - characterHeight - 18 * this.unit;
   }
 
   private takeStreetDialogue(walker: Walker): string {
@@ -1876,8 +1884,8 @@ export class NeighborhoodScene extends Phaser.Scene {
   private positionTrafficBikeSpeechBubble(bike: TrafficBike, x: number, laneY: number): void {
     const laneRank = this.trafficBikes.filter((candidate) => candidate.lane === bike.lane).indexOf(bike);
     const laneLift = 132 + (Math.max(0, laneRank) % 2) * 52;
-    const marketScale = this.activeZone === "market" ? MARKET_CHARACTER_SCALE : 1;
-    this.positionStreetSpeechBubble(bike.speechBubble, x, laneY - laneLift * marketScale * this.unit);
+    const zoneScale = getZoneArtworkScale(this.activeZone);
+    this.positionStreetSpeechBubble(bike.speechBubble, x, laneY - laneLift * zoneScale * this.unit);
   }
 
   private destroyTrafficBike(bike: TrafficBike): void {
@@ -1894,8 +1902,8 @@ export class NeighborhoodScene extends Phaser.Scene {
     for (const bike of this.trafficBikes) {
       const laneY = this.getTrafficLaneY(bike.lane);
       bike.direction = this.getTrafficLaneDirection(bike.lane);
-      const marketScale = this.activeZone === "market" ? MARKET_CHARACTER_SCALE : 1;
-      const scale = this.unit * bike.profile.scale * marketScale;
+      const zoneScale = getZoneArtworkScale(this.activeZone);
+      const scale = this.unit * bike.profile.scale * zoneScale;
       bike.speed = bike.profile.speed * this.unit;
       bike.exitX = bike.direction > 0 ? viewportRight + exitMargin : viewportLeft - exitMargin;
       bike.sprite.setPosition(bike.sprite.x, laneY)
@@ -1904,7 +1912,7 @@ export class NeighborhoodScene extends Phaser.Scene {
         .setFlipX(bike.direction < 0)
         .setDepth(getStreetCharacterDepth(laneY));
       bike.shadow.setPosition(bike.sprite.x, laneY + 1.5 * this.unit)
-        .setDisplaySize(TRAFFIC_BIKE_SHADOW_WIDTH * this.unit * marketScale, 11 * this.unit * marketScale)
+        .setDisplaySize(TRAFFIC_BIKE_SHADOW_WIDTH * this.unit * zoneScale, 11 * this.unit * zoneScale)
         .setDepth(getStreetCharacterDepth(laneY) - 0.02);
       bike.speechBubble
         .setScale(this.unit)
@@ -1949,11 +1957,11 @@ export class NeighborhoodScene extends Phaser.Scene {
       : Math.max(zoneLeft - entranceMargin, viewportLeft - entranceMargin);
     const laneY = this.getTrafficLaneY(lane);
     const profile = this.takeTrafficBikeProfile();
-    const marketScale = this.activeZone === "market" ? MARKET_CHARACTER_SCALE : 1;
-    const scale = this.unit * profile.scale * marketScale;
+    const zoneScale = getZoneArtworkScale(this.activeZone);
+    const scale = this.unit * profile.scale * zoneScale;
     const shadow = this.add.image(spawnX, laneY + 1.5 * this.unit, "character-contact-shadow-soft")
       .setOrigin(0.5)
-      .setDisplaySize(TRAFFIC_BIKE_SHADOW_WIDTH * this.unit * marketScale, 11 * this.unit * marketScale)
+      .setDisplaySize(TRAFFIC_BIKE_SHADOW_WIDTH * this.unit * zoneScale, 11 * this.unit * zoneScale)
       .setAlpha(0.38)
       .setDepth(getStreetCharacterDepth(laneY) - 0.02);
     const sprite = this.add.image(spawnX, laneY, profile.key)
@@ -2913,14 +2921,14 @@ export class NeighborhoodScene extends Phaser.Scene {
 
   private layoutPlayerOwner(x: number, y: number, unit: number, characterUnit: number): void {
     if (!this.ownerCharacter || !this.ownerShadow) return;
-    const marketScale = this.activeZone === "market" ? MARKET_CHARACTER_SCALE : 1;
-    const actorUnit = characterUnit * marketScale;
+    const zoneScale = getZoneArtworkScale(this.activeZone);
+    const actorUnit = characterUnit * zoneScale;
     this.ownerWorldX = x;
     this.ownerWorldY = y;
     const depth = getStreetCharacterDepth(y);
     this.ownerShadow
       .setPosition(x, y + 1.5 * unit)
-      .setDisplaySize(42 * unit * marketScale, 12 * unit * marketScale)
+      .setDisplaySize(42 * unit * zoneScale, 12 * unit * zoneScale)
       .setDepth(depth - 0.02);
     this.ownerCharacter
       .setPosition(x, y)
@@ -4784,13 +4792,12 @@ export class NeighborhoodScene extends Phaser.Scene {
     this.walkers.forEach((walker, index) => {
       walker.speed = getAmbientWalkerSpeed(index, walker.textureKey, unit);
       const laneY = this.getWalkerLaneY(walker.lane, walker.zone) + Math.sin(index * 1.9) * 2 * unit;
-      const marketScale = walker.zone === "market" && walker.textureKey !== "walk-street-cat"
-        ? MARKET_CHARACTER_SCALE : 1;
+      const zoneScale = getZoneArtworkScale(walker.zone);
       walker.shadow.setPosition(walker.sprite.x, laneY + 1.5 * unit)
-        .setDisplaySize(walker.shadowWidth * walker.size * unit * marketScale, walker.shadowHeight * walker.size * unit * marketScale)
+        .setDisplaySize(walker.shadowWidth * walker.size * unit * zoneScale, walker.shadowHeight * walker.size * unit * zoneScale)
         .setDepth(getStreetCharacterDepth(laneY) - 0.02)
         .setVisible(walker.active);
-      const actorScale = walker.textureKey === "walk-street-cat" ? unit : characterUnit * marketScale;
+      const actorScale = walker.textureKey === "walk-street-cat" ? unit : characterUnit * zoneScale;
       walker.sprite.setPosition(walker.sprite.x, laneY)
         .setDisplaySize(walker.width * walker.size * actorScale, walker.height * walker.size * actorScale)
         .setDepth(getStreetCharacterDepth(laneY))

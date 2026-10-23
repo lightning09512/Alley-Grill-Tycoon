@@ -3,12 +3,12 @@ import "./style.css";
 import { BUSINESS_STAGE_NAMES, CART_UPGRADE_COST, CUSTOMER_TYPES, getRecipeLearningCost, INGREDIENTS, MAX_CART_LEVEL, PLAYABLE_RECIPE_IDS, RECIPES, type RecipeId } from "./game/data";
 import { DINING_ORDER_APPROACH_SECONDS, DINING_ORDER_DELIVERY_SECONDS, DINING_ORDER_GUEST_DIALOGUE_SECONDS, DINING_ORDER_SERVER_REPLY_SECONDS, DINING_ORDER_TAKE_SECONDS, GameStore, getDiningTableCapacity, type CashCollectionEvent, type DiningOrder, type GameSnapshot } from "./game/GameStore";
 import { formatVndFromThousands } from "./game/currency";
-import { MAX_STAFF_LEVEL, STAFF_CANDIDATES, STAFF_ROLES, STAFF_TRAINING_COST, getStaffCandidate, getStaffRole, type StaffRoleId } from "./game/staffCatalog";
+import { MAX_STAFF_LEVEL, STAFF_CANDIDATES, STAFF_ROLES, STAFF_TRAINING_COST, getServerCleaningRestSeconds, getStaffCandidate, getStaffRole, type StaffRoleId } from "./game/staffCatalog";
 import { MENU_DISHES, MENU_CATEGORIES, MENU_INGREDIENTS, type MenuCategory, type MenuDish, type MenuIngredientId } from "./game/menuCatalog";
 import { getMarketStall, MARKET_PRODUCT_DETAILS, type MarketStallId } from "./game/marketCatalog";
 import { MusicPlayer } from "./game/MusicPlayer";
 import { NeighborhoodScene } from "./game/NeighborhoodScene";
-import { DiningRoomScene } from "./game/DiningRoomScene";
+import { DINING_ROOM_HEIGHT, DINING_ROOM_WIDTH, DiningRoomScene } from "./game/DiningRoomScene";
 import { HomeInteriorScene } from "./game/HomeInteriorScene";
 import { WholesaleMarketScene, WHOLESALE_MARKET_INTERIOR_SECTIONS, type WholesaleMarketLightingState, type WholesaleMarketSection } from "./game/WholesaleMarketScene";
 import { formatStoreNameForDisplay, GAME_TITLE } from "./config/game";
@@ -291,15 +291,128 @@ function setMaiLinhSpriteMotion(element: HTMLElement, motion: MaiLinhSpriteMotio
   element.classList.toggle("is-mirrored", !directionalSpriteUrl && [1, 2, 3].includes(direction));
 }
 
-const MAI_LINH_WORK_HOLD_SECONDS = 32;
+const MAI_LINH_WORK_HOLD_SECONDS = 6;
 let maiLinhWorkHoldUntil = -1;
+type MaiLinhRoomPoint = { x: number; y: number };
+let maiLinhRoamPoint: MaiLinhRoomPoint | null = null;
+let maiLinhRoamActor: HTMLElement | null = null;
+let maiLinhRoamAnimation: Animation | null = null;
+let maiLinhRoamTimer: number | null = null;
+let maiLinhRoamRunId = 0;
+
+function readMaiLinhRoomPoint(actor: HTMLElement): MaiLinhRoomPoint | null {
+  const style = getComputedStyle(actor);
+  const stage = actor.parentElement?.getBoundingClientRect();
+  if (!stage || stage.width <= 0 || stage.height <= 0) return null;
+  const toRoomCoordinate = (value: string, extent: number, roomExtent: number): number | null => {
+    const coordinate = Number.parseFloat(value);
+    if (!Number.isFinite(coordinate)) return null;
+    return value.trim().endsWith("%") ? coordinate / 100 * roomExtent : coordinate / extent * roomExtent;
+  };
+  const x = toRoomCoordinate(style.left, stage.width, DINING_ROOM_WIDTH);
+  const y = toRoomCoordinate(style.top, stage.height, DINING_ROOM_HEIGHT);
+  return x !== null && y !== null ? { x, y } : null;
+}
+
+function setMaiLinhRoomPoint(actor: HTMLElement, point: MaiLinhRoomPoint): void {
+  actor.style.left = `${point.x / DINING_ROOM_WIDTH * 100}%`;
+  actor.style.top = `${point.y / DINING_ROOM_HEIGHT * 100}%`;
+  actor.style.bottom = "auto";
+}
+
+function stopMaiLinhRoaming(): void {
+  if (!maiLinhRoamActor && !maiLinhRoamAnimation && maiLinhRoamTimer === null) return;
+  maiLinhRoamRunId += 1;
+  if (maiLinhRoamTimer !== null) window.clearTimeout(maiLinhRoamTimer);
+  maiLinhRoamTimer = null;
+  const actor = maiLinhRoamActor;
+  const position = actor ? readMaiLinhRoomPoint(actor) : null;
+  if (position) maiLinhRoamPoint = position;
+  maiLinhRoamAnimation?.cancel();
+  maiLinhRoamAnimation = null;
+  if (actor && position) {
+    setMaiLinhRoomPoint(actor, position);
+  }
+  maiLinhRoamActor = null;
+}
+
+function startMaiLinhRoaming(actor: HTMLElement): void {
+  if (maiLinhRoamActor === actor) return;
+  stopMaiLinhRoaming();
+  const initialPoint = maiLinhRoamPoint ?? diningScene.getServiceCounterStaffRoomPoint();
+  if (!initialPoint) return;
+  maiLinhRoamPoint = initialPoint;
+  maiLinhRoamActor = actor;
+  setMaiLinhRoomPoint(actor, initialPoint);
+  const runId = ++maiLinhRoamRunId;
+
+  const pauseThenWalk = (pauseMs: number): void => {
+    if (runId !== maiLinhRoamRunId || maiLinhRoamActor !== actor || !actor.isConnected) return;
+    setMaiLinhSpriteMotion(actor, "phone", 1);
+    maiLinhRoamTimer = window.setTimeout(() => {
+      maiLinhRoamTimer = null;
+      const currentPoint = readMaiLinhRoomPoint(actor) ?? maiLinhRoamPoint;
+      if (!currentPoint) return;
+      maiLinhRoamPoint = currentPoint;
+      const route = diningScene.getStaffRoamRouteRoomPoints(currentPoint);
+      if (!route || route.length < 2) {
+        pauseThenWalk(1_000);
+        return;
+      }
+      let segmentIndex = 1;
+      const walkNextSegment = (): void => {
+        if (runId !== maiLinhRoamRunId || maiLinhRoamActor !== actor || !actor.isConnected) return;
+        if (segmentIndex >= route.length) {
+          const finalPoint = route[route.length - 1]!;
+          maiLinhRoamPoint = finalPoint;
+          setMaiLinhRoomPoint(actor, finalPoint);
+          maiLinhRoamAnimation = null;
+          setMaiLinhSpriteMotion(actor, "phone", 1);
+          pauseThenWalk(1_400 + Math.random() * 2_100);
+          return;
+        }
+        const from = readMaiLinhRoomPoint(actor) ?? maiLinhRoamPoint ?? route[segmentIndex - 1]!;
+        const to = route[segmentIndex]!;
+        segmentIndex += 1;
+        const distance = Math.hypot(to.x - from.x, to.y - from.y);
+        if (distance < 2) {
+          setMaiLinhRoomPoint(actor, to);
+          maiLinhRoamPoint = to;
+          walkNextSegment();
+          return;
+        }
+        setMaiLinhSpriteMotion(actor, "walk-empty", getMaiLinhDirectionRow(from, to));
+        setMaiLinhRoomPoint(actor, from);
+        const stageWidth = actor.parentElement?.getBoundingClientRect().width ?? 0;
+        const screenScale = stageWidth > 0 ? stageWidth / DINING_ROOM_WIDTH : 1;
+        const animation = actor.animate([
+          { left: `${from.x / DINING_ROOM_WIDTH * 100}%`, top: `${from.y / DINING_ROOM_HEIGHT * 100}%` },
+          { left: `${to.x / DINING_ROOM_WIDTH * 100}%`, top: `${to.y / DINING_ROOM_HEIGHT * 100}%` },
+        ], { duration: Math.max(120, distance * screenScale / 31 * 1_000), easing: "linear", fill: "forwards" });
+        maiLinhRoamAnimation = animation;
+        animation.addEventListener("finish", () => {
+          if (runId !== maiLinhRoamRunId || maiLinhRoamActor !== actor) return;
+          setMaiLinhRoomPoint(actor, to);
+          maiLinhRoamPoint = to;
+          animation.cancel();
+          maiLinhRoamAnimation = null;
+          walkNextSegment();
+        }, { once: true });
+      };
+      walkNextSegment();
+    }, pauseMs);
+  };
+
+  pauseThenWalk(700 + Math.random() * 900);
+}
 
 function getStaffActivity(member: GameSnapshot["staff"][number], snapshot: GameSnapshot): "work" | "rest" | "lazy" {
   if (member.id === "mai-linh") {
     if (!snapshot.inShift || !member.isWorking) maiLinhWorkHoldUntil = -1;
     else {
-      const isServing = snapshot.dining.orders.some((order) => ["called", "taking", "queued", "cooking", "ready", "carrying"].includes(order.status))
-        || snapshot.dining.guests.some((guest) => ["approaching", "entering", "waiting-order", "waiting-food", "eating", "awaiting-payment"].includes(guest.status));
+      const isServing = snapshot.dining.orders.some((order) => ["called", "taking", "ready", "carrying"].includes(order.status))
+        || snapshot.dining.tables.some((table) => table.cleaningSeconds > 0)
+        || snapshot.dining.guests.some((guest) => ["approaching", "entering", "waiting-order"].includes(guest.status));
       if (isServing) maiLinhWorkHoldUntil = snapshot.elapsedSeconds + MAI_LINH_WORK_HOLD_SECONDS;
       if (isServing || snapshot.elapsedSeconds <= maiLinhWorkHoldUntil) {
         if (member.restSeconds <= 0 && member.energy > 18) return "work";
@@ -308,7 +421,8 @@ function getStaffActivity(member: GameSnapshot["staff"][number], snapshot: GameS
   }
   if (member.restSeconds > 0 || member.energy <= 18) return "rest";
   const hasKitchenWork = snapshot.dining.orders.some((order) => order.status === "cooking");
-  if (member.role === "server" && snapshot.dining.orders.some((order) => ["taking", "ready", "carrying"].includes(order.status))) return "work";
+  if (member.role === "server" && (snapshot.dining.orders.some((order) => ["taking", "ready", "carrying"].includes(order.status))
+    || snapshot.dining.tables.some((table) => table.cleaningSeconds > 0))) return "work";
   if (member.role === "cashier" && snapshot.dining.guests.some((guest) => guest.status === "awaiting-payment")) return "work";
   if ((member.role === "chef" || member.role === "prep") && hasKitchenWork) return "work";
   if (member.role === "promoter" && snapshot.elapsedSeconds % 32 < 9) return "work";
@@ -319,8 +433,10 @@ function renderRestaurantStaffActors(snapshot: GameSnapshot): void {
   const stage = document.querySelector<HTMLElement>("#restaurant-staff-stage");
   if (!stage) return;
   const deliveryStage = document.querySelector<HTMLElement>("#dining-delivery-stage");
-  const serverDelivering = snapshot.dining.orders.some((order) => ["taking", "carrying"].includes(order.status) && order.carriedByStaff)
-    || Boolean(deliveryStage?.dataset.returnOrderId);
+  const deliveryActorReady = Boolean(deliveryStage?.querySelector(".dining-delivery-person"));
+  const serverDelivering = deliveryActorReady && (snapshot.dining.orders.some((order) => ["taking", "carrying"].includes(order.status) && order.carriedByStaff)
+    || deliveryStage?.dataset.orderId?.startsWith("clean-table-")
+    || Boolean(deliveryStage?.dataset.returnOrderId));
   const visibleStaff = snapshot.inShift ? snapshot.staff.filter((member) => member.isWorking && !["prep", "chef"].includes(member.role)
     && (!staffEntranceActive || staffEntranceArrivedIds.has(member.id))
     && !(member.role === "server" && serverDelivering)) : [];
@@ -342,19 +458,24 @@ function renderRestaurantStaffActors(snapshot: GameSnapshot): void {
   });
   const signature = actors.map((actor) => actor.signature).join(",");
   if (stage.dataset.staffSignature !== signature) {
+    stopMaiLinhRoaming();
     stage.dataset.staffSignature = signature;
     stage.innerHTML = actors.map((actor) => actor.markup).join("");
   }
   const maiLinh = stage.querySelector<HTMLElement>('[data-staff-id="mai-linh"]');
-  const counterStaffPoint = diningScene.getServiceCounterStaffScreenPoint();
-  if (maiLinh && counterStaffPoint && !serverDelivering) {
+  const counterStaffPoint = diningScene.getServiceCounterStaffRoomPoint();
+  if (maiLinh && !serverDelivering) {
     const activity = maiLinh.dataset.staffActivity;
-    // Work poses now match the actual task: writing is reserved for a table,
-    // while waiting at the service counter uses the directional idle pose.
-    setMaiLinhSpriteMotion(maiLinh, activity === "rest" ? "rest" : activity === "lazy" ? "phone" : "idle", 1);
-    maiLinh.style.left = `${counterStaffPoint.x}px`;
-    maiLinh.style.top = `${counterStaffPoint.y}px`;
-    maiLinh.style.bottom = "auto";
+    if (activity === "lazy" && snapshot.inShift && snapshot.serviceMode === "dining") {
+      startMaiLinhRoaming(maiLinh);
+    } else {
+      stopMaiLinhRoaming();
+      const point = maiLinhRoamPoint ?? counterStaffPoint;
+      if (point) setMaiLinhRoomPoint(maiLinh, point);
+      setMaiLinhSpriteMotion(maiLinh, activity === "rest" ? "rest" : "idle", 1);
+    }
+  } else {
+    stopMaiLinhRoaming();
   }
   for (const actor of stage.querySelectorAll<HTMLElement>(".restaurant-staff-sprite:not([data-staff-id='mai-linh'])")) {
     const member = visibleStaff.find((entry) => entry.id === actor.dataset.staffId);
@@ -395,9 +516,16 @@ function renderKitchenStaffSprite(selector: string, member: GameSnapshot["staff"
 
 const STAFF_ENTRANCE_DIALOGUES: Record<string, readonly string[]> = {
   "mai-linh": [
-    "Mới mở mắt ra đã thấy bàn với ghế... thôi, làm!",
-    "Cầu cho ca nay khách gọi món từ từ giùm em.",
-    "Chân còn chưa tỉnh mà quán mở cửa rồi đó hả trời.",
+    "Rồi, em vô ca đây. Bàn nào gọi cứ réo em nha.",
+    "Ủa, mới mở ca mà có bàn gọi rồi hả? Em qua liền.",
+    "Em đứng phòng ăn nha, có món thì chuyển phiếu xuống bếp giúp em.",
+    "Để em đi một vòng coi bàn nào đang cần gì.",
+    "Ca mới bắt đầu đó, đừng dồn hết khách cho em một lượt nha.",
+    "Em vô vị trí rồi, bàn nào cần thêm gì cứ gọi.",
+    "Rồi, hôm nay em lo chạy bàn. Có gì báo em tiếng nha.",
+    "Bàn trong kia đang chờ kìa, em qua hỏi món trước đây.",
+    "Cho em gửi đồ cái đã… rồi, bàn nào trước đây?",
+    "Mới vô đã nghe gọi rồi, em tới liền đây.",
   ],
   "quang-tin": [
     "Hôm nay ai trả tiền lẻ là tui khóc tại quầy luôn á.",
@@ -426,6 +554,44 @@ const STAFF_ENTRANCE_DIALOGUES: Record<string, readonly string[]> = {
   ],
 };
 
+const MAI_LINH_ORDER_REPLY_TEMPLATES = [
+  "Rồi, {mon} nha. Em ghi rồi.",
+  "Ok, {mon} em chuyển xuống bếp liền.",
+  "Bàn mình gọi {mon} đúng không? Em chốt nha.",
+  "Em ghi {mon} rồi đó, chờ chút nha.",
+  "Để em báo bếp làm {mon} cho bàn mình.",
+  "Rồi nha, {mon} em ghi đủ rồi.",
+  "{mon} phải không mình? Em chuyển phiếu nha.",
+  "Ok bàn mình, em đưa {mon} xuống bếp đây.",
+  "Em nhận món rồi, {mon} đúng không ạ?",
+  "Được rồi, {mon} em ghi vô phiếu rồi.",
+  "Rồi, em nhắc bếp món {mon} trước nha.",
+  "Chốt {mon} nha. Mình gọi thêm gì nữa không?",
+  "Em ghi xong rồi, {mon} xuống bếp liền đây.",
+  "Ok nha, {mon} em báo bếp ngay.",
+  "Để em đọc lại cho chắc: {mon}, đúng không?",
+  "Rồi đó, {mon} em không ghi sót đâu.",
+  "Bàn mình chờ chút nha, em chuyển {mon} xuống bếp.",
+  "Dạ, {mon} em ghi rồi. Cần thêm gì gọi em nha.",
+  "Rồi, phiếu có {mon} rồi nha.",
+  "Em chốt món này rồi, để em báo bếp.",
+] as const;
+let maiLinhOrderReplyBag: string[] = [];
+let lastMaiLinhOrderReplyTemplate = "";
+
+function takeMaiLinhOrderReply(recipeName: string): string {
+  if (maiLinhOrderReplyBag.length === 0) {
+    maiLinhOrderReplyBag = Phaser.Utils.Array.Shuffle([...MAI_LINH_ORDER_REPLY_TEMPLATES]);
+    if (maiLinhOrderReplyBag.at(-1) === lastMaiLinhOrderReplyTemplate && maiLinhOrderReplyBag.length > 1) {
+      [maiLinhOrderReplyBag[maiLinhOrderReplyBag.length - 1], maiLinhOrderReplyBag[maiLinhOrderReplyBag.length - 2]] =
+        [maiLinhOrderReplyBag[maiLinhOrderReplyBag.length - 2]!, maiLinhOrderReplyBag[maiLinhOrderReplyBag.length - 1]!];
+    }
+  }
+  const template = maiLinhOrderReplyBag.pop() ?? MAI_LINH_ORDER_REPLY_TEMPLATES[0];
+  lastMaiLinhOrderReplyTemplate = template;
+  return template.replaceAll("{mon}", recipeName);
+}
+
 function queueStaffEntranceTimer(callback: () => void, delay: number): void {
   const timer = window.setTimeout(() => {
     staffEntranceTimers.delete(timer);
@@ -446,6 +612,7 @@ function clearStaffEntranceSequence(): void {
 
 function finishStaffEntranceActor(memberId: string, runId: number, total: number): void {
   if (runId !== staffEntranceRunId) return;
+  if (memberId === "mai-linh") maiLinhRoamPoint = diningScene.getServiceCounterStaffRoomPoint();
   staffEntranceArrivedIds.add(memberId);
   document.querySelector<HTMLElement>(`#staff-entrance-stage [data-staff-id="${memberId}"]`)?.remove();
   const snapshot = store.getSnapshot();
@@ -605,17 +772,28 @@ function renderKitchenStove(snapshot: GameSnapshot): void {
 function renderKitchenPass(snapshot: GameSnapshot): void {
   const stage = document.querySelector<HTMLElement>("#kitchen-pass-stage");
   if (!stage) return;
-  const readyOrders = snapshot.dining.orders.filter((order) => order.status === "ready");
+  const delivery = snapshot.dining.orders.find((order) => order.status === "carrying" && order.carriedByStaff);
+  const deliveryElapsed = delivery ? DINING_ORDER_DELIVERY_SECONDS - delivery.deliverySeconds : -1;
+  // Keep the plate on the pass until the server actually finishes picking it up.
+  const readyOrders = snapshot.dining.orders.filter((order) => order.status === "ready"
+    || (order.id === delivery?.id && deliveryElapsed < 8));
   const hasAvailableServer = snapshot.inShift && snapshot.staff.some((member) => member.role === "server"
     && member.isWorking && member.restSeconds <= 0 && member.energy > 18);
   const serverPickup = document.querySelector<HTMLElement>("#kitchen-server-pickup");
   if (serverPickup) {
-    const hasDishToPickUp = readyOrders.length > 0 && hasAvailableServer;
+    const hasDishToPickUp = Boolean(delivery && deliveryElapsed >= 4 && deliveryElapsed < 10);
     serverPickup.hidden = !hasDishToPickUp;
-    if (hasDishToPickUp) setMaiLinhSpriteMotion(serverPickup, "pickup-kitchen", 0);
+    if (hasDishToPickUp) {
+      const entering = deliveryElapsed < 6;
+      const pickingUp = deliveryElapsed >= 6 && deliveryElapsed < 8;
+      const progress = entering ? (deliveryElapsed - 4) / 2 : pickingUp ? 1 : 1 - (deliveryElapsed - 8) / 2;
+      serverPickup.style.left = `${83 - 39 * progress}%`;
+      serverPickup.style.top = "89%";
+      setMaiLinhSpriteMotion(serverPickup, pickingUp ? "pickup-kitchen" : entering ? "walk-empty" : "walk-tray", entering ? 2 : 6);
+    }
   }
   const signature = readyOrders.map((order) => `${order.id}:${order.recipe}:${order.tableId}`).join(",");
-  const serviceSignature = `${signature}:${hasAvailableServer}`;
+  const serviceSignature = `${signature}:${hasAvailableServer}:${deliveryElapsed < 8}`;
   if (stage.dataset.passSignature === serviceSignature) return;
   stage.dataset.passSignature = serviceSignature;
   stage.innerHTML = readyOrders.slice(0, 4).map((order, index) => `<button class="kitchen-pass-dish ${hasAvailableServer ? "has-server" : "needs-manual-service"}" data-action="dining-take-dish" data-order-id="${order.id}" type="button" style="--pass-index:${index}" aria-label="${hasAvailableServer ? `Món ${RECIPES[order.recipe].name} đang chờ phục vụ tới bàn ${order.tableId}` : `Chạm để bưng ${RECIPES[order.recipe].name} tới bàn ${order.tableId}`}" title="${hasAvailableServer ? `Nhân viên sẽ bưng tới bàn ${order.tableId}` : `Chạm để bưng tới bàn ${order.tableId}`}" ${hasAvailableServer ? "disabled" : ""}>
@@ -673,16 +851,92 @@ function renderDiningDelivery(snapshot: GameSnapshot): void {
     delete stage.dataset.orderId;
     delete stage.dataset.returnOrderId;
     delete stage.dataset.carriedByStaff;
+    delete stage.dataset.serviceRoute;
+    delete stage.dataset.serviceRouteRoom;
+    delete stage.dataset.staffHomeRoomPoint;
+    return;
+  }
+
+  const cleaningTable = snapshot.dining.tables.find((table) => table.cleanliness === "dirty" && table.cleaningSeconds > 0);
+  if (!order && cleaningTable) {
+    stopMaiLinhRoaming();
+    const taskId = `clean-table-${cleaningTable.id}`;
+    if (stage.dataset.orderId !== taskId) {
+      delete stage.dataset.serviceRouteRoom;
+      delete stage.dataset.staffHomeRoomPoint;
+    }
+    let serviceRoute: MaiLinhRoomPoint[] | null = null;
+    if (stage.dataset.orderId === taskId && stage.dataset.serviceRouteRoom) {
+      try {
+        const savedRoute = JSON.parse(stage.dataset.serviceRouteRoom) as unknown;
+        if (Array.isArray(savedRoute) && savedRoute.every((point) => point && Number.isFinite(point.x) && Number.isFinite(point.y))) {
+          serviceRoute = savedRoute as MaiLinhRoomPoint[];
+        }
+      } catch {
+        serviceRoute = null;
+      }
+    }
+    serviceRoute ??= diningScene.getServiceTableRouteRoomPoints(cleaningTable.id, maiLinhRoamPoint ?? diningScene.getServiceCounterStaffRoomPoint());
+    const destination = serviceRoute?.[serviceRoute.length - 1];
+    const tableCenter = diningScene.getTableRoomPoint(cleaningTable.id);
+    if (!serviceRoute || !destination || !tableCenter) return;
+    const homePoint = serviceRoute[0]!;
+    const total = Math.max(1, cleaningTable.cleaningTotalSeconds);
+    const elapsed = Math.max(0, total - cleaningTable.cleaningSeconds);
+    const approachSeconds = 4;
+    const travelProgress = Math.min(1, elapsed / approachSeconds);
+    const nextPoint = pointAlongScreenRoute(serviceRoute, travelProgress);
+    const directionRow = travelProgress < 1
+      ? directionAlongScreenRoute(serviceRoute, travelProgress)
+      : getMaiLinhDirectionRow(destination, tableCenter);
+    if (stage.dataset.orderId !== taskId) {
+      stage.dataset.orderId = taskId;
+      stage.dataset.carriedByStaff = "true";
+      stage.dataset.tableId = String(cleaningTable.id);
+      stage.dataset.serviceRouteRoom = JSON.stringify(serviceRoute);
+      stage.dataset.staffHomeRoomPoint = JSON.stringify(homePoint);
+      delete stage.dataset.returnOrderId;
+      stage.innerHTML = `<div class="dining-delivery-actor is-staff is-cleaning-table">
+        <div class="dining-delivery-person mai-linh-gif" aria-hidden="true"></div>
+        <span>Đang dọn bàn ${cleaningTable.id}</span>
+      </div>`;
+    }
+    const actor = stage.querySelector<HTMLElement>(".dining-delivery-actor");
+    const person = actor?.querySelector<HTMLElement>(".dining-delivery-person");
+    if (!actor || !person) return;
+    setMaiLinhSpriteMotion(person, travelProgress < 1 ? "walk-empty" : "serve-table", directionRow);
+    actor.dataset.staffMotion = travelProgress < 1 ? "walk-empty" : "serve-table";
+    actor.style.left = `${nextPoint.x / DINING_ROOM_WIDTH * 100}%`;
+    actor.style.top = `${nextPoint.y / DINING_ROOM_HEIGHT * 100}%`;
+    maiLinhRoamPoint = nextPoint;
     return;
   }
 
   if (!order) {
     const actor = stage.querySelector<HTMLElement>(".dining-delivery-actor");
     const tableId = Number(stage.dataset.tableId);
-    const serviceRoute = diningScene.getServiceTableRouteScreenPoints(tableId);
-    const homePoint = serviceRoute?.[0] ?? diningScene.getServiceCounterStaffScreenPoint();
-    const destination = serviceRoute?.[serviceRoute.length - 1] ?? diningScene.getServiceTableApproachScreenPoint(tableId);
-    if (actor && stage.dataset.carriedByStaff === "true" && stage.dataset.orderId && !stage.dataset.returnOrderId && homePoint && destination) {
+    let serviceRoute: MaiLinhRoomPoint[] | null = null;
+    try {
+      const savedRoute = stage.dataset.serviceRouteRoom ? JSON.parse(stage.dataset.serviceRouteRoom) as unknown : null;
+      if (Array.isArray(savedRoute) && savedRoute.every((point) => point && Number.isFinite(point.x) && Number.isFinite(point.y))) {
+        serviceRoute = savedRoute as MaiLinhRoomPoint[];
+      }
+    } catch {
+      serviceRoute = null;
+    }
+    let savedHomePoint: MaiLinhRoomPoint | null = null;
+    try {
+      const value = stage.dataset.staffHomeRoomPoint ? JSON.parse(stage.dataset.staffHomeRoomPoint) as unknown : null;
+      if (value && typeof value === "object" && Number.isFinite((value as MaiLinhRoomPoint).x) && Number.isFinite((value as MaiLinhRoomPoint).y)) {
+        savedHomePoint = value as MaiLinhRoomPoint;
+      }
+    } catch {
+      savedHomePoint = null;
+    }
+    const homePoint = savedHomePoint ?? serviceRoute?.[0] ?? diningScene.getServiceCounterStaffRoomPoint();
+    const destination = serviceRoute?.[serviceRoute.length - 1] ?? diningScene.getServiceTableApproachRoomPoint(tableId);
+    if (actor && stage.dataset.carriedByStaff === "true" && stage.dataset.orderId && !stage.dataset.returnOrderId && destination) {
+      actor.style.visibility = "visible";
       stage.dataset.returnOrderId = stage.dataset.orderId;
       actor.classList.add("is-returning");
       actor.querySelector(".dining-delivery-dish")?.remove();
@@ -692,14 +946,18 @@ function renderDiningDelivery(snapshot: GameSnapshot): void {
       const firstTurn = returnRoute[1] ?? homePoint;
       if (person) setMaiLinhSpriteMotion(person, "walk-empty", getMaiLinhDirectionRow(destination, firstTurn));
       actor.dataset.staffMotion = "walk-empty";
-      actor.style.left = `${destination.x}px`;
-      actor.style.top = `${destination.y}px`;
+      actor.style.left = `${destination.x / DINING_ROOM_WIDTH * 100}%`;
+      actor.style.top = `${destination.y / DINING_ROOM_HEIGHT * 100}%`;
       const returnDistances = returnRoute.slice(1).map((point, index) => Math.hypot(point.x - returnRoute[index]!.x, point.y - returnRoute[index]!.y));
       const returnDistance = returnDistances.reduce((sum, distance) => sum + distance, 0);
       let coveredDistance = 0;
       const returnKeyframes = returnRoute.map((point, index) => {
         if (index > 0) coveredDistance += returnDistances[index - 1]!;
-        return { left: `${point.x}px`, top: `${point.y}px`, offset: returnDistance > 0 ? coveredDistance / returnDistance : 1 };
+        return {
+          left: `${point.x / DINING_ROOM_WIDTH * 100}%`,
+          top: `${point.y / DINING_ROOM_HEIGHT * 100}%`,
+          offset: returnDistance > 0 ? coveredDistance / returnDistance : 1,
+        };
       });
       actor.style.transition = "none";
       const returnAnimation = actor.animate(returnKeyframes, { duration: 2_200, easing: "linear", fill: "forwards" });
@@ -709,6 +967,10 @@ function renderDiningDelivery(snapshot: GameSnapshot): void {
         delete stage.dataset.orderId;
         delete stage.dataset.returnOrderId;
         delete stage.dataset.carriedByStaff;
+        delete stage.dataset.serviceRoute;
+        delete stage.dataset.serviceRouteRoom;
+        delete stage.dataset.staffHomeRoomPoint;
+        maiLinhRoamPoint = homePoint;
         diningDeliveryReturnTimer = null;
         renderRestaurantStaffActors(store.getSnapshot());
       }, 2_220);
@@ -719,17 +981,43 @@ function renderDiningDelivery(snapshot: GameSnapshot): void {
     delete stage.dataset.orderId;
     delete stage.dataset.carriedByStaff;
     delete stage.dataset.tableId;
+    delete stage.dataset.serviceRoute;
+    delete stage.dataset.serviceRouteRoom;
+    delete stage.dataset.staffHomeRoomPoint;
     return;
   }
 
-  const serviceRoute = order.carriedByStaff ? diningScene.getServiceTableRouteScreenPoints(order.tableId) : null;
+  if (stage.dataset.orderId !== order.id) {
+    delete stage.dataset.serviceRouteRoom;
+    delete stage.dataset.staffHomeRoomPoint;
+    delete stage.dataset.kitchenOutboundRoom;
+  }
+  if (order.carriedByStaff) stopMaiLinhRoaming();
+  let serviceRoute: MaiLinhRoomPoint[] | null = null;
+  if (order.carriedByStaff) {
+    if (stage.dataset.orderId === order.id && stage.dataset.serviceRouteRoom) {
+      try {
+        const savedRoute = JSON.parse(stage.dataset.serviceRouteRoom) as unknown;
+        if (Array.isArray(savedRoute) && savedRoute.every((point) => point && Number.isFinite(point.x) && Number.isFinite(point.y))) {
+          serviceRoute = savedRoute as MaiLinhRoomPoint[];
+        }
+      } catch {
+        serviceRoute = null;
+      }
+    }
+    serviceRoute ??= diningScene.getServiceTableRouteRoomPoints(order.tableId,
+      order.status === "carrying" ? { x: 70, y: 960 } : maiLinhRoamPoint ?? diningScene.getServiceCounterStaffRoomPoint());
+    if (!serviceRoute) return;
+  }
   const homePoint = order.carriedByStaff
-    ? serviceRoute?.[0] ?? diningScene.getServiceCounterStaffScreenPoint()
+    ? serviceRoute?.[0] ?? diningScene.getServiceCounterStaffRoomPoint()
     : diningScene.getServiceCounterScreenPoint();
   const destination = order.carriedByStaff
-    ? serviceRoute?.[serviceRoute.length - 1] ?? diningScene.getServiceTableApproachScreenPoint(order.tableId)
+    ? serviceRoute?.[serviceRoute.length - 1] ?? diningScene.getServiceTableApproachRoomPoint(order.tableId)
     : diningScene.getTableScreenPoint(order.tableId);
-  const tableCenter = diningScene.getTableScreenPoint(order.tableId);
+  const tableCenter = order.carriedByStaff
+    ? diningScene.getTableRoomPoint(order.tableId)
+    : diningScene.getTableScreenPoint(order.tableId);
   if (!homePoint || !destination || !tableCenter) return;
   if (diningDeliveryReturnTimer !== null) window.clearTimeout(diningDeliveryReturnTimer);
   diningDeliveryReturnTimer = null;
@@ -744,30 +1032,65 @@ function renderDiningDelivery(snapshot: GameSnapshot): void {
   const travelProgress = order.status === "taking" ? Math.min(1, progress / approachProgress) : progress;
   const movementProgress = order.status === "carrying" ? Math.min(1, progress / interactionProgress) : travelProgress;
   const route = serviceRoute ?? [homePoint, destination];
-  const nextPoint = pointAlongScreenRoute(route, movementProgress);
+  let nextPoint = pointAlongScreenRoute(route, movementProgress);
   const directionRow = progress >= interactionProgress
     ? getMaiLinhDirectionRow(destination, tableCenter)
     : directionAlongScreenRoute(route, movementProgress);
-  const staffMotion: MaiLinhSpriteMotion = order.status === "taking"
+  let staffMotion: MaiLinhSpriteMotion = order.status === "taking"
     ? progress < approachProgress ? "walk-empty" : progress < serverReplyEndProgress ? "idle" : "take-order"
     : progress >= 0.82 ? "serve-table" : "walk-tray";
+  let deliveryDirection = directionRow;
+  let inKitchen = false;
+  if (order.status === "carrying" && order.carriedByStaff) {
+    const elapsed = duration - remaining;
+    const door = { x: 70, y: 960 };
+    if (elapsed < 4) {
+      const start = maiLinhRoamPoint ?? diningScene.getServiceCounterStaffRoomPoint();
+      // The same collision-aware navigation is used for the trip to the kitchen door.
+      let outbound: MaiLinhRoomPoint[];
+      try { outbound = JSON.parse(stage.dataset.kitchenOutboundRoom ?? "null"); } catch { outbound = []; }
+      if (!Array.isArray(outbound) || outbound.length < 2) {
+        const safeRoute = diningScene.findStaffRoute(start, door);
+        if (!safeRoute) return;
+        outbound = safeRoute;
+        stage.dataset.kitchenOutboundRoom = JSON.stringify(outbound);
+      }
+      nextPoint = pointAlongScreenRoute(outbound, elapsed / 4);
+      deliveryDirection = directionAlongScreenRoute(outbound, elapsed / 4);
+      staffMotion = "walk-empty";
+    } else if (elapsed < 10) {
+      nextPoint = door;
+      inKitchen = true;
+    } else {
+      const travel = Math.min(1, (elapsed - 10) / 5);
+      nextPoint = pointAlongScreenRoute(route, travel);
+      deliveryDirection = travel < 1 ? directionAlongScreenRoute(route, travel) : getMaiLinhDirectionRow(destination, tableCenter);
+      staffMotion = travel < 1 ? "walk-tray" : "serve-table";
+    }
+  }
   if (stage.dataset.orderId !== order.id) {
+    if (order.status !== "carrying") delete stage.dataset.kitchenOutboundRoom;
     stage.dataset.orderId = order.id;
     stage.dataset.carriedByStaff = String(order.carriedByStaff);
     stage.dataset.tableId = String(order.tableId);
-    stage.innerHTML = `<div class="dining-delivery-actor ${order.carriedByStaff ? "is-staff" : "is-player"} ${order.status === "taking" ? "is-taking-order" : "is-delivering-dish"}" style="left:${homePoint.x}px;top:${homePoint.y}px">
+    if (serviceRoute) stage.dataset.serviceRouteRoom = JSON.stringify(serviceRoute);
+    if (order.carriedByStaff) stage.dataset.staffHomeRoomPoint = JSON.stringify(homePoint);
+    stage.innerHTML = `<div class="dining-delivery-actor ${order.carriedByStaff ? "is-staff" : "is-player"} ${order.status === "taking" ? "is-taking-order" : "is-delivering-dish"}">
       ${order.carriedByStaff ? `<div class="dining-delivery-person mai-linh-gif" aria-hidden="true"></div>` : ""}
-      ${order.status === "taking" && order.carriedByStaff ? `<div class="dining-order-staff-bubble" hidden>Dạ, để em ghi từng món cho bàn mình ạ.</div>` : ""}
+      ${order.status === "taking" && order.carriedByStaff ? `<div class="dining-order-staff-bubble" hidden></div>` : ""}
       ${order.status === "carrying" && !order.carriedByStaff ? `<img class="dining-delivery-dish" src="${DISH_ART_URLS[order.recipe]}" alt="">` : ""}
       ${order.status === "carrying" ? `<span>Bàn ${order.tableId}</span>` : ""}
     </div>`;
+    const staffReply = stage.querySelector<HTMLElement>(".dining-order-staff-bubble");
+    if (staffReply) staffReply.textContent = takeMaiLinhOrderReply(RECIPES[order.recipe].name);
   }
   const actor = stage.querySelector<HTMLElement>(".dining-delivery-actor");
   if (!actor) return;
+  actor.style.visibility = inKitchen ? "hidden" : "visible";
   if (order.carriedByStaff) {
     actor.dataset.staffMotion = staffMotion;
     const person = actor.querySelector<HTMLElement>(".dining-delivery-person");
-    if (person) setMaiLinhSpriteMotion(person, staffMotion, directionRow);
+    if (person) setMaiLinhSpriteMotion(person, staffMotion, deliveryDirection);
     const staffBubble = actor.querySelector<HTMLElement>(".dining-order-staff-bubble");
     if (staffBubble) staffBubble.hidden = !(progress >= guestDialogueEndProgress && progress < serverReplyEndProgress);
     actor.querySelector(".dining-delivery-dish")?.remove();
@@ -776,8 +1099,12 @@ function renderDiningDelivery(snapshot: GameSnapshot): void {
   const nextY = nextPoint.y;
   if (actor.dataset.pathPosition !== `${nextX},${nextY}`) {
     actor.dataset.pathPosition = `${nextX},${nextY}`;
-    actor.style.left = `${nextX}px`;
-    actor.style.top = `${nextY}px`;
+    actor.style.left = order.carriedByStaff
+      ? `${nextX / DINING_ROOM_WIDTH * 100}%`
+      : `${nextX}px`;
+    actor.style.top = order.carriedByStaff
+      ? `${nextY / DINING_ROOM_HEIGHT * 100}%`
+      : `${nextY}px`;
   }
 }
 
@@ -1207,10 +1534,11 @@ const beginDiningSwipe = (event: PointerEvent): void => {
   diningSwipeStart = null;
   if (store.getSnapshot().serviceMode !== "dining") return;
   if (!event.isPrimary) return;
-  if (event.target instanceof Element && event.target.closest("button, a, input, select, textarea, [role='button'], .dining-ticket-list")) return;
+  if (event.target instanceof Element && event.target.closest("button, a, input, select, textarea, [role='button'], .dining-ticket-list, #dining-control-panel")) return;
   diningSwipeStart = { x: event.clientX, y: event.clientY, pointerId: event.pointerId };
 };
-phaserRoot.closest<HTMLElement>(".street-section")?.addEventListener("pointerdown", beginDiningSwipe);
+const gameFrame = phaserRoot.closest<HTMLElement>(".game-frame");
+gameFrame?.addEventListener("pointerdown", beginDiningSwipe, true);
 window.addEventListener("pointerup", (event) => {
   if (!diningSwipeStart || diningSwipeStart.pointerId !== event.pointerId) return;
   const dx = event.clientX - diningSwipeStart.x;
@@ -1219,8 +1547,10 @@ window.addEventListener("pointerup", (event) => {
   if (store.getSnapshot().serviceMode !== "dining" || Math.abs(dx) < 55 || Math.abs(dx) < Math.abs(dy) * 1.25) return;
   if (dx > 0 && diningView === "tables") setDiningView("kitchen");
   else if (dx < 0 && diningView === "kitchen") setDiningView("tables");
-});
-window.addEventListener("pointercancel", () => { diningSwipeStart = null; });
+}, true);
+window.addEventListener("pointercancel", (event) => {
+  if (diningSwipeStart?.pointerId === event.pointerId) diningSwipeStart = null;
+}, true);
 
 game.events.once(Phaser.Core.Events.READY, () => {
   phaserReady = true;
@@ -1368,7 +1698,7 @@ function renderStaffManagement(snapshot: GameSnapshot): void {
       ? `<button class="staff-action-button ${employee.isWorking ? "secondary" : ""}" data-action="staff-shift" data-employee-id="${employee.id}" type="button">${employee.isWorking ? "Cho nghỉ ca" : "Xếp vào ca"}</button>`
       : `<button class="staff-action-button" data-action="staff-hire" data-candidate-id="${candidate.id}" type="button" ${hireDisabled ? "disabled" : ""}>${locked ? `Mở ở cấp ${candidate.unlockLevel}` : `Tuyển · ${formatVndFromThousands(candidate.hireCost)}`}</button>`;
     const trainButton = employee
-      ? `<button class="staff-action-button" data-action="staff-train" data-employee-id="${employee.id}" type="button" ${trainDisabled ? "disabled" : ""}>${employee.level >= MAX_STAFF_LEVEL ? "Đã tối đa" : `Đào tạo · ${formatVndFromThousands(trainingCost ?? 0)}`}</button>`
+      ? `<button class="staff-action-button" data-action="staff-train" data-employee-id="${employee.id}" type="button" ${trainDisabled ? "disabled" : ""}>${employee.level >= MAX_STAFF_LEVEL ? "Đã tối đa" : `${candidate.role === "server" ? "Tăng lương" : "Đào tạo"} · ${formatVndFromThousands(trainingCost ?? 0)}`}</button>`
       : "";
     const state = !employee ? locked ? `Khóa tới cấp ${candidate.unlockLevel}` : "Ứng viên"
       : !employee.isWorking ? "Nghỉ ca"
@@ -1383,7 +1713,7 @@ function renderStaffManagement(snapshot: GameSnapshot): void {
         <div class="employee-stars" aria-label="${employee ? `Bậc kỹ năng ${employee.level} trên ${MAX_STAFF_LEVEL}` : "Chưa tuyển"}">${stars}</div>
         <p>${role.duty}</p>
         ${employee ? `<div class="employee-energy" role="meter" aria-label="Sức bền ${employee.energy}%" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${employee.energy}"><span style="width:${employee.energy}%"></span></div>` : ""}
-        <div class="employee-facts"><span><b>Nơi làm:</b> ${role.workstation}</span><span><b>Lương:</b> ${formatVndFromThousands(wage)}/ca</span><span><b>Trạng thái:</b> ${state}</span></div>
+        <div class="employee-facts"><span><b>Nơi làm:</b> ${role.workstation}</span><span><b>Lương:</b> ${formatVndFromThousands(wage)}/ca</span>${candidate.role === "server" && employee ? `<span><b>Dọn bàn:</b> 3 giây · nghỉ ${getServerCleaningRestSeconds(employee.level)} giây giữa hai bàn</span>` : ""}<span><b>Trạng thái:</b> ${state}</span></div>
         <div class="employee-actions">${workButton}${trainButton}</div>
       </div>
     </article>`;
@@ -1820,13 +2150,22 @@ function framePointForCashCollection(event: CashCollectionEvent, frame: HTMLElem
 
 function animateCoinCounter(from: number, to: number, coins: HTMLElement): Promise<void> {
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const duration = reducedMotion ? 1 : 360;
+  const duration = reducedMotion ? 1 : 300;
   return new Promise((resolve) => {
     const startedAt = performance.now();
+    let lastRenderedAt = startedAt;
+    let lastRenderedValue = from;
     const step = (now: number): void => {
       const progress = Math.min(1, (now - startedAt) / duration);
-      const eased = 1 - (1 - progress) ** 3;
-      coins.textContent = formatVndFromThousands(Math.round(from + (to - from) * eased));
+      if (progress === 1 || now - lastRenderedAt >= 1000 / 30) {
+        const eased = 1 - (1 - progress) ** 3;
+        const value = progress === 1 ? to : Math.round(from + (to - from) * eased);
+        if (value !== lastRenderedValue) {
+          coins.textContent = formatVndFromThousands(value);
+          lastRenderedValue = value;
+        }
+        lastRenderedAt = now;
+      }
       if (progress < 1) window.requestAnimationFrame(step);
       else resolve();
     };
@@ -1837,7 +2176,12 @@ function animateCoinCounter(from: number, to: number, coins: HTMLElement): Promi
 function queueCashCollection(event: CashCollectionEvent): void {
   if (event.id <= lastCashCollectionId) return;
   lastCashCollectionId = event.id;
-  cashFlightQueue.push(event);
+  const queued = cashFlightQueue.at(-1);
+  if (cashFlightPlaying && queued) {
+    cashFlightQueue[cashFlightQueue.length - 1] = { ...event, amount: queued.amount + event.amount };
+  } else {
+    cashFlightQueue.push(event);
+  }
   if (!cashFlightPlaying) void playNextCashCollection();
 }
 
@@ -1887,13 +2231,11 @@ async function playNextCashCollection(): Promise<void> {
     y: targetBounds.top - frameBounds.top + targetBounds.height * 0.5,
   };
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const flights = Array.from({ length: 6 }, (_, index) => {
-    const bill = document.createElement("img");
+  const flights = Array.from({ length: 4 }, (_, index) => {
+    const bill = document.createElement("span");
     bill.className = "money-cash-flight";
-    bill.src = "/assets/money-stack.png";
-    bill.alt = "";
-    bill.draggable = false;
-    const startX = origin.x + (index - 2.5) * 9;
+    bill.innerHTML = iconMarkup("banknote", "money-cash-flight-icon");
+    const startX = origin.x + (index - 1.5) * 11;
     const startY = origin.y + (index % 3 - 1) * 8;
     const deltaX = target.x - startX;
     const deltaY = target.y - startY;
@@ -1901,24 +2243,26 @@ async function playNextCashCollection(): Promise<void> {
     bill.style.top = `${startY}px`;
     layer.append(bill);
     const arc = 38 + (index % 3) * 9;
-    const sway = (index - 2.5) * 11;
-    const frames = Array.from({ length: 13 }, (_, step) => {
-      const t = step / 12;
+    const sway = (index - 1.5) * 12;
+    const positionAt = (t: number): { transform: string; opacity: number } => {
       const eased = 1 - (1 - t) ** 2.1;
       const x = deltaX * eased + Math.sin(Math.PI * t) * sway;
       const y = deltaY * eased - Math.sin(Math.PI * t) * arc;
-      const scale = 0.7 + Math.sin(Math.PI * t) * 0.23 - t * 0.36;
-      const rotation = -18 + index * 7 + Math.sin(t * Math.PI * 2) * 11;
+      const scale = 0.76 + Math.sin(Math.PI * t) * 0.14 - t * 0.24;
+      const rotation = -14 + index * 8 + t * 18;
       return {
-        offset: t,
         opacity: t < 0.08 ? t / 0.08 : t > 0.82 ? (1 - t) / 0.18 : 1,
-        transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(${scale}) rotate(${rotation}deg)`,
+        transform: `translate3d(calc(-50% + ${x}px), calc(-50% + ${y}px), 0) scale(${scale}) rotate(${rotation}deg)`,
       };
-    });
-    const animation = bill.animate(frames, {
-      duration: prefersReducedMotion ? 1 : 620,
-      delay: prefersReducedMotion ? 0 : index * 42,
-      easing: "linear",
+    };
+    const animation = bill.animate([
+      { ...positionAt(0), offset: 0 },
+      { ...positionAt(0.52), offset: 0.52 },
+      { ...positionAt(1), offset: 1 },
+    ], {
+      duration: prefersReducedMotion ? 1 : 540,
+      delay: prefersReducedMotion ? 0 : index * 26,
+      easing: "cubic-bezier(.18,.78,.22,1)",
       fill: "forwards",
     });
     return animation.finished.catch(() => undefined).finally(() => bill.remove());
@@ -1927,11 +2271,12 @@ async function playNextCashCollection(): Promise<void> {
 
   const balanceAfterPayment = displayedCoinBalance + event.amount;
   const walletForBounce = walletVisible ? walletPill : fallbackWallet;
-  walletForBounce?.classList.remove("is-cashing");
   if (walletForBounce) {
-    void walletForBounce.offsetWidth;
-    walletForBounce.classList.add("is-cashing");
-    window.setTimeout(() => walletForBounce.classList.remove("is-cashing"), 560);
+    walletForBounce.animate([
+      { transform: "translateY(0) scale(1)" },
+      { transform: "translateY(-4px) scale(1.08)", offset: 0.38 },
+      { transform: "translateY(0) scale(1)" },
+    ], { duration: 420, easing: "cubic-bezier(.2,.85,.28,1.15)" });
   }
   const gain = document.createElement("span");
   gain.className = "money-gain-pop";

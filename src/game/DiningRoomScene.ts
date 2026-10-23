@@ -27,6 +27,8 @@ type RoomPart = {
 
 const ROOM_WIDTH = 576;
 const ROOM_HEIGHT = 1280;
+export const DINING_ROOM_WIDTH = ROOM_WIDTH;
+export const DINING_ROOM_HEIGHT = ROOM_HEIGHT;
 const SERVICE_COUNTER_TOP_Y = 1000;
 const GUEST_COUNTER_CLEARANCE = 40;
 // Threshold of the open doorway at the top of tavern_room_shell_base.png.
@@ -35,6 +37,19 @@ const DINING_WALK_FPS = 3;
 const DINING_EAT_ANIMATION_TIME_SCALE = 0.55;
 const TABLE_ART_SCALE = 0.17;
 const TABLE_ART_HEIGHT = 1226 * TABLE_ART_SCALE;
+// Visible alpha bounds of dining_set_table_4stools_stove-v2.png at TABLE_ART_SCALE.
+// The previous 920px width was from an older table asset and left a large part
+// of the current 1283px table image unblocked in staff navigation.
+const TABLE_ART_LEFT = 41 * TABLE_ART_SCALE;
+const TABLE_ART_RIGHT = 1255 * TABLE_ART_SCALE;
+const STAFF_NAV_STEP = 8;
+// The 24cqi staff sprite is 138 room units wide; keep its full box on-screen.
+const STAFF_NAV_MIN_X = 70;
+const STAFF_NAV_MAX_X = ROOM_WIDTH - 70;
+const STAFF_NAV_MIN_Y = 236;
+const STAFF_NAV_MAX_Y = 992;
+// Leave a visible gap after correcting the full-width table art bounds.
+const STAFF_OBSTACLE_MARGIN = 8;
 // Keep guests close to the atlas's intended proportions relative to the table art.
 const GUEST_VISUAL_SCALE = 1.15;
 const TABLE_CENTER = { x: 109.1, y: 93.5 } as const;
@@ -42,10 +57,6 @@ const TABLE_CENTER = { x: 109.1, y: 93.5 } as const;
 const TABLE_ORIGINS = [{ x: 24, y: 313 }, { x: 260, y: 313 }, { x: 24, y: 550 }, { x: 260, y: 550 }, { x: 24, y: 787 }, { x: 260, y: 787 }] as const;
 // Seating anchors measured from the full four-stool table art.
 const SEAT_OFFSETS = [{ x: 109.3, y: 28.9 }, { x: 181.1, y: 99.5 }, { x: 109.1, y: 157.3 }, { x: 37.4, y: 99.5 }] as const;
-// Keep Mai Linh's feet inside the narrow aisle between the two table columns.
-// A small final step makes her approach the correct side without entering the
-// table or stool footprint.
-const SERVICE_TABLE_SIDE_STEP = 14;
 const ROOM_TEXTURES: Record<RoomTexture, string> = {
   shell: roomShellUrl,
   shelf: shelfUrl,
@@ -258,6 +269,11 @@ export class DiningRoomScene extends Phaser.Scene {
     return point ? this.worldToFramePoint(point) : null;
   }
 
+  getTableRoomPoint(tableId: number): { x: number; y: number } | null {
+    const origin = TABLE_ORIGINS[Math.trunc(tableId) - 1];
+    return origin ? { x: origin.x + TABLE_CENTER.x, y: origin.y + TABLE_CENTER.y } : null;
+  }
+
   getServiceCounterScreenPoint(): { x: number; y: number } | null {
     const roomScale = this.roomMapWidth / ROOM_WIDTH;
     return this.worldToFramePoint({
@@ -267,12 +283,12 @@ export class DiningRoomScene extends Phaser.Scene {
   }
 
   getServiceCounterStaffScreenPoint(): { x: number; y: number } | null {
-    const roomScale = this.roomMapWidth / ROOM_WIDTH;
-    return this.worldToFramePoint({
-      // One home anchor for both the waiting sprite and every service trip.
-      x: this.roomMapLeft + 240 * roomScale,
-      y: 960 * roomScale,
-    });
+    return this.roomPointToFramePoint(this.getServiceCounterStaffRoomPoint());
+  }
+
+  getServiceCounterStaffRoomPoint(): { x: number; y: number } {
+    // One home anchor for both the waiting sprite and every service trip.
+    return { x: 240, y: 960 };
   }
 
   getStaffWorkstationScreenPoint(role: string, roleIndex = 0): { x: number; y: number } | null {
@@ -318,16 +334,16 @@ export class DiningRoomScene extends Phaser.Scene {
     return route?.[route.length - 1] ?? null;
   }
 
-  getServiceTableRouteScreenPoints(tableId: number): { x: number; y: number }[] | null {
+  getServiceTableRouteScreenPoints(tableId: number, fromScreenPoint?: { x: number; y: number }): { x: number; y: number }[] | null {
+    const fromRoomPoint = fromScreenPoint ? this.framePointToRoomPoint(fromScreenPoint) : this.getServiceCounterStaffRoomPoint();
+    if (!fromRoomPoint) return null;
+    return this.getServiceTableRouteRoomPoints(tableId, fromRoomPoint)?.map((point) => this.roomPointToFramePoint(point))
+      .filter((point): point is { x: number; y: number } => Boolean(point)) ?? null;
+  }
+
+  getServiceTableRouteRoomPoints(tableId: number, fromRoomPoint = this.getServiceCounterStaffRoomPoint()): { x: number; y: number }[] | null {
     const origin = TABLE_ORIGINS[Math.trunc(tableId) - 1];
     if (!origin) return null;
-    const roomScale = this.roomMapWidth / ROOM_WIDTH;
-    const home = { x: 240, y: 960 };
-    // Follow a simple service grid: leave the counter, walk along the clear
-    // center aisle, then take one short step toward the requested table.
-    const leftTableRightSeatX = TABLE_ORIGINS[0].x + SEAT_OFFSETS[1].x;
-    const rightTableLeftSeatX = TABLE_ORIGINS[1].x + SEAT_OFFSETS[3].x;
-    const aisleX = (leftTableRightSeatX + rightTableLeftSeatX) / 2;
     const tableIsLeft = Math.trunc(tableId) % 2 === 1;
     const rowIndex = Math.floor((Math.trunc(tableId) - 1) / 2);
     const adjacentRowOrigin = rowIndex < 2
@@ -338,18 +354,215 @@ export class DiningRoomScene extends Phaser.Scene {
     const stopY = rowIndex < 2
       ? (origin.y + TABLE_ART_HEIGHT + adjacentRowOrigin.y) / 2
       : (adjacentRowOrigin.y + TABLE_ART_HEIGHT + origin.y) / 2;
-    const serviceX = aisleX + (tableIsLeft ? -SERVICE_TABLE_SIDE_STEP : SERVICE_TABLE_SIDE_STEP);
-    const logicalRoute = [
-      home,
-      { x: aisleX, y: home.y },
-      { x: aisleX, y: stopY },
-      { x: serviceX, y: stopY },
-    ];
-    const route = logicalRoute.map((point) => this.worldToFramePoint({
+    // Approach each table from the clear aisle just outside its art footprint.
+    // The old right-side target landed inside the right table's collision area.
+    const serviceX = tableIsLeft
+      ? origin.x + TABLE_ART_RIGHT + STAFF_OBSTACLE_MARGIN + 2
+      : origin.x + TABLE_ART_LEFT - STAFF_OBSTACLE_MARGIN - 2;
+    return this.findStaffRoute(fromRoomPoint, { x: serviceX, y: stopY });
+  }
+
+  getServiceTableApproachRoomPoint(tableId: number): { x: number; y: number } | null {
+    const route = this.getServiceTableRouteRoomPoints(tableId);
+    return route?.[route.length - 1] ?? null;
+  }
+
+  getStaffRoamRouteScreenPoints(fromScreenPoint: { x: number; y: number }): { x: number; y: number }[] | null {
+    const start = this.framePointToRoomPoint(fromScreenPoint);
+    if (!start) return null;
+    return this.getStaffRoamRouteRoomPoints(start)?.map((point) => this.roomPointToFramePoint(point))
+      .filter((point): point is { x: number; y: number } => Boolean(point)) ?? null;
+  }
+
+  getStaffRoamRouteRoomPoints(fromRoomPoint: { x: number; y: number }): { x: number; y: number }[] | null {
+    const start = fromRoomPoint;
+    const startCell = this.nearestStaffGridCell(start);
+    if (!startCell) return null;
+    const columns = this.staffGridColumns;
+    const rows = this.staffGridRows;
+    const parent = new Int32Array(columns * rows);
+    parent.fill(-2);
+    const queue = new Int32Array(parent.length);
+    let head = 0;
+    let tail = 0;
+    const startIndex = startCell.row * columns + startCell.column;
+    parent[startIndex] = -1;
+    queue[tail++] = startIndex;
+    const reachable: { index: number; distance: number }[] = [];
+    const directions = [
+      [-1, 0], [1, 0], [0, -1], [0, 1],
+      [-1, -1], [1, -1], [-1, 1], [1, 1],
+    ] as const;
+
+    while (head < tail) {
+      const currentIndex = queue[head++]!;
+      const row = Math.floor(currentIndex / columns);
+      const column = currentIndex % columns;
+      const point = this.staffGridPoint(column, row);
+      const distance = Math.hypot(point.x - startCell.point.x, point.y - startCell.point.y);
+      if (distance >= 112) reachable.push({ index: currentIndex, distance });
+      for (const [dx, dy] of directions) {
+        const nextColumn = column + dx;
+        const nextRow = row + dy;
+        if (!this.isStaffGridPointWalkable(nextColumn, nextRow)) continue;
+        if (dx !== 0 && dy !== 0
+          && (!this.isStaffGridPointWalkable(column + dx, row)
+            || !this.isStaffGridPointWalkable(column, row + dy))) continue;
+        const nextIndex = nextRow * columns + nextColumn;
+        if (parent[nextIndex] !== -2) continue;
+        parent[nextIndex] = currentIndex;
+        queue[tail++] = nextIndex;
+      }
+    }
+
+    if (reachable.length === 0) return null;
+    const localChoices = reachable.filter((candidate) => candidate.distance <= 360);
+    const choices = localChoices.length > 0 ? localChoices : reachable;
+    const target = choices[Math.floor(Math.random() * choices.length)]!;
+    const cells = this.reconstructStaffRoute(parent, target.index, columns);
+    if (!cells) return null;
+    const logicalRoute = this.compressStaffGridRoute(cells);
+    logicalRoute.unshift(start);
+    return logicalRoute;
+  }
+
+  private get staffGridColumns(): number {
+    return Math.floor((STAFF_NAV_MAX_X - STAFF_NAV_MIN_X) / STAFF_NAV_STEP) + 1;
+  }
+
+  private get staffGridRows(): number {
+    return Math.floor((STAFF_NAV_MAX_Y - STAFF_NAV_MIN_Y) / STAFF_NAV_STEP) + 1;
+  }
+
+  private staffGridPoint(column: number, row: number): { x: number; y: number } {
+    return { x: STAFF_NAV_MIN_X + column * STAFF_NAV_STEP, y: STAFF_NAV_MIN_Y + row * STAFF_NAV_STEP };
+  }
+
+  private isStaffGridPointWalkable(column: number, row: number): boolean {
+    if (column < 0 || row < 0 || column >= this.staffGridColumns || row >= this.staffGridRows) return false;
+    const point = this.staffGridPoint(column, row);
+    if (point.x < STAFF_NAV_MIN_X || point.x > STAFF_NAV_MAX_X || point.y < STAFF_NAV_MIN_Y || point.y > STAFF_NAV_MAX_Y) return false;
+    // Leave space for the staircase and service counter at the room edges.
+    if (point.x >= 434 && point.y < 490) return false;
+    if (point.y >= SERVICE_COUNTER_TOP_Y - STAFF_OBSTACLE_MARGIN) return false;
+    return !TABLE_ORIGINS.some((origin) => point.x >= origin.x + TABLE_ART_LEFT - STAFF_OBSTACLE_MARGIN
+      && point.x <= origin.x + TABLE_ART_RIGHT + STAFF_OBSTACLE_MARGIN
+      && point.y >= origin.y - STAFF_OBSTACLE_MARGIN
+      && point.y <= origin.y + TABLE_ART_HEIGHT + STAFF_OBSTACLE_MARGIN);
+  }
+
+  private nearestStaffGridCell(point: { x: number; y: number }): { column: number; row: number; point: { x: number; y: number } } | null {
+    const baseColumn = Math.round((point.x - STAFF_NAV_MIN_X) / STAFF_NAV_STEP);
+    const baseRow = Math.round((point.y - STAFF_NAV_MIN_Y) / STAFF_NAV_STEP);
+    for (let radius = 0; radius <= 6; radius += 1) {
+      let closest: { column: number; row: number; point: { x: number; y: number }; distance: number } | null = null;
+      for (let row = baseRow - radius; row <= baseRow + radius; row += 1) {
+        for (let column = baseColumn - radius; column <= baseColumn + radius; column += 1) {
+          if (Math.max(Math.abs(column - baseColumn), Math.abs(row - baseRow)) !== radius
+            || !this.isStaffGridPointWalkable(column, row)) continue;
+          const candidate = this.staffGridPoint(column, row);
+          const distance = Math.hypot(candidate.x - point.x, candidate.y - point.y);
+          if (!closest || distance < closest.distance) closest = { column, row, point: candidate, distance };
+        }
+      }
+      if (closest) return closest;
+    }
+    return null;
+  }
+
+  findStaffRoute(from: { x: number; y: number }, to: { x: number; y: number }): { x: number; y: number }[] | null {
+    const startCell = this.nearestStaffGridCell(from);
+    const endCell = this.nearestStaffGridCell(to);
+    if (!startCell || !endCell) return null;
+    const columns = this.staffGridColumns;
+    const parent = new Int32Array(columns * this.staffGridRows);
+    parent.fill(-2);
+    const queue = new Int32Array(parent.length);
+    let head = 0;
+    let tail = 0;
+    const startIndex = startCell.row * columns + startCell.column;
+    const endIndex = endCell.row * columns + endCell.column;
+    parent[startIndex] = -1;
+    queue[tail++] = startIndex;
+    const directions = [
+      [-1, 0], [1, 0], [0, -1], [0, 1],
+      [-1, -1], [1, -1], [-1, 1], [1, 1],
+    ] as const;
+    while (head < tail && parent[endIndex] === -2) {
+      const currentIndex = queue[head++]!;
+      const row = Math.floor(currentIndex / columns);
+      const column = currentIndex % columns;
+      for (const [dx, dy] of directions) {
+        const nextColumn = column + dx;
+        const nextRow = row + dy;
+        if (!this.isStaffGridPointWalkable(nextColumn, nextRow)) continue;
+        if (dx !== 0 && dy !== 0
+          && (!this.isStaffGridPointWalkable(column + dx, row)
+            || !this.isStaffGridPointWalkable(column, row + dy))) continue;
+        const nextIndex = nextRow * columns + nextColumn;
+        if (parent[nextIndex] !== -2) continue;
+        parent[nextIndex] = currentIndex;
+        queue[tail++] = nextIndex;
+      }
+    }
+    const cells = this.reconstructStaffRoute(parent, endIndex, columns);
+    if (!cells) return null;
+    const route = this.compressStaffGridRoute(cells);
+    route.unshift(from);
+    route.push(to);
+    return route;
+  }
+
+  private reconstructStaffRoute(parent: Int32Array, endIndex: number, columns: number): { x: number; y: number }[] | null {
+    if (parent[endIndex] === -2) return null;
+    const cells: { x: number; y: number }[] = [];
+    let currentIndex = endIndex;
+    while (currentIndex >= 0) {
+      cells.push(this.staffGridPoint(currentIndex % columns, Math.floor(currentIndex / columns)));
+      currentIndex = parent[currentIndex]!;
+    }
+    return cells.reverse();
+  }
+
+  private compressStaffGridRoute(points: { x: number; y: number }[]): { x: number; y: number }[] {
+    if (points.length <= 2) return points;
+    const compressed = [points[0]!];
+    let previousDx = Math.sign(points[1]!.x - points[0]!.x);
+    let previousDy = Math.sign(points[1]!.y - points[0]!.y);
+    for (let index = 2; index < points.length; index += 1) {
+      const previous = points[index - 1]!;
+      const current = points[index]!;
+      const dx = Math.sign(current.x - previous.x);
+      const dy = Math.sign(current.y - previous.y);
+      if (dx !== previousDx || dy !== previousDy) compressed.push(previous);
+      previousDx = dx;
+      previousDy = dy;
+    }
+    compressed.push(points[points.length - 1]!);
+    return compressed;
+  }
+
+  framePointToRoomPoint(point: { x: number; y: number }): { x: number; y: number } | null {
+    const canvas = this.game?.canvas;
+    const frame = canvas?.closest<HTMLElement>(".game-frame");
+    if (!canvas || !frame || !this.sys?.isActive()) return null;
+    const canvasBounds = canvas.getBoundingClientRect();
+    const frameBounds = frame.getBoundingClientRect();
+    const cssRoomWidth = Math.min(canvasBounds.width, canvasBounds.height * ROOM_WIDTH / ROOM_HEIGHT);
+    if (cssRoomWidth <= 0 || canvasBounds.height <= 0) return null;
+    const cssRoomLeft = (canvasBounds.width - cssRoomWidth) / 2;
+    return {
+      x: (point.x - (canvasBounds.left - frameBounds.left) - cssRoomLeft) / cssRoomWidth * ROOM_WIDTH,
+      y: (point.y - (canvasBounds.top - frameBounds.top)) / canvasBounds.height * ROOM_HEIGHT,
+    };
+  }
+
+  roomPointToFramePoint(point: { x: number; y: number }): { x: number; y: number } | null {
+    const roomScale = this.roomMapWidth / ROOM_WIDTH;
+    return this.worldToFramePoint({
       x: this.roomMapLeft + point.x * roomScale,
       y: point.y * roomScale,
-    }));
-    return route.every((point): point is { x: number; y: number } => Boolean(point)) ? route : null;
+    });
   }
 
   private worldToFramePoint(point: { x: number; y: number }): { x: number; y: number } | null {
@@ -771,7 +984,11 @@ export class DiningRoomScene extends Phaser.Scene {
       const taskAction = tableGuests.some((guest) => guest.status === "awaiting-payment")
         ? "collect-payment"
         : table.cleanliness === "dirty" && tableGuests.length === 0 ? "clean-table" : "";
-      const task = taskAction === "collect-payment" ? "Thu tiền" : taskAction === "clean-table" ? "Dọn bàn" : "";
+      const task = taskAction === "collect-payment"
+        ? "Thu tiền"
+        : taskAction === "clean-table"
+          ? table.cleaningSeconds > 3 ? "Mai Linh đang tới" : table.cleaningSeconds > 0 ? `Đang dọn · ${table.cleaningSeconds}s` : "Dọn bàn"
+          : "";
       let label = this.tableTaskLabels.get(table.id);
       let background = this.tableTaskBackgrounds.get(table.id);
       if (!point || table.id > capacity || !taskAction) {

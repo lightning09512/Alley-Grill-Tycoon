@@ -112,10 +112,9 @@ h3 { margin: 2px 0 0; color: var(--ink); font-size: 13px; line-height: 1.15; }
 .money-animation-layer { position: absolute; z-index: 20; inset: 0; overflow: hidden; pointer-events: none; }
 .money-reward-wallet { position: absolute; top: max(7px, env(safe-area-inset-top)); left: 11px; z-index: 1; }
 .money-reward-wallet[hidden] { display: none; }
-.money-cash-flight { position: absolute; width: 38px; height: 38px; object-fit: contain; image-rendering: auto; pointer-events: none; will-change: transform, opacity; }
+.money-cash-flight { position: absolute; display: block; width: clamp(18px, 7.5cqi, 30px); height: clamp(18px, 7.5cqi, 30px); pointer-events: none; will-change: transform, opacity; }
+.money-cash-flight svg { display: block; width: 100%; height: 100%; }
 .money-gain-pop { position: absolute; z-index: 2; color: #ffe78c; font-size: 13px; font-weight: 900; line-height: 1; text-shadow: 0 1px 2px #254438, 0 0 5px rgba(26, 47, 36, .8); white-space: nowrap; animation: money-gain-pop 850ms cubic-bezier(.18,.75,.23,1) both; }
-.wallet-pill.is-cashing { animation: wallet-cash-bounce 520ms cubic-bezier(.2,.85,.28,1.25); }
-@keyframes wallet-cash-bounce { 0%, 100% { transform: translateY(0) scale(1); } 35% { transform: translateY(-5px) scale(1.12); } 68% { transform: translateY(1px) scale(.96); } }
 @keyframes money-gain-pop { 0% { opacity: 0; transform: translate(-50%, 3px) scale(.75); } 22% { opacity: 1; transform: translate(-50%, -2px) scale(1.08); } 100% { opacity: 0; transform: translate(-50%, -25px) scale(1); } }
 .game-loading-screen { position: absolute; z-index: 50; inset: 0; display: grid; place-items: center; padding: 20px; color: #fff2d3; background: radial-gradient(ellipse at 50% 40%, #397565, #19463e 72%, #12352f); opacity: 1; transition: opacity 280ms ease, visibility 280ms ease; }
 .game-loading-screen[hidden] { display: none; }
@@ -358,7 +357,7 @@ main, .street-section { position: absolute; inset: 0; }
 @keyframes staff-entrance-step { from { translate: 0 0; } to { translate: 0 -1.1cqi; } }
 .dining-delivery-stage { position: absolute; z-index: 4; inset: 0; overflow: hidden; pointer-events: none; }
 #app[data-dining-view="kitchen"] .dining-delivery-stage { display: none; }
-.dining-delivery-actor { position: absolute; display: grid; justify-items: center; width: 58px; transform: translate(-50%, -88%); transition: left .96s linear, top .96s linear; filter: drop-shadow(0 2px 2px rgba(35,25,17,.3)); will-change: left, top; }
+.dining-delivery-actor { position: absolute; display: grid; justify-items: center; width: 58px; transform: translate(-50%, -88%); transition: left 1s linear, top 1s linear; filter: drop-shadow(0 2px 2px rgba(35,25,17,.3)); will-change: left, top; }
 .dining-delivery-actor.is-staff { width: 24cqi; height: 24cqi; transform: translate(-50%, -100%); }
 .dining-delivery-actor.is-staff.is-returning { transition: left .9s ease-in-out, top .9s ease-in-out; }
 .dining-delivery-person { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
@@ -378,8 +377,9 @@ main, .street-section { position: absolute; inset: 0; }
 .restaurant-staff-sprite.role-cashier[data-staff-index="1"] { left: 79%; }
 .restaurant-staff-sprite.role-promoter { left: 88%; bottom: 20%; }
 .restaurant-staff-sprite[hidden] { display: none; }
-.mai-linh-gif { background-image: var(--mai-linh-animation); background-repeat: no-repeat; background-position: center bottom; background-size: contain; }
-.mai-linh-gif.is-mirrored { scale: -1 1; }
+.mai-linh-gif { background: none; }
+.mai-linh-gif::before { content: ""; position: absolute; inset: 0; background-image: var(--mai-linh-animation); background-repeat: no-repeat; background-position: center bottom; background-size: contain; }
+.mai-linh-gif.is-mirrored::before { transform: scaleX(-1); transform-origin: center; }
 .mai-linh-motion-pickup-kitchen { width: 21cqi; height: 24cqi; }
 @media (prefers-reduced-motion: reduce) { .kitchen-pass-dish.is-taking, .kitchen-stove-indicator { animation-duration: .01ms; } }
 #app[data-location="dining"] .street-caption { display: none !important; }
